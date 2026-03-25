@@ -1,0 +1,17 @@
+/* index.css
+   Global styles for Blue Lotus runtime.
+   Keep this minimal and neutral.
+*/
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: system-ui, sans-serif;
+  background: #ffffff;
+  color: #222;
+}
+
+* {
+  box-sizing: border-box;
+}
