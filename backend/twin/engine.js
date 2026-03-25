@@ -8,6 +8,8 @@
 
 import { getProject } from "./actions/getProject.js";
 import { createProject } from "./actions/createProject.js";
+import { updateProject } from "./actions/updateProject.js";
+import { deleteProject } from "./actions/deleteProject.js";
 
 export async function runTWIN(action, payload = {}) {
   try {
@@ -20,6 +22,12 @@ export async function runTWIN(action, payload = {}) {
 
       case "createProject":
         return await createProject(payload);
+
+      case "updateProject":
+        return await updateProject(payload);
+
+      case "deleteProject":
+        return await deleteProject(payload);
 
       default:
         throw new Error(`Unknown TWIN action: ${action}`);
