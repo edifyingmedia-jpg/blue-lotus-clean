@@ -6,6 +6,8 @@
  * All privileged logic stays here — never in the frontend.
  */
 
+import { getProject } from "./actions/getProject.js";
+
 export async function runTWIN(action, payload = {}) {
   try {
     switch (action) {
@@ -22,23 +24,4 @@ export async function runTWIN(action, payload = {}) {
     console.error("TWIN Engine Error:", err);
     throw err;
   }
-}
-
-/**
- * getProject
- * First real backend action.
- * Confirms the engine pipeline works end-to-end.
- * Supabase integration will be added next.
- */
-async function getProject({ projectId }) {
-  if (!projectId) {
-    throw new Error("Missing projectId");
-  }
-
-  // Placeholder for now — will connect to Supabase next
-  return {
-    ok: true,
-    projectId,
-    message: "Project lookup stub working"
-  };
 }
