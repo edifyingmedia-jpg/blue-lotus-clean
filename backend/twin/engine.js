@@ -12,20 +12,8 @@ export async function runTWIN(action, payload = {}) {
       case "ping":
         return { ok: true, message: "TWIN engine online" };
 
-      // -----------------------------
-      // Add real TWIN actions here
-      // -----------------------------
-      // case "createProject":
-      //   return await createProject(payload);
-
-      // case "syncSchema":
-      //   return await syncSchema(payload);
-
-      // case "repairBackend":
-      //   return await repairBackend(payload);
-
-      // case "migrate":
-      //   return await runMigration(payload);
+      case "getProject":
+        return await getProject(payload);
 
       default:
         throw new Error(`Unknown TWIN action: ${action}`);
@@ -34,4 +22,23 @@ export async function runTWIN(action, payload = {}) {
     console.error("TWIN Engine Error:", err);
     throw err;
   }
+}
+
+/**
+ * getProject
+ * First real backend action.
+ * Confirms the engine pipeline works end-to-end.
+ * Supabase integration will be added next.
+ */
+async function getProject({ projectId }) {
+  if (!projectId) {
+    throw new Error("Missing projectId");
+  }
+
+  // Placeholder for now — will connect to Supabase next
+  return {
+    ok: true,
+    projectId,
+    message: "Project lookup stub working"
+  };
 }
