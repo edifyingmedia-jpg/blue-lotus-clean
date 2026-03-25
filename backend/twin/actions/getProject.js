@@ -3,22 +3,15 @@
 /**
  * getProject (Backend Action)
  * Retrieves a project by ID from Supabase.
- * This is the first real TWIN backend action.
  */
 
 import { supabase } from "../supabase.js";
 
-/**
- * getProject
- * @param {Object} payload
- * @param {string} payload.projectId - The ID of the project to retrieve
- */
 export async function getProject({ projectId }) {
   if (!projectId) {
     throw new Error("Missing projectId");
   }
 
-  // Query Supabase
   const { data, error } = await supabase
     .from("projects")
     .select("*")
