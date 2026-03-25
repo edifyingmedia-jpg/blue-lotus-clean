@@ -1,11 +1,22 @@
 import React from "react";
-import Builder from "./builder/Builder";
+import { AppLayout } from "./layout";
+import { AppRouter } from "./router";
+import { ProjectProvider, useProject } from "./state";
+
+function AppContent() {
+  const { project } = useProject();
+
+  return (
+    <AppLayout>
+      <AppRouter project={project} />
+    </AppLayout>
+  );
+}
 
 export default function App() {
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Blue Lotus — Clean Build</h1>
-      <Builder />
-    </div>
+    <ProjectProvider>
+      <AppContent />
+    </ProjectProvider>
   );
 }
