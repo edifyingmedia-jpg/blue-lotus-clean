@@ -12,6 +12,7 @@ import { updateProject } from "./actions/updateProject.js";
 import { deleteProject } from "./actions/deleteProject.js";
 import { listProjects } from "./actions/listProjects.js";
 import { getAllUserData } from "./actions/getAllUserData.js";
+import { saveProject } from "./actions/saveProject.js";
 
 export async function runTWIN(action, payload = {}) {
   try {
@@ -36,6 +37,9 @@ export async function runTWIN(action, payload = {}) {
 
       case "getAllUserData":
         return await getAllUserData(payload);
+
+      case "saveProject":
+        return await saveProject(payload);
 
       default:
         throw new Error(`Unknown TWIN action: ${action}`);
