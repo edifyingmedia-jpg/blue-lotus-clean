@@ -1,26 +1,45 @@
 import React from "react";
+import { formatValue } from "../utils";
+import { COMPONENT_TYPES } from "./ComponentRegistry.js";
 
-export default function ComponentRenderer({ component }) {
-  switch (component.type) {
+export function ComponentRenderer({ component }) {
+  if (!component) {
+    return null;
+  }
+
+  const { type, props } = component;
+
+  switch (type) {
     case "text":
-      return <p>{component.props?.text || "Text"}</p>;
+      return (
+        <div style={{ marginBottom: 12 }}>
+          {formatValue(props.text || COMPONENT_TYPES.text.defaultProps.text)}
+        </div>
+      );
 
     case "button":
       return (
-        <button>
-          {component.props?.label || "Button"}
+        <button
+          style={{ marginBottom: 12, padding: "8px 16px" }}
+        >
+          {formatValue(props.label || COMPONENT_TYPES.button.defaultProps.label)}
         </button>
       );
 
-    case "input":
+    case "image":
       return (
-        <input
-          type="text"
-          placeholder={component.props?.placeholder || "Enter text"}
+        <img
+          src={props.src || COMPONENT_TYPES.image.defaultProps.src}
+          alt=""
+          style={{ maxWidth: "100%", marginBottom: 12 }}
         />
       );
 
     default:
-      return null;
+      return (
+        <div style={{ marginBottom: 12 }}>
+          Unknown component: {type}
+        </div>
+      );
   }
 }
