@@ -1,28 +1,39 @@
-import React from "react";
+import { useState, useCallback } from "react";
 
-export default function Twin({ project, updateProject }) {
-  function addPage() {
-    const newPage = {
-      id: crypto.randomUUID(),
-      name: `Page ${project.pages.length + 1}`,
-      components: []
-    };
+/**
+ * useTWIN
+ * Frontend-safe wrapper for calling backend TWIN actions.
+ * All privileged logic stays server-side.
+ */
+export function useTWIN() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    updateProject({
-      pages: [...project.pages, newPage]
-    });
-  }
+  const callTWIN = useCallback(async (action, payload = {}) => {
+    setLoading(true);
+    setError(null);
 
-  return (
-    <div>
-      <button onClick={addPage}>Add Page</button>
+    try {
+      const res = await fetch("/api/twin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, payload })
+      });
 
-      <div style={{ marginTop: 20 }}>
-        <h3>Pages</h3>
-        {project.pages.map(page => (
-          <div key={page.id}>{page.name}</div>
-        ))}
-      </div>
-    </div>
-  );
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "TWIN request failed");
+      }
+
+      return data;
+    } catch (err) {
+      setError(err.message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { callTWIN, loading, error };
 }
