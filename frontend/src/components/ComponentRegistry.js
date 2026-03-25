@@ -1,11 +1,25 @@
-import ComponentRenderer from "./ComponentRenderer";
+// ComponentRegistry.js
+// Central registry of all supported component types.
 
-export const registry = {
-  text: ComponentRenderer,
-  button: ComponentRenderer,
-  input: ComponentRenderer
+export const COMPONENT_TYPES = {
+  text: {
+    label: "Text",
+    defaultProps: {
+      text: "Text"
+    }
+  },
+
+  button: {
+    label: "Button",
+    defaultProps: {
+      label: "Button"
+    }
+  },
+
+  image: {
+    label: "Image",
+    defaultProps: {
+      src: ""
+    }
+  }
 };
-
-export function getComponentRenderer(type) {
-  return registry[type] || null;
-}
