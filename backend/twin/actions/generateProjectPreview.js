@@ -1,89 +1,50 @@
 // backend/twin/actions/generateProjectPreview.js
 
 /**
- * generateProjectPreview (Backend Action)
- * Prepares a normalized, preview-safe version of the project definition.
- */
-
-import { supabase } from "../supabase.js";
-
-/**
  * generateProjectPreview
- * @param {Object} payload
- * @param {string} payload.projectId - The project to preview
+ * ----------------------
+ * Produces a safe, deterministic preview payload for the frontend.
+ * This does NOT execute code — it only assembles a structured snapshot
+ * of the project so the LivePreview engine can render it.
  */
-export async function generateProjectPreview({ projectId }) {
-  if (!projectId) {
-    throw new Error("Missing projectId");
+
+export async function generateProjectPreview({ project }) {
+  if (!project || typeof project !== "object") {
+    throw new Error("Invalid project payload: expected an object.");
   }
 
-  // Load the project
-  const { data: project, error } = await supabase
-    .from("projects")
-    .select("*")
-    .eq("id", projectId)
-    .single();
+  // Basic required fields
+  const { id, name, pages } = project;
 
-  if (error) {
-    throw new Error("Supabase error: " + error.message);
+  if (!id) throw new Error("Project is missing id");
+  if (!name) throw new Error("Project is missing name");
+  if (!Array.isArray(pages)) {
+    throw new Error("Project pages must be an array");
   }
 
-  if (!project) {
-    return {
-      ok: false,
-      projectId,
-      message: "Project not found"
-    };
-  }
-
-  const definition = project.definition;
-
-  if (!definition || typeof definition !== "object") {
-    throw new Error("Invalid or missing project definition");
-  }
-
-  // Normalize screens
-  const screens = Array.isArray(definition.screens)
-    ? definition.screens.map(screen => ({
-        id: screen.id,
-        name: screen.name,
-        type: screen.type || "screen",
-        components: screen.components || [],
-        routes: screen.routes || []
-      }))
-    : [];
-
-  // Normalize components
-  const components = Array.isArray(definition.components)
-    ? definition.components.map(c => ({
-        id: c.id,
-        type: c.type,
-        props: c.props || {},
-        children: c.children || []
-      }))
-    : [];
-
-  // Normalize routes
-  const routes = Array.isArray(definition.routes)
-    ? definition.routes.map(r => ({
-        path: r.path,
-        screenId: r.screenId
-      }))
-    : [];
-
-  // Construct preview payload
+  // Build preview structure
   const preview = {
-    projectId,
-    name: project.name,
-    updated_at: project.updated_at,
-    screens,
-    components,
-    routes
+    id,
+    name,
+    pageCount: pages.length,
+    pages: pages.map((page) => ({
+      id: page.id,
+      name: page.name,
+      componentCount: Array.isArray(page.components)
+        ? page.components.length
+        : 0,
+      components: Array.isArray(page.components)
+        ? page.components.map((c) => ({
+            id: c.id,
+            type: c.type,
+            props: c.props || {},
+          }))
+        : [],
+    })),
   };
 
   return {
     ok: true,
     preview,
-    message: "Preview generated successfully"
   };
 }
