@@ -1,46 +1,52 @@
+// frontend/src/runtime/AppRenderer.jsx
+
 import React from "react";
-import { ComponentRenderer } from "../components";
-import { validateAppDefinition } from "./AppDefinitionValidator";
+import PageRenderer from "./PageRenderer";
+import StateManager from "./StateManager";
 
 /**
- * AppRenderer
- * Renders the entire app at runtime using the validated project definition.
+ * AppRenderer is the root renderer for a Blue Lotus app.
+ * It renders a single page using the full app definition
+ * and provides runtime state to all components.
  */
-export default function AppRenderer({ project }) {
-  const validation = validateAppDefinition(project);
-
-  if (!validation.valid) {
+export default function AppRenderer({
+  appDefinition,
+  page,
+  selectedComponentId,
+  mode = "runtime",
+}) {
+  if (!appDefinition || !page) {
     return (
-      <div style={{ padding: 20, color: "red" }}>
-        Runtime Error: {validation.error}
-      </div>
-    );
-  }
-
-  const currentPage = project.pages.find(
-    (p) => p.id === project.currentPageId
-  );
-
-  if (!currentPage) {
-    return (
-      <div style={{ padding: 20, color: "#666" }}>
-        No page selected.
+      <div
+        style={{
+          padding: "1rem",
+          background: "#f8f9fa",
+          border: "1px solid #dee2e6",
+          borderRadius: "6px",
+          color: "#495057",
+        }}
+      >
+        <h3>Nothing to Render</h3>
+        <p>The app definition or page is missing.</p>
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        padding: 20,
-        background: "#fff",
-        minHeight: "100vh",
-        overflow: "auto"
-      }}
-    >
-      {currentPage.components.map((component) => (
-        <ComponentRenderer key={component.id} component={component} />
-      ))}
-    </div>
+    <StateManager initialState={appDefinition.state || {}}>
+      <div
+        data-runtime-mode={mode}
+        style={{
+          width: "100%",
+          height: "100%",
+          position: "relative",
+        }}
+      >
+        <PageRenderer
+          page={page}
+          selectedComponentId={selectedComponentId}
+        />
+      </div>
+    </StateManager>
   );
 }
