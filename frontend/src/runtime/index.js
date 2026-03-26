@@ -1,18 +1,34 @@
-// frontend/src/runtime/index.js
-
 /**
- * Runtime Entry Point
- * --------------------------------------------------
- * Exports the full Blue Lotus runtime API.
- * This allows the builder, preview engine, and
- * external tools to import everything cleanly.
+ * index.js
+ * ----------------------------------------------------
+ * Public runtime entrypoint.
+ *
+ * Exports:
+ *  - RuntimeApp (React root)
+ *  - RuntimeProvider + useRuntime (context)
+ *  - Engines (State, Navigation, Action)
+ *  - Utilities for embedding the runtime
  */
 
-export { default as LivePreview } from "./LivePreview";
-export { default as AppRenderer } from "./AppRenderer.jsx";
-export { default as PageRenderer } from "./PageRenderer.jsx";
-export { default as ComponentRenderer } from "./ComponentRenderer.jsx";
+import RuntimeApp from "./RuntimeApp.jsx";
+import { RuntimeProvider, useRuntime } from "./RuntimeContext";
 
-export { RuntimeProvider, useRuntime } from "./RuntimeContext";
+import StateEngine from "./StateEngine";
+import NavigationEngine from "./NavigationEngine";
+import ActionEngine from "./ActionEngine";
 
-export { getComponent } from "./ComponentRegistry";
+import RenderScreen from "./RenderScreen";
+import ScreenRenderer from "./ScreenRenderer";
+import AppRenderer from "./AppRenderer";
+
+export {
+  RuntimeApp,
+  RuntimeProvider,
+  useRuntime,
+  StateEngine,
+  NavigationEngine,
+  ActionEngine,
+  RenderScreen,
+  ScreenRenderer,
+  AppRenderer,
+};
