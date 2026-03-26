@@ -4,8 +4,8 @@
  * Root React entry point for the Blue Lotus runtime.
  *
  * Responsibilities:
- *  - Initialize RuntimeEngine once
- *  - Load the appDefinition into the engine
+ *  - Initialize runtime engines once
+ *  - Load the appDefinition into the runtime
  *  - Render the active screen through RenderScreen
  *  - Bridge runtime events into React
  */
