@@ -5,7 +5,7 @@ import PageRenderer from "./PageRenderer";
 import StateManager from "./StateManager";
 
 /**
- * AppRenderer is the root renderer for a Blue Lotus app.
+ * AppRenderer is the root runtime renderer.
  * It renders a single page using the full app definition
  * and provides runtime state to all components.
  */
