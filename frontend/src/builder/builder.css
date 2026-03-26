@@ -1,0 +1,87 @@
+/* Root shell */
+.builder-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f6f7f9;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Header */
+.builder-header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.builder-header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.builder-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.builder-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.builder-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.builder-mode {
+  font-size: 12px;
+  color: #374151;
+}
+
+/* Main layout */
+.builder-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 260px 1fr 320px;
+  overflow: hidden;
+}
+
+/* Sidebars */
+.builder-sidebar {
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.builder-sidebar-right {
+  border-right: none;
+  border-left: 1px solid #e5e7eb;
+}
+
+/* Canvas */
+.builder-canvas {
+  background: #f0f2f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: auto;
+}
+
+.builder-canvas-frame {
+  background: #ffffff;
+  width: 100%;
+  max-width: 1200px;
+  min-height: 80%;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
