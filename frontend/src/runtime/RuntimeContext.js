@@ -1,22 +1,52 @@
-// frontend/src/runtime/RuntimeContext.js
-
-import React, { createContext, useContext, useState, useCallback } from "react";
-
 /**
- * RuntimeContext provides state, actions, and data
- * to all components rendered by the Blue Lotus runtime.
+ * RuntimeContext.js
+ * ----------------------------------------------------
+ * Provides global runtime context for:
+ *  - stateEngine
+ *  - navigationEngine
+ *  - actionEngine
+ *  - appDefinition
  *
- * This allows components to interact with the app definition
- * (e.g., buttons triggering actions, inputs updating state).
+ * This context allows deeply nested components to access
+ * runtime engines without prop‑drilling.
  */
+
+import React, { createContext, useContext } from "react";
 
 const RuntimeContext = createContext(null);
 
-export function RuntimeProvider({ children, initialState = {} }) {
-  const [state, setState] = useState(initialState);
+export function RuntimeProvider({
+  appDefinition,
+  stateEngine,
+  navigationEngine,
+  actionEngine,
+  children,
+}) {
+  if (!appDefinition) {
+    throw new Error("RuntimeProvider requires appDefinition");
+  }
+  if (!stateEngine || !navigationEngine || !actionEngine) {
+    throw new Error("RuntimeProvider requires all runtime engines");
+  }
 
-  /**
-   * updateState merges new values into the existing state.
-   */
-  const updateState = useCallback((updates) => {
-    setState((prev) => ({ ...prev, ...updates }));
+  const value = {
+    appDefinition,
+    stateEngine,
+    navigationEngine,
+    actionEngine,
+  };
+
+  return (
+    <RuntimeContext.Provider value={value}>
+      {children}
+    </RuntimeContext.Provider>
+  );
+}
+
+export function useRuntime() {
+  const ctx = useContext(RuntimeContext);
+  if (!ctx) {
+    throw new Error("useRuntime must be used inside <RuntimeProvider>");
+  }
+  return ctx;
+}
