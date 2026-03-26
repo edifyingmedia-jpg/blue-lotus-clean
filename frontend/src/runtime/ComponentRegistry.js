@@ -12,7 +12,7 @@
 import BLText from "../components/primitives/Text.jsx";
 import BLButton from "../components/primitives/Button.jsx";
 import BLImage from "../components/primitives/Image.jsx";
-import BLView from "../components/primitives/View.jsx"; // optional container
+import BLView from "../components/primitives/View.jsx"; // container component
 
 // The official runtime registry
 const registry = {
