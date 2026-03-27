@@ -1,53 +1,56 @@
-// frontend/src/runtime/state/useBuilderState.js
-
-import useAppState from "./useAppState";
-import useSelectionState from "./useSelectionState";
-
 /**
- * useBuilderState is the single source of truth
- * for the Blue Lotus builder.
+ * useBuilderState.js
+ * ----------------------------------------------------
+ * React hook for interacting with the runtime state
+ * inside the builder environment.
  *
- * It combines:
- * - app definition state
- * - page selection
- * - component selection
+ * Responsibilities:
+ *  - Subscribe to state changes from StateEngine
+ *  - Provide get/set/patch helpers
+ *  - Keep builder UI reactive to preview state
  */
-export default function useBuilderState(initialAppDefinition) {
-  const appState = useAppState(initialAppDefinition);
-  const selectionState = useSelectionState(
-    initialAppDefinition?.pages?.[0]?.id ?? null
-  );
 
-  const { appDefinition } = appState;
-  const { selectedPageId, selectedComponentId } = selectionState;
+import { useEffect, useState } from "react";
+import eventBus from "../utils/eventBus";
 
-  /**
-   * Derived helpers
-   */
-  const selectedPage =
-    appDefinition?.pages?.find((p) => p.id === selectedPageId) ?? null;
+export default function useBuilderState(stateEngine) {
+  if (!stateEngine) {
+    throw new Error("useBuilderState requires a StateEngine instance");
+  }
 
-  const findComponentById = (components, id) => {
-    for (const component of components) {
-      if (component.id === id) return component;
-      if (component.children) {
-        const found = findComponentById(component.children, id);
-        if (found) return found;
-      }
-    }
-    return null;
-  };
+  const [version, setVersion] = useState(0);
 
-  const selectedComponent =
-    selectedPage && selectedComponentId
-      ? findComponentById(selectedPage.components, selectedComponentId)
-      : null;
+  useEffect(() => {
+    const handler = () => {
+      setVersion((v) => v + 1);
+    };
+
+    eventBus.on("state:changed", handler);
+
+    return () => {
+      eventBus.off("state:changed", handler);
+    };
+  }, []);
 
   return {
-    ...appState,
-    ...selectionState,
+    /**
+     * Read a value from the state tree
+     */
+    get: (path) => stateEngine.get(path),
 
-    selectedPage,
-    selectedComponent,
+    /**
+     * Set a value in the state tree
+     */
+    set: (path, value) => stateEngine.set(path, value),
+
+    /**
+     * Apply a partial update
+     */
+    patch: (patchObj) => stateEngine.patch(patchObj),
+
+    /**
+     * Used only to force React re-renders
+     */
+    version,
   };
 }
