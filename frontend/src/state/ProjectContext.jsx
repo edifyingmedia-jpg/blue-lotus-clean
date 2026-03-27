@@ -15,7 +15,7 @@ export function ProjectProvider({ children }) {
     currentPageId: "page-1"
   });
 
-  // Get current page object
+  // Get the current page object
   const currentPage = project.pages.find(
     (p) => p.id === project.currentPageId
   );
