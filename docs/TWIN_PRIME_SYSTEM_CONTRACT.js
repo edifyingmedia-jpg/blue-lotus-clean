@@ -1,4 +1,4 @@
-{
+const TWIN_PRIME_SYSTEM_CONTRACT = {
   "contract_id": "twin_prime",
   "version": "1.0.0",
   "scope": "owner_only",
@@ -88,4 +88,6 @@
     "derivatives_long_term_personal_memory_forbidden": true,
     "derivatives_relational_cognition_forbidden": true
   }
-}
+};
+
+export default Object.freeze(TWIN_PRIME_SYSTEM_CONTRACT);
