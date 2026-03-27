@@ -1,13 +1,29 @@
 import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BuilderLayout } from "../layout";
+import { ComponentPanel } from "../builder";
 import { PageRenderer } from "../pages";
+import { useProject } from "../state";
 
-export default function AppRouter({ project }) {
-  if (!project || !project.pages || project.pages.length === 0) {
-    return <div style={{ padding: 20 }}>No pages defined.</div>;
-  }
+export default function AppRouter() {
+  const { project } = useProject();
 
-  // For now, render the first page
-  const page = project.pages[0];
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Builder Route */}
+        <Route
+          path="/"
+          element={
+            <BuilderLayout
+              left={<ComponentPanel addComponent={project.addComponent} />}
+              right={<PageRenderer page={project.currentPage} />}
+            />
+          }
+        />
 
-  return <PageRenderer page={page} />;
+        {/* Future: Additional routes can go here */}
+      </Routes>
+    </BrowserRouter>
+  );
 }
