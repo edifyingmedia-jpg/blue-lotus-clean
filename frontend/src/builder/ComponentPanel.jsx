@@ -4,7 +4,7 @@ import { generateId } from "../utils";
 const DEFAULT_COMPONENTS = [
   { type: "text", label: "Text" },
   { type: "button", label: "Button" },
-  { type: "image", label: "Image" }
+  { type: "image", label: "Image" },
 ];
 
 export function ComponentPanel({ onAddComponent }) {
@@ -20,14 +20,16 @@ export function ComponentPanel({ onAddComponent }) {
             marginBottom: 8,
             border: "1px solid #ccc",
             borderRadius: 4,
-            cursor: "pointer"
+            cursor: "pointer",
           }}
           onClick={() => {
             const component = {
               id: generateId("cmp"),
               type: item.type,
-              props: {}
+              props: {},
+              children: [],
             };
+
             onAddComponent(component);
           }}
         >
