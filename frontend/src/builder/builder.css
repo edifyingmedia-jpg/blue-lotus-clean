@@ -1,87 +1,89 @@
-/* Root shell */
-.builder-shell {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: #f6f7f9;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+/**
+ * builder.css
+ * ----------------------------------------------------
+ * Global styles for the Blue Lotus Builder environment.
+ *
+ * Principles:
+ *  - Minimalist two‑column layout
+ *  - No clutter, no visual noise
+ *  - Quiet, confident, owner‑first design
+ *  - High contrast, readable typography
+ */
+
+:root {
+  --bl-bg: #f7f7f8;
+  --bl-panel-bg: #ffffff;
+  --bl-border: #e2e2e6;
+  --bl-text: #1a1a1c;
+  --bl-muted: #6a6a6d;
+  --bl-accent: #4a6bff;
 }
 
-/* Header */
-.builder-header {
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bl-bg);
+  color: var(--bl-text);
+  font-family: Inter, system-ui, sans-serif;
 }
 
-.builder-header-left {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.builder-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.builder-subtitle {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.builder-header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.builder-mode {
-  font-size: 12px;
-  color: #374151;
-}
-
-/* Main layout */
-.builder-main {
-  flex: 1;
+/* Two-column builder layout */
+.bl-builder {
   display: grid;
-  grid-template-columns: 260px 1fr 320px;
+  grid-template-columns: 320px 1fr;
+  height: 100vh;
   overflow: hidden;
 }
 
-/* Sidebars */
-.builder-sidebar {
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
-  padding: 16px;
+/* Left panel (navigation, components, properties) */
+.bl-panel {
+  background: var(--bl-panel-bg);
+  border-right: 1px solid var(--bl-border);
   overflow-y: auto;
+  padding: 16px;
 }
 
-.builder-sidebar-right {
-  border-right: none;
-  border-left: 1px solid #e5e7eb;
+/* Right panel (preview) */
+.bl-preview {
+  background: var(--bl-bg);
+  overflow: hidden;
+  position: relative;
 }
 
-/* Canvas */
-.builder-canvas {
-  background: #f0f2f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  overflow: auto;
+/* Section headers */
+.bl-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--bl-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.builder-canvas-frame {
-  background: #ffffff;
-  width: 100%;
-  max-width: 1200px;
-  min-height: 80%;
+/* Component list items */
+.bl-component-item {
+  padding: 8px 10px;
+  border: 1px solid var(--bl-border);
   border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 8px;
+  cursor: pointer;
+  background: #fff;
+  transition: background 0.15s ease;
+}
+
+.bl-component-item:hover {
+  background: #f0f0f3;
+}
+
+/* Preview frame */
+.bl-preview-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
+}
+
+/* Utility spacing */
+.bl-spacer {
+  height: 16px;
 }
