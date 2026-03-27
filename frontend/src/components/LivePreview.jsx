@@ -1,25 +1,26 @@
 import React from "react";
 import { getComponent } from "../runtime/ComponentRegistry";
+import { useProject } from "../state";
 
 /**
  * LivePreview
  * ----------------------------------------------------
- * Runtime renderer for the current project definition.
- * Safely renders component trees using the ComponentRegistry.
+ * Interactive runtime renderer with selection support.
  */
 
-function renderNode(node) {
-  if (!node || typeof node !== "object") {
-    return null;
-  }
+function RenderNode({ node }) {
+  const { selectedId, setSelectedId } = useProject();
+
+  if (!node || typeof node !== "object") return null;
 
   const { id, type, props = {}, children = [] } = node;
   const Component = getComponent(type);
 
+  const isSelected = selectedId === id;
+
   if (!Component) {
     return (
       <div
-        key={id}
         style={{
           padding: 8,
           border: "1px dashed red",
@@ -33,11 +34,24 @@ function renderNode(node) {
   }
 
   return (
-    <Component key={id} {...props}>
-      {Array.isArray(children)
-        ? children.map((child) => renderNode(child))
-        : null}
-    </Component>
+    <div
+      style={{
+        outline: isSelected ? "2px solid #4da3ff" : "none",
+        outlineOffset: 2,
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        setSelectedId(id);
+      }}
+    >
+      <Component {...props}>
+        {Array.isArray(children)
+          ? children.map((child) => (
+              <RenderNode key={child.id} node={child} />
+            ))
+          : null}
+      </Component>
+    </div>
   );
 }
 
@@ -53,7 +67,7 @@ export default function LivePreview({ project }) {
   return (
     <div style={{ padding: 16 }}>
       <h3>Live Preview</h3>
-      {renderNode(project.root)}
+      <RenderNode node={project.root} />
     </div>
   );
 }
