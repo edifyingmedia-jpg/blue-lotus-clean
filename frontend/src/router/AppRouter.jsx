@@ -2,7 +2,8 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { BuilderLayout } from "../layout";
 import { ComponentPanel } from "../builder";
-import { PageRenderer } from "../pages";
+import LivePreview from "../components/LivePreview";
+import Inspector from "../components/Inspector";
 import { useProject } from "../state";
 
 export default function AppRouter() {
@@ -11,18 +12,24 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Builder Route */}
         <Route
           path="/"
           element={
             <BuilderLayout
               left={<ComponentPanel addComponent={project.addComponent} />}
-              right={<PageRenderer page={project.currentPage} />}
+              right={
+                <div style={{ display: "flex", height: "100%" }}>
+                  <div style={{ flex: 2, borderRight: "1px solid #ddd" }}>
+                    <LivePreview project={project} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Inspector />
+                  </div>
+                </div>
+              }
             />
           }
         />
-
-        {/* Future: Additional routes can go here */}
       </Routes>
     </BrowserRouter>
   );
