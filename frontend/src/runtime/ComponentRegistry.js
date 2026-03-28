@@ -1,18 +1,28 @@
 // frontend/src/runtime/ComponentRegistry.js
 
-import BLText from "../components/primitives/Text.jsx";        // this file exists
-import BLView from "./components/primitives/View.jsx";         // this file exists
+/**
+ * ComponentRegistry
+ * --------------------------------------------------
+ * Maps component "type" strings from the app definition
+ * to real React components in the runtime.
+ *
+ * This is the authoritative registry for the Blue Lotus runtime.
+ */
 
-// These two DO NOT EXIST ANYWHERE in your repo yet.
-// So we temporarily disable them until you create them.
+import BLText from "../components/primitives/Text.jsx";
+
+// These components do not exist yet.
+// They are intentionally disabled to prevent build failures.
 const BLButton = null;
 const BLImage = null;
+const BLView = null;
 
+// The official runtime registry
 const registry = {
   text: BLText,
-  view: BLView,
   button: BLButton,
   image: BLImage,
+  view: BLView,
 };
 
 export function getComponent(type) {
