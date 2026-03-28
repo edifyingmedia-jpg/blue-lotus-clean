@@ -21,6 +21,8 @@ import RenderScreen from "./RenderScreen";
 import ScreenRenderer from "./ScreenRenderer";
 import AppRenderer from "./AppRenderer";
 
+import { initTWINSession } from "./twin/initTWINSession";
+
 export {
   RuntimeApp,
   RuntimeProvider,
@@ -31,4 +33,5 @@ export {
   RenderScreen,
   ScreenRenderer,
   AppRenderer,
+  initTWINSession,
 };
