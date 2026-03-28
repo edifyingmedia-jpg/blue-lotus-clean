@@ -2,37 +2,63 @@ import React from "react";
 
 export default function BuilderApp() {
   return (
-    <div className="builder-shell">
-      {/* Header */}
-      <header className="builder-header">
-        <div className="builder-header-left">
-          <span className="builder-title">Blue Lotus</span>
-          <span className="builder-subtitle">Meta Builder</span>
-        </div>
-
-        <div className="builder-header-right">
-          <span className="builder-mode">Authoring</span>
-          {/* Publish button will live here later */}
-        </div>
-      </header>
-
-      {/* Main Layout */}
-      <main className="builder-main">
+    <div
+      className="builder-shell"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        width: "100%",
+        overflow: "hidden"
+      }}
+    >
+      {/* Main Builder Layout */}
+      <main
+        className="builder-main"
+        style={{
+          display: "flex",
+          flex: 1,
+          overflow: "hidden"
+        }}
+      >
         {/* Left Sidebar */}
-        <aside className="builder-sidebar builder-sidebar-left">
-          {/* Structure / Pages / Components */}
+        <aside
+          className="builder-sidebar builder-sidebar-left"
+          style={{
+            width: 260,
+            borderRight: "1px solid #ddd",
+            background: "#fafafa",
+            overflowY: "auto"
+          }}
+        >
+          {/* Component / Structure panel mounts here */}
         </aside>
 
         {/* Canvas */}
-        <section className="builder-canvas">
+        <section
+          className="builder-canvas"
+          style={{
+            flex: 1,
+            overflow: "auto",
+            background: "#fff"
+          }}
+        >
           <div className="builder-canvas-frame">
-            {/* LivePreview will mount here */}
+            {/* LivePreview mounts here */}
           </div>
         </section>
 
         {/* Right Sidebar */}
-        <aside className="builder-sidebar builder-sidebar-right">
-          {/* Inspector / Properties */}
+        <aside
+          className="builder-sidebar builder-sidebar-right"
+          style={{
+            width: 300,
+            borderLeft: "1px solid #ddd",
+            background: "#fafafa",
+            overflowY: "auto"
+          }}
+        >
+          {/* Inspector / Properties panel mounts here */}
         </aside>
       </main>
     </div>
