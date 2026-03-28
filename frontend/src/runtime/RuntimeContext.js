@@ -1,43 +1,21 @@
-/**
- * RuntimeContext.js
- * ----------------------------------------------------
- * Provides global runtime context for:
- *  - stateEngine
- *  - navigationEngine
- *  - actionEngine
- *  - appDefinition
- *
- * This context allows deeply nested components to access
- * runtime engines without prop‑drilling.
- */
-
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useMemo } from "react";
+import { initTWINSession } from "./index";
 
 const RuntimeContext = createContext(null);
 
-export function RuntimeProvider({
-  appDefinition,
-  stateEngine,
-  navigationEngine,
-  actionEngine,
-  children,
-}) {
-  if (!appDefinition) {
-    throw new Error("RuntimeProvider requires appDefinition");
-  }
-  if (!stateEngine || !navigationEngine || !actionEngine) {
-    throw new Error("RuntimeProvider requires all runtime engines");
-  }
+export function RuntimeProvider({ children }) {
+  const twinSession = useMemo(() => {
+    return initTWINSession({ isOwner: true });
+  }, []);
 
-  const value = {
-    appDefinition,
-    stateEngine,
-    navigationEngine,
-    actionEngine,
-  };
+  const runtime = useMemo(() => {
+    return {
+      twin: twinSession
+    };
+  }, [twinSession]);
 
   return (
-    <RuntimeContext.Provider value={value}>
+    <RuntimeContext.Provider value={runtime}>
       {children}
     </RuntimeContext.Provider>
   );
@@ -46,7 +24,7 @@ export function RuntimeProvider({
 export function useRuntime() {
   const ctx = useContext(RuntimeContext);
   if (!ctx) {
-    throw new Error("useRuntime must be used inside <RuntimeProvider>");
+    throw new Error("useRuntime must be used within RuntimeProvider");
   }
   return ctx;
 }
