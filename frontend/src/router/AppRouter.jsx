@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import AppLayout from "../layout/AppLayout";
 import { ComponentPanel } from "../builder";
 import LivePreview from "../components/LivePreview";
 import Inspector from "../components/Inspector";
@@ -14,7 +16,7 @@ export default function AppRouter() {
         <Route
           path="/"
           element={
-            <BuilderLayout
+            <AppLayout
               left={<ComponentPanel addComponent={project.addComponent} />}
               right={
                 <div style={{ display: "flex", height: "100%" }}>
