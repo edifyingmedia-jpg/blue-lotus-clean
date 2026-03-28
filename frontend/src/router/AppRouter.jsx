@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { BuilderLayout } from "../layout";
 import { ComponentPanel } from "../builder";
 import LivePreview from "../components/LivePreview";
 import Inspector from "../components/Inspector";
