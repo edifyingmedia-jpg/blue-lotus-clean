@@ -1,6 +1,6 @@
 // frontend/src/builder/CanvasRenderer.jsx
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { RegistryV2 } from "./components/registry";
 
 /**
@@ -114,9 +114,7 @@ function TopNav({ navigation, activeRoute, onNavigate }) {
 function BindingBadge({ binding }) {
   if (!binding) return null;
 
-  const label = binding.field
-    ? `${binding.table}.${binding.field}`
-    : binding.table;
+  const label = binding.field ? `${binding.table}.${binding.field}` : binding.table;
 
   return (
     <div
@@ -140,12 +138,114 @@ function BindingBadge({ binding }) {
 }
 
 /**
- * Renders a single component node using RegistryV2.
- * Includes data-binding indicators.
+ * Schema-aware mock data generator (owner-only preview)
+ * -----------------------------------------------------
+ * Uses field names to infer realistic sample values.
  */
-function RenderNode({ node, backend }) {
-  const Renderer = RegistryV2[node.type];
 
+function generateMockRow(tableName, tableDef, index) {
+  const row = {};
+  const fields = tableDef?.fields || {};
+
+  Object.keys(fields).forEach((fieldName) => {
+    const field = fields[fieldName];
+    const type = field.type || "text";
+
+    if (fieldName === "id") {
+      row.id = `${tableName}_${index + 1}`;
+      return;
+    }
+
+    const lower = fieldName.toLowerCase();
+
+    if (lower.includes("email")) {
+      row[fieldName] = `user${index + 1}@example.com`;
+    } else if (lower.includes("name")) {
+      const names = ["Alice", "Bob", "Charlie", "Dana"];
+      row[fieldName] = names[index % names.length];
+    } else if (lower.includes("title")) {
+      row[fieldName] = `Sample ${capitalizeFirst(tableName)} Title ${index + 1}`;
+    } else if (lower.includes("description")) {
+      row[fieldName] = `Sample description for ${tableName} #${index + 1}.`;
+    } else if (lower.includes("price")) {
+      row[fieldName] = (19.99 + index).toFixed(2);
+    } else if (lower.includes("count")) {
+      row[fieldName] = index + 1;
+    } else if (lower.includes("age")) {
+      row[fieldName] = 20 + index;
+    } else if (lower.includes("date")) {
+      row[fieldName] = "2026-03-29";
+    } else if (lower.includes("avatar") || lower.includes("image")) {
+      row[fieldName] = null;
+    } else if (type === "number") {
+      row[fieldName] = index + 1;
+    } else {
+      row[fieldName] = `${capitalizeFirst(fieldName)} ${index + 1}`;
+    }
+  });
+
+  return row;
+}
+
+function generateMockTableData(backend, tableName, rowCount = 3) {
+  if (!backend?.schema?.[tableName]) return [];
+  const tableDef = backend.schema[tableName];
+
+  const rows = [];
+  for (let i = 0; i < rowCount; i++) {
+    rows.push(generateMockRow(tableName, tableDef, i));
+  }
+  return rows;
+}
+
+function capitalizeFirst(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
+ * Render helpers for preview mode
+ * --------------------------------
+ */
+
+function getPreviewValueForBinding(backend, binding) {
+  if (!binding?.table) return null;
+
+  const rows = generateMockTableData(backend, binding.table, 1);
+  const row = rows[0];
+  if (!row) return null;
+
+  if (binding.field) {
+    return row[binding.field] ?? null;
+  }
+
+  // If only table is bound, return first text-like field
+  const fields = backend?.schema?.[binding.table]?.fields || {};
+  const textField =
+    Object.keys(fields).find((f) => {
+      const lf = f.toLowerCase();
+      return (
+        lf.includes("name") ||
+        lf.includes("title") ||
+        lf.includes("label") ||
+        lf.includes("email")
+      );
+    }) || Object.keys(fields)[0];
+
+  return textField ? row[textField] : null;
+}
+
+function getPreviewListData(backend, binding) {
+  if (!binding?.table) return [];
+  return generateMockTableData(backend, binding.table, 3);
+}
+
+/**
+ * Renders a single component node using RegistryV2.
+ * Includes data-binding indicators and optional live preview.
+ */
+function RenderNode({ node, backend, previewMode }) {
+  const Renderer = RegistryV2[node.type];
   const binding = backend?.bindings?.[node.id] || null;
 
   if (!Renderer) {
@@ -162,17 +262,84 @@ function RenderNode({ node, backend }) {
     );
   }
 
+  let rendered = null;
+
+  if (previewMode && binding && backend) {
+    // Schema-aware preview for some common types
+    if (node.type === "input") {
+      const value = getPreviewValueForBinding(backend, binding);
+      rendered = <Renderer {...node.props} value={value ?? ""} />;
+    } else if (node.type === "list") {
+      const rows = getPreviewListData(backend, binding);
+      rendered = (
+        <div>
+          {rows.map((row, idx) => (
+            <div
+              key={idx}
+              style={{
+                padding: "6px 8px",
+                borderBottom: "1px solid #eee",
+                fontSize: 13
+              }}
+            >
+              {Object.keys(row)
+                .filter((k) => k !== "id")
+                .slice(0, 3)
+                .map((field) => (
+                  <span key={field} style={{ marginRight: 8 }}>
+                    <strong>{field}:</strong> {String(row[field])}
+                  </span>
+                ))}
+            </div>
+          ))}
+          {rows.length === 0 && (
+            <div style={{ fontSize: 12, color: "#999" }}>No sample rows.</div>
+          )}
+        </div>
+      );
+    } else if (node.type === "card") {
+      const rows = getPreviewListData(backend, binding);
+      const row = rows[0];
+      if (row) {
+        rendered = (
+          <div style={{ padding: 12, border: "1px solid #eee", borderRadius: 6 }}>
+            {Object.keys(row)
+              .filter((k) => k !== "id")
+              .slice(0, 4)
+              .map((field) => (
+                <div key={field} style={{ marginBottom: 4, fontSize: 13 }}>
+                  <strong>{field}:</strong> {String(row[field])}
+                </div>
+              ))}
+          </div>
+        );
+      } else {
+        rendered = <Renderer {...node.props} />;
+      }
+    } else {
+      // Default: pass through, maybe with preview value if text-like
+      rendered = <Renderer {...node.props} />;
+    }
+  } else {
+    rendered = <Renderer {...node.props} />;
+  }
+
   return (
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <Renderer {...node.props} />
+        {rendered}
         <BindingBadge binding={binding} />
       </div>
 
       {node.children?.length > 0 && (
         <div style={{ marginLeft: 16, marginTop: 8 }}>
           {node.children.map((child) => (
-            <RenderNode key={child.id} node={child} backend={backend} />
+            <RenderNode
+              key={child.id}
+              node={child}
+              backend={backend}
+              previewMode={previewMode}
+            />
           ))}
         </div>
       )}
@@ -181,16 +348,26 @@ function RenderNode({ node, backend }) {
 }
 
 /**
- * Main Canvas Renderer
+ * Main Canvas Renderer (OWNER VERSION)
+ * ------------------------------------
+ * - Navigation (tabs, sidebar, top)
+ * - Data-binding badges
+ * - Live Preview Mode (schema-aware mock data)
  */
+
 export function CanvasRenderer({ components, app }) {
   const initialRoute = app?.navigation?.initialRoute || null;
   const [activeRoute, setActiveRoute] = useState(initialRoute);
+  const [previewMode, setPreviewMode] = useState(true); // OWNER-ONLY TOGGLE
 
-  const activeScreen =
-    app?.screens?.find((s) => s.name.toLowerCase().replace(/\s+/g, "-") === activeRoute) ||
-    app?.screens?.[0] ||
-    null;
+  const activeScreen = useMemo(() => {
+    if (!app?.screens || app.screens.length === 0) return null;
+    const byRoute =
+      app.screens.find(
+        (s) => s.name.toLowerCase().replace(/\s+/g, "-") === activeRoute
+      ) || null;
+    return byRoute || app.screens[0];
+  }, [app, activeRoute]);
 
   function handleNavigate(route) {
     setActiveRoute(route);
@@ -227,6 +404,28 @@ export function CanvasRenderer({ components, app }) {
             />
           )}
 
+          {/* Owner-only preview toggle */}
+          <div style={{ marginBottom: 12, display: "flex", justifyContent: "flex-end" }}>
+            <label
+              style={{
+                fontSize: 12,
+                color: "#555",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                cursor: "pointer"
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={previewMode}
+                onChange={(e) => setPreviewMode(e.target.checked)}
+                style={{ cursor: "pointer" }}
+              />
+              Live data preview (owner-only, mock data)
+            </label>
+          </div>
+
           {/* Active Screen */}
           {activeScreen ? (
             <div>
@@ -237,6 +436,7 @@ export function CanvasRenderer({ components, app }) {
                     key={node.id}
                     node={node}
                     backend={app.backend}
+                    previewMode={previewMode}
                   />
                 ))}
               </div>
@@ -261,7 +461,7 @@ export function CanvasRenderer({ components, app }) {
   return (
     <div>
       {components.map((node) => (
-        <RenderNode key={node.id} node={node} backend={null} />
+        <RenderNode key={node.id} node={node} backend={null} previewMode={false} />
       ))}
     </div>
   );
