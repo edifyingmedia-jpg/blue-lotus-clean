@@ -8,6 +8,13 @@ import {
   createExplicitNavigation,
   linkScreens
 } from "./navigationEngine";
+import {
+  ensureBackend,
+  createTable,
+  addField,
+  addRelationship,
+  bindComponent
+} from "./backendSchemaEngine";
 
 /**
  * High-level intent types TWIN can infer from a command.
@@ -17,6 +24,7 @@ export const INTENT_TYPES = {
   SCREEN: "screen",
   COMPONENT: "component",
   NAVIGATION: "navigation",
+  BACKEND: "backend",
   UNKNOWN: "unknown"
 };
 
@@ -26,14 +34,36 @@ export const INTENT_TYPES = {
 export function inferIntentType(command) {
   const text = command.toLowerCase();
 
+  // App creation
   if (text.includes("full app") || text.includes("entire app") || text.includes("build an app")) {
     return INTENT_TYPES.APP;
   }
 
-  if (text.includes("navigation") || text.includes("tab bar") || text.includes("sidebar")) {
+  // Navigation
+  if (
+    text.includes("navigation") ||
+    text.includes("tab bar") ||
+    text.includes("sidebar") ||
+    text.includes("top nav") ||
+    text.includes("go to")
+  ) {
     return INTENT_TYPES.NAVIGATION;
   }
 
+  // Backend
+  if (
+    text.includes("table") ||
+    text.includes("schema") ||
+    text.includes("crud") ||
+    text.includes("bind") ||
+    text.includes("field") ||
+    text.includes("relationship") ||
+    text.includes("link posts to users")
+  ) {
+    return INTENT_TYPES.BACKEND;
+  }
+
+  // Screen creation
   if (
     text.includes("screen") ||
     text.includes("page") ||
@@ -43,6 +73,7 @@ export function inferIntentType(command) {
     return INTENT_TYPES.SCREEN;
   }
 
+  // Component creation
   if (
     text.includes("button") ||
     text.includes("input") ||
@@ -62,7 +93,7 @@ export function inferIntentType(command) {
 /**
  * Main interpreter entry point.
  */
-export async function interpretCommand(command, existingApp = null) {
+export async function interpretCommand(command, existingApp = null, context = {}) {
   const caps = getCurrentTWINCapabilities();
   const intent = inferIntentType(command);
   const isPrime = isTWINPrime();
@@ -79,8 +110,12 @@ export async function interpretCommand(command, existingApp = null) {
     return interpretNavigationLevel(command, existingApp, { isPrime, caps });
   }
 
+  if (intent === INTENT_TYPES.BACKEND) {
+    return interpretBackendLevel(command, existingApp, context, { isPrime, caps });
+  }
+
   if (intent === INTENT_TYPES.COMPONENT) {
-    return interpretComponentLevel(command, { isPrime, caps });
+    return interpretComponentLevel(command, existingApp, context, { isPrime, caps });
   }
 
   // Fallback
@@ -115,6 +150,7 @@ function interpretAppLevel(command, { isPrime }) {
       id: `app_${now}`,
       name: guessAppNameFromCommand(command),
       navigation: null,
+      backend: null,
       screens: [
         {
           id: `screen_${now}_home`,
@@ -202,14 +238,10 @@ function interpretScreenLevel(command, existingApp, { isPrime }) {
     ]
   };
 
-  // If app exists, add screen + navigation
   if (existingApp) {
     existingApp.screens.push(screen);
 
-    // Ensure navigation exists
     const nav = ensureNavigation(existingApp, command);
-
-    // Add screen to navigation
     addScreenToNavigation(existingApp, screenName);
 
     return {
@@ -223,7 +255,6 @@ function interpretScreenLevel(command, existingApp, { isPrime }) {
     };
   }
 
-  // No app exists → return standalone screen
   return {
     intent: INTENT_TYPES.SCREEN,
     structureType: "screen",
@@ -249,15 +280,12 @@ function interpretNavigationLevel(command, existingApp, { isPrime }) {
     };
   }
 
-  // Explicit nav creation: "Create a tab bar with Home, Explore, Profile"
   if (command.toLowerCase().includes("with")) {
     createExplicitNavigation(existingApp, command);
   } else {
-    // Ensure navigation exists
     ensureNavigation(existingApp, command);
   }
 
-  // Linking commands: "Go to Profile screen"
   linkScreens(existingApp, command);
 
   return {
@@ -272,16 +300,56 @@ function interpretNavigationLevel(command, existingApp, { isPrime }) {
 }
 
 // ---------------------------------------------------------------------------
+// BACKEND LEVEL
+// ---------------------------------------------------------------------------
+
+function interpretBackendLevel(command, existingApp, context, { isPrime }) {
+  if (!existingApp) {
+    return {
+      intent: INTENT_TYPES.BACKEND,
+      structureType: "error",
+      error: "Backend commands require an existing app.",
+      meta: { source: isPrime ? "TWIN_PRIME" : "TWIN_PUBLIC" }
+    };
+  }
+
+  ensureBackend(existingApp);
+
+  // Table creation
+  const table = createTable(existingApp, command);
+
+  // Field creation
+  const field = addField(existingApp, command);
+
+  // Relationship creation
+  const relation = addRelationship(existingApp, command);
+
+  // Component binding
+  if (context?.componentId) {
+    bindComponent(existingApp, context.componentId, command);
+  }
+
+  return {
+    intent: INTENT_TYPES.BACKEND,
+    structureType: "app",
+    app: existingApp,
+    meta: {
+      source: isPrime ? "TWIN_PRIME" : "TWIN_PUBLIC",
+      note: "Backend schema updated."
+    }
+  };
+}
+
+// ---------------------------------------------------------------------------
 // COMPONENT LEVEL
 // ---------------------------------------------------------------------------
 
-function interpretComponentLevel(command, { isPrime }) {
+function interpretComponentLevel(command, existingApp, context, { isPrime }) {
   const now = Date.now();
   const lower = command.toLowerCase();
 
   let baseComponents = [];
 
-  // --- Base component generation (Registry v2) ---
   if (lower.includes("button")) {
     baseComponents.push({
       id: `cmp_${now}_button`,
@@ -342,8 +410,13 @@ function interpretComponentLevel(command, { isPrime }) {
     });
   }
 
-  // --- Apply layout intelligence ---
+  // Apply layout intelligence
   const intelligent = applyLayoutIntelligence(baseComponents, command);
+
+  // Bind component to backend if requested
+  if (existingApp && context?.componentId) {
+    bindComponent(existingApp, context.componentId, command);
+  }
 
   return {
     intent: INTENT_TYPES.COMPONENT,
