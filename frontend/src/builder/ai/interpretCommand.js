@@ -1,6 +1,7 @@
 // frontend/src/builder/ai/interpretCommand.js
 
 import { getCurrentTWINCapabilities, isTWINPrime } from "../../twin/identity";
+import { applyLayoutIntelligence } from "./layoutEngine";
 
 /**
  * High-level intent types TWIN can infer from a command.
@@ -96,50 +97,50 @@ function interpretAppLevel(command, { isPrime }) {
     intent: INTENT_TYPES.APP,
     structureType: "app",
     app: {
-    id: `app_${now}`,
-    name: guessAppNameFromCommand(command),
-    screens: [
-      {
-        id: `screen_${now}_home`,
-        name: "Home",
-        components: [
-          {
-            id: `cmp_${now}_section`,
-            type: "section",
-            props: { title: "Overview" },
-            children: [
-              {
-                id: `cmp_${now}_heading`,
-                type: "heading",
-                props: { value: `App created from: "${command}"`, level: 2 },
-                children: []
-              },
-              {
-                id: `cmp_${now}_text`,
-                type: "text",
-                props: {
-                  value: "This is a generated home screen. You can refine it with more commands.",
-                  size: 14
+      id: `app_${now}`,
+      name: guessAppNameFromCommand(command),
+      screens: [
+        {
+          id: `screen_${now}_home`,
+          name: "Home",
+          components: [
+            {
+              id: `cmp_${now}_section`,
+              type: "section",
+              props: { title: "Overview" },
+              children: [
+                {
+                  id: `cmp_${now}_heading`,
+                  type: "heading",
+                  props: { value: `App created from: "${command}"`, level: 2 },
+                  children: []
                 },
-                children: []
-              },
-              {
-                id: `cmp_${now}_spacer`,
-                type: "spacer",
-                props: { size: 16 },
-                children: []
-              },
-              {
-                id: `cmp_${now}_button`,
-                type: "button",
-                props: { label: "Primary Action" },
-                children: []
-              }
-            ]
-          }
-        ]
-      }
-    ]
+                {
+                  id: `cmp_${now}_text`,
+                  type: "text",
+                  props: {
+                    value: "This is a generated home screen. You can refine it with more commands.",
+                    size: 14
+                  },
+                  children: []
+                },
+                {
+                  id: `cmp_${now}_spacer`,
+                  type: "spacer",
+                  props: { size: 16 },
+                  children: []
+                },
+                {
+                  id: `cmp_${now}_button`,
+                  type: "button",
+                  props: { label: "Primary Action" },
+                  children: []
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     meta: {
       source: isPrime ? "TWIN_PRIME" : "TWIN_PUBLIC",
@@ -193,47 +194,32 @@ function interpretComponentLevel(command, { isPrime }) {
   const now = Date.now();
   const lower = command.toLowerCase();
 
-  // Default
-  let node = {
-    id: `cmp_${now}`,
-    type: "text",
-    props: {
-      value: `Component created from: "${command}"`,
-      size: 14
-    },
-    children: []
-  };
+  let baseComponents = [];
 
+  // --- Base component generation (Registry v2) ---
   if (lower.includes("button")) {
-    node = {
+    baseComponents.push({
       id: `cmp_${now}_button`,
       type: "button",
-      props: {
-        label: extractLabel(command, "button") || "Click me"
-      },
+      props: { label: extractLabel(command) || "Click me" },
       children: []
-    };
+    });
   } else if (lower.includes("input") || lower.includes("field")) {
-    node = {
+    baseComponents.push({
       id: `cmp_${now}_input`,
       type: "input",
-      props: {
-        placeholder: extractLabel(command, "field") || "Enter value"
-      },
+      props: { placeholder: extractLabel(command) || "Enter value" },
       children: []
-    };
+    });
   } else if (lower.includes("image")) {
-    node = {
+    baseComponents.push({
       id: `cmp_${now}_image`,
       type: "image",
-      props: {
-        src: null,
-        alt: extractLabel(command, "image") || "Generated image"
-      },
+      props: { src: null, alt: extractLabel(command) || "Generated image" },
       children: []
-    };
+    });
   } else if (lower.includes("card")) {
-    node = {
+    baseComponents.push({
       id: `cmp_${now}_card`,
       type: "card",
       props: {},
@@ -251,36 +237,36 @@ function interpretComponentLevel(command, { isPrime }) {
           children: []
         }
       ]
-    };
+    });
   } else if (lower.includes("list")) {
-    node = {
+    baseComponents.push({
       id: `cmp_${now}_list`,
       type: "list",
       props: {},
       children: [
-        {
-          id: `cmp_${now}_item1`,
-          type: "listItem",
-          props: { value: "First item" },
-          children: []
-        },
-        {
-          id: `cmp_${now}_item2`,
-          type: "listItem",
-          props: { value: "Second item" },
-          children: []
-        }
+        { id: `cmp_${now}_item1`, type: "listItem", props: { value: "First item" }, children: [] },
+        { id: `cmp_${now}_item2`, type: "listItem", props: { value: "Second item" }, children: [] }
       ]
-    };
+    });
+  } else {
+    baseComponents.push({
+      id: `cmp_${now}`,
+      type: "text",
+      props: { value: `Component created from: "${command}"`, size: 14 },
+      children: []
+    });
   }
+
+  // --- Apply layout intelligence ---
+  const intelligent = applyLayoutIntelligence(baseComponents, command);
 
   return {
     intent: INTENT_TYPES.COMPONENT,
     structureType: "component",
-    components: [node],
+    components: intelligent,
     meta: {
       source: isPrime ? "TWIN_PRIME" : "TWIN_PUBLIC",
-      note: "Component-level structure using Registry v2 primitives."
+      note: "Component-level structure with layout intelligence (Registry v2)."
     }
   };
 }
