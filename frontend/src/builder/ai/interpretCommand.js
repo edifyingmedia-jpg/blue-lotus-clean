@@ -38,7 +38,9 @@ export function inferIntentType(command) {
     text.includes("field") ||
     text.includes("text") ||
     text.includes("image") ||
-    text.includes("card")
+    text.includes("card") ||
+    text.includes("form") ||
+    text.includes("list")
   ) {
     return INTENT_TYPES.COMPONENT;
   }
@@ -53,8 +55,6 @@ export function inferIntentType(command) {
 export async function interpretCommand(command) {
   const caps = getCurrentTWINCapabilities();
   const intent = inferIntentType(command);
-
-  // Owner vs public behavior can diverge here later
   const isPrime = isTWINPrime();
 
   if (intent === INTENT_TYPES.APP) {
@@ -76,9 +76,10 @@ export async function interpretCommand(command) {
     components: [
       {
         id: `cmp_${Date.now()}`,
-        type: "generated-text",
+        type: "text",
         props: {
-          text: `AI interpretation (generic): "${command}"`
+          value: `AI interpretation (generic): "${command}"`,
+          size: 16
         },
         children: []
       }
@@ -89,37 +90,60 @@ export async function interpretCommand(command) {
 // ---- INTERPRETERS -------------------------------------------------------
 
 function interpretAppLevel(command, { isPrime }) {
-  // Later: call real TWIN PRIME / PUBLIC here.
-  // For now, we simulate a simple multi-screen app.
-
   const now = Date.now();
 
   return {
     intent: INTENT_TYPES.APP,
     structureType: "app",
     app: {
-      id: `app_${now}`,
-      name: guessAppNameFromCommand(command),
-      screens: [
-        {
-          id: `screen_${now}_home`,
-          name: "Home",
-          components: [
-            {
-              id: `cmp_${now}_title`,
-              type: "generated-text",
-              props: {
-                text: `App created from: "${command}"`
+    id: `app_${now}`,
+    name: guessAppNameFromCommand(command),
+    screens: [
+      {
+        id: `screen_${now}_home`,
+        name: "Home",
+        components: [
+          {
+            id: `cmp_${now}_section`,
+            type: "section",
+            props: { title: "Overview" },
+            children: [
+              {
+                id: `cmp_${now}_heading`,
+                type: "heading",
+                props: { value: `App created from: "${command}"`, level: 2 },
+                children: []
               },
-              children: []
-            }
-          ]
-        }
-      ]
+              {
+                id: `cmp_${now}_text`,
+                type: "text",
+                props: {
+                  value: "This is a generated home screen. You can refine it with more commands.",
+                  size: 14
+                },
+                children: []
+              },
+              {
+                id: `cmp_${now}_spacer`,
+                type: "spacer",
+                props: { size: 16 },
+                children: []
+              },
+              {
+                id: `cmp_${now}_button`,
+                type: "button",
+                props: { label: "Primary Action" },
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
     },
     meta: {
       source: isPrime ? "TWIN_PRIME" : "TWIN_PUBLIC",
-      note: "Simulated app-level structure. Replace with real TWIN call later."
+      note: "App-level structure using Registry v2 primitives."
     }
   };
 }
@@ -135,55 +159,128 @@ function interpretScreenLevel(command, { isPrime }) {
       name: guessScreenNameFromCommand(command),
       components: [
         {
-          id: `cmp_${now}_header`,
-          type: "generated-text",
-          props: {
-            text: `Screen created from: "${command}"`
-          },
-          children: []
+          id: `cmp_${now}_card`,
+          type: "card",
+          props: {},
+          children: [
+            {
+              id: `cmp_${now}_heading`,
+              type: "heading",
+              props: { value: `Screen: ${guessScreenNameFromCommand(command)}`, level: 2 },
+              children: []
+            },
+            {
+              id: `cmp_${now}_text`,
+              type: "text",
+              props: {
+                value: `Screen created from: "${command}"`,
+                size: 14
+              },
+              children: []
+            }
+          ]
         }
       ]
     },
     meta: {
       source: isPrime ? "TWIN_PRIME" : "TWIN_PUBLIC",
-      note: "Simulated screen-level structure. Replace with real TWIN call later."
+      note: "Screen-level structure using Registry v2 primitives."
     }
   };
 }
 
 function interpretComponentLevel(command, { isPrime }) {
   const now = Date.now();
-
-  // Very naive mapping for now
   const lower = command.toLowerCase();
-  let type = "generated-text";
-  let text = `Component created from: "${command}"`;
+
+  // Default
+  let node = {
+    id: `cmp_${now}`,
+    type: "text",
+    props: {
+      value: `Component created from: "${command}"`,
+      size: 14
+    },
+    children: []
+  };
 
   if (lower.includes("button")) {
-    type = "button";
-    text = extractLabel(command, "button") || "Click me";
+    node = {
+      id: `cmp_${now}_button`,
+      type: "button",
+      props: {
+        label: extractLabel(command, "button") || "Click me"
+      },
+      children: []
+    };
   } else if (lower.includes("input") || lower.includes("field")) {
-    type = "input";
-    text = extractLabel(command, "field") || "Input";
+    node = {
+      id: `cmp_${now}_input`,
+      type: "input",
+      props: {
+        placeholder: extractLabel(command, "field") || "Enter value"
+      },
+      children: []
+    };
   } else if (lower.includes("image")) {
-    type = "image";
-    text = extractLabel(command, "image") || "Image";
+    node = {
+      id: `cmp_${now}_image`,
+      type: "image",
+      props: {
+        src: null,
+        alt: extractLabel(command, "image") || "Generated image"
+      },
+      children: []
+    };
+  } else if (lower.includes("card")) {
+    node = {
+      id: `cmp_${now}_card`,
+      type: "card",
+      props: {},
+      children: [
+        {
+          id: `cmp_${now}_card_heading`,
+          type: "heading",
+          props: { value: "Card Title", level: 3 },
+          children: []
+        },
+        {
+          id: `cmp_${now}_card_text`,
+          type: "text",
+          props: { value: "Card content generated from your command.", size: 14 },
+          children: []
+        }
+      ]
+    };
+  } else if (lower.includes("list")) {
+    node = {
+      id: `cmp_${now}_list`,
+      type: "list",
+      props: {},
+      children: [
+        {
+          id: `cmp_${now}_item1`,
+          type: "listItem",
+          props: { value: "First item" },
+          children: []
+        },
+        {
+          id: `cmp_${now}_item2`,
+          type: "listItem",
+          props: { value: "Second item" },
+          children: []
+        }
+      ]
+    };
   }
 
   return {
     intent: INTENT_TYPES.COMPONENT,
     structureType: "component",
-    components: [
-      {
-        id: `cmp_${now}`,
-        type,
-        props: { text },
-        children: []
-      }
-    ],
+    components: [node],
     meta: {
       source: isPrime ? "TWIN_PRIME" : "TWIN_PUBLIC",
-      note: "Simulated component-level structure. Replace with real TWIN call later."
+      note: "Component-level structure using Registry v2 primitives."
     }
   };
 }
@@ -191,7 +288,6 @@ function interpretComponentLevel(command, { isPrime }) {
 // ---- SMALL HELPERS ------------------------------------------------------
 
 function guessAppNameFromCommand(command) {
-  // crude: "Build a budgeting app" -> "Budgeting App"
   const match = command.match(/build (an?|the)? (.+?) app/i);
   if (match && match[2]) {
     return capitalizeWords(match[2].trim()) + " App";
@@ -200,7 +296,6 @@ function guessAppNameFromCommand(command) {
 }
 
 function guessScreenNameFromCommand(command) {
-  // crude: "Create a login screen" -> "Login Screen"
   const match = command.match(/create (an?|the)? (.+?) screen/i);
   if (match && match[2]) {
     return capitalizeWords(match[2].trim()) + " Screen";
@@ -208,8 +303,7 @@ function guessScreenNameFromCommand(command) {
   return "Generated Screen";
 }
 
-function extractLabel(command, keyword) {
-  // crude: "Add a button that says Submit" -> "Submit"
+function extractLabel(command) {
   const match = command.match(/says ([^.,!?]+)/i);
   if (match && match[1]) {
     return match[1].trim();
