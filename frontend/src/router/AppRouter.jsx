@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
 import BuilderApp from "../builder/BuilderApp";
+import { ComponentPanel } from "../builder/ComponentPanel";
 
 export default function AppRouter() {
+  const [components, setComponents] = useState([]);
+
+  function handleAddComponent(component) {
+    setComponents((prev) => [...prev, component]);
+  }
+
   return (
     <BrowserRouter>
       <Routes>
@@ -11,12 +18,8 @@ export default function AppRouter() {
           path="/"
           element={
             <AppLayout
-              left={null}
-              right={
-                <div style={{ height: "100%", display: "flex" }}>
-                  <BuilderApp />
-                </div>
-              }
+              left={<ComponentPanel onAddComponent={handleAddComponent} />}
+              right={<BuilderApp components={components} />}
             />
           }
         />
