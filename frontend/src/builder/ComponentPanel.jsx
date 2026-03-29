@@ -6,6 +6,7 @@ const DEFAULT_COMPONENTS = [
   { type: "image", label: "Image" }
 ];
 
+// Simple ID generator so we don't rely on external utils yet
 function generateId(prefix = "cmp") {
   return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
