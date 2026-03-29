@@ -105,10 +105,48 @@ function TopNav({ navigation, activeRoute, onNavigate }) {
 }
 
 /**
- * Renders a single component node using RegistryV2.
+ * Data Binding Badge (Hybrid Mode)
+ * --------------------------------
+ * Appears inline next to components that are bound to backend data.
+ * Hovering shows a tooltip with table/field info.
  */
-function RenderNode({ node }) {
+
+function BindingBadge({ binding }) {
+  if (!binding) return null;
+
+  const label = binding.field
+    ? `${binding.table}.${binding.field}`
+    : binding.table;
+
+  return (
+    <div
+      style={{
+        display: "inline-block",
+        marginLeft: 8,
+        padding: "2px 6px",
+        fontSize: 11,
+        background: "#e8ecff",
+        color: "#3b4cca",
+        borderRadius: 4,
+        cursor: "default",
+        border: "1px solid #d0d7ff",
+        position: "relative"
+      }}
+      title={`Bound to ${label}`}
+    >
+      {label}
+    </div>
+  );
+}
+
+/**
+ * Renders a single component node using RegistryV2.
+ * Includes data-binding indicators.
+ */
+function RenderNode({ node, backend }) {
   const Renderer = RegistryV2[node.type];
+
+  const binding = backend?.bindings?.[node.id] || null;
 
   if (!Renderer) {
     return (
@@ -126,12 +164,15 @@ function RenderNode({ node }) {
 
   return (
     <div style={{ marginBottom: 12 }}>
-      <Renderer {...node.props} />
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Renderer {...node.props} />
+        <BindingBadge binding={binding} />
+      </div>
 
       {node.children?.length > 0 && (
         <div style={{ marginLeft: 16, marginTop: 8 }}>
           {node.children.map((child) => (
-            <RenderNode key={child.id} node={child} />
+            <RenderNode key={child.id} node={child} backend={backend} />
           ))}
         </div>
       )}
@@ -143,22 +184,18 @@ function RenderNode({ node }) {
  * Main Canvas Renderer
  */
 export function CanvasRenderer({ components, app }) {
-  // Determine active route
   const initialRoute = app?.navigation?.initialRoute || null;
   const [activeRoute, setActiveRoute] = useState(initialRoute);
 
-  // Find active screen
   const activeScreen =
     app?.screens?.find((s) => s.name.toLowerCase().replace(/\s+/g, "-") === activeRoute) ||
     app?.screens?.[0] ||
     null;
 
-  // Navigation handler
   function handleNavigate(route) {
     setActiveRoute(route);
   }
 
-  // If app exists, render navigation + active screen
   if (app) {
     return (
       <div style={{ display: "flex", height: "100%" }}>
@@ -196,7 +233,11 @@ export function CanvasRenderer({ components, app }) {
               <h2 style={{ marginBottom: 16 }}>{activeScreen.name}</h2>
               <div>
                 {activeScreen.components.map((node) => (
-                  <RenderNode key={node.id} node={node} />
+                  <RenderNode
+                    key={node.id}
+                    node={node}
+                    backend={app.backend}
+                  />
                 ))}
               </div>
             </div>
@@ -220,7 +261,7 @@ export function CanvasRenderer({ components, app }) {
   return (
     <div>
       {components.map((node) => (
-        <RenderNode key={node.id} node={node} />
+        <RenderNode key={node.id} node={node} backend={null} />
       ))}
     </div>
   );
