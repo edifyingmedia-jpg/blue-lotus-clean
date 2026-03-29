@@ -2,6 +2,12 @@
 
 import { getCurrentTWINCapabilities, isTWINPrime } from "../../twin/identity";
 import { applyLayoutIntelligence } from "./layoutEngine";
+import {
+  ensureNavigation,
+  addScreenToNavigation,
+  createExplicitNavigation,
+  linkScreens
+} from "./navigationEngine";
 
 /**
  * High-level intent types TWIN can infer from a command.
@@ -10,18 +16,22 @@ export const INTENT_TYPES = {
   APP: "app",
   SCREEN: "screen",
   COMPONENT: "component",
+  NAVIGATION: "navigation",
   UNKNOWN: "unknown"
 };
 
 /**
- * Very simple heuristic intent classifier for now.
- * You can replace this later with a real LLM call.
+ * Intent classifier
  */
 export function inferIntentType(command) {
   const text = command.toLowerCase();
 
   if (text.includes("full app") || text.includes("entire app") || text.includes("build an app")) {
     return INTENT_TYPES.APP;
+  }
+
+  if (text.includes("navigation") || text.includes("tab bar") || text.includes("sidebar")) {
+    return INTENT_TYPES.NAVIGATION;
   }
 
   if (
@@ -51,9 +61,8 @@ export function inferIntentType(command) {
 
 /**
  * Main interpreter entry point.
- * For now this is deterministic and local; later it can call TWIN PRIME / PUBLIC remotely.
  */
-export async function interpretCommand(command) {
+export async function interpretCommand(command, existingApp = null) {
   const caps = getCurrentTWINCapabilities();
   const intent = inferIntentType(command);
   const isPrime = isTWINPrime();
@@ -63,14 +72,18 @@ export async function interpretCommand(command) {
   }
 
   if (intent === INTENT_TYPES.SCREEN) {
-    return interpretScreenLevel(command, { isPrime, caps });
+    return interpretScreenLevel(command, existingApp, { isPrime, caps });
+  }
+
+  if (intent === INTENT_TYPES.NAVIGATION) {
+    return interpretNavigationLevel(command, existingApp, { isPrime, caps });
   }
 
   if (intent === INTENT_TYPES.COMPONENT) {
     return interpretComponentLevel(command, { isPrime, caps });
   }
 
-  // Fallback: treat as a generic description and render as text
+  // Fallback
   return {
     intent,
     structureType: "component",
@@ -88,7 +101,9 @@ export async function interpretCommand(command) {
   };
 }
 
-// ---- INTERPRETERS -------------------------------------------------------
+// ---------------------------------------------------------------------------
+// APP LEVEL
+// ---------------------------------------------------------------------------
 
 function interpretAppLevel(command, { isPrime }) {
   const now = Date.now();
@@ -99,6 +114,7 @@ function interpretAppLevel(command, { isPrime }) {
     app: {
       id: `app_${now}`,
       name: guessAppNameFromCommand(command),
+      navigation: null,
       screens: [
         {
           id: `screen_${now}_home`,
@@ -149,46 +165,115 @@ function interpretAppLevel(command, { isPrime }) {
   };
 }
 
-function interpretScreenLevel(command, { isPrime }) {
-  const now = Date.now();
+// ---------------------------------------------------------------------------
+// SCREEN LEVEL
+// ---------------------------------------------------------------------------
 
+function interpretScreenLevel(command, existingApp, { isPrime }) {
+  const now = Date.now();
+  const screenName = guessScreenNameFromCommand(command);
+
+  const screen = {
+    id: `screen_${now}`,
+    name: screenName,
+    components: [
+      {
+        id: `cmp_${now}_card`,
+        type: "card",
+        props: {},
+        children: [
+          {
+            id: `cmp_${now}_heading`,
+            type: "heading",
+            props: { value: `Screen: ${screenName}`, level: 2 },
+            children: []
+          },
+          {
+            id: `cmp_${now}_text`,
+            type: "text",
+            props: {
+              value: `Screen created from: "${command}"`,
+              size: 14
+            },
+            children: []
+          }
+        ]
+      }
+    ]
+  };
+
+  // If app exists, add screen + navigation
+  if (existingApp) {
+    existingApp.screens.push(screen);
+
+    // Ensure navigation exists
+    const nav = ensureNavigation(existingApp, command);
+
+    // Add screen to navigation
+    addScreenToNavigation(existingApp, screenName);
+
+    return {
+      intent: INTENT_TYPES.SCREEN,
+      structureType: "app",
+      app: existingApp,
+      meta: {
+        source: isPrime ? "TWIN_PRIME" : "TWIN_PUBLIC",
+        note: "Screen added to existing app with navigation integration."
+      }
+    };
+  }
+
+  // No app exists → return standalone screen
   return {
     intent: INTENT_TYPES.SCREEN,
     structureType: "screen",
-    screen: {
-      id: `screen_${now}`,
-      name: guessScreenNameFromCommand(command),
-      components: [
-        {
-          id: `cmp_${now}_card`,
-          type: "card",
-          props: {},
-          children: [
-            {
-              id: `cmp_${now}_heading`,
-              type: "heading",
-              props: { value: `Screen: ${guessScreenNameFromCommand(command)}`, level: 2 },
-              children: []
-            },
-            {
-              id: `cmp_${now}_text`,
-              type: "text",
-              props: {
-                value: `Screen created from: "${command}"`,
-                size: 14
-              },
-              children: []
-            }
-          ]
-        }
-      ]
-    },
+    screen,
     meta: {
       source: isPrime ? "TWIN_PRIME" : "TWIN_PUBLIC",
-      note: "Screen-level structure using Registry v2 primitives."
+      note: "Standalone screen using Registry v2 primitives."
     }
   };
 }
+
+// ---------------------------------------------------------------------------
+// NAVIGATION LEVEL
+// ---------------------------------------------------------------------------
+
+function interpretNavigationLevel(command, existingApp, { isPrime }) {
+  if (!existingApp) {
+    return {
+      intent: INTENT_TYPES.NAVIGATION,
+      structureType: "error",
+      error: "Navigation requires an existing app.",
+      meta: { source: isPrime ? "TWIN_PRIME" : "TWIN_PUBLIC" }
+    };
+  }
+
+  // Explicit nav creation: "Create a tab bar with Home, Explore, Profile"
+  if (command.toLowerCase().includes("with")) {
+    createExplicitNavigation(existingApp, command);
+  } else {
+    // Ensure navigation exists
+    ensureNavigation(existingApp, command);
+  }
+
+  // Linking commands: "Go to Profile screen"
+  linkScreens(existingApp, command);
+
+  return {
+    intent: INTENT_TYPES.NAVIGATION,
+    structureType: "app",
+    app: existingApp,
+    meta: {
+      source: isPrime ? "TWIN_PRIME" : "TWIN_PUBLIC",
+      note: "Navigation updated."
+    }
+  };
+}
+
+// ---------------------------------------------------------------------------
+// COMPONENT LEVEL
+// ---------------------------------------------------------------------------
 
 function interpretComponentLevel(command, { isPrime }) {
   const now = Date.now();
@@ -271,7 +356,9 @@ function interpretComponentLevel(command, { isPrime }) {
   };
 }
 
-// ---- SMALL HELPERS ------------------------------------------------------
+// ---------------------------------------------------------------------------
+// HELPERS
+// ---------------------------------------------------------------------------
 
 function guessAppNameFromCommand(command) {
   const match = command.match(/build (an?|the)? (.+?) app/i);
