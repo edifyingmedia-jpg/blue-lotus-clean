@@ -10,9 +10,10 @@ export default function AppRouter() {
         <Route
           path="/"
           element={
-            <AppLayout>
-              <BuilderApp />
-            </AppLayout>
+            <AppLayout
+              left={null}
+              right={<BuilderApp />}
+            />
           }
         />
       </Routes>
