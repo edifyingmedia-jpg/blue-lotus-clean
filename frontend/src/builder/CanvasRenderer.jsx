@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import { RegistryV2 } from "./components/registry";
+import { fetchDataForBinding } from "./ai/dataEngine";
 
 /**
  * Hybrid Navigation UI Components
@@ -219,7 +220,6 @@ function getPreviewValueForBinding(backend, binding) {
     return row[binding.field] ?? null;
   }
 
-  // If only table is bound, return first text-like field
   const fields = backend?.schema?.[binding.table]?.fields || {};
   const textField =
     Object.keys(fields).find((f) => {
@@ -242,9 +242,13 @@ function getPreviewListData(backend, binding) {
 
 /**
  * Renders a single component node using RegistryV2.
- * Includes data-binding indicators and optional live preview.
+ * Includes:
+ * - data-binding indicators
+ * - owner preview mode (mock data)
+ * - live data mode (real Supabase reads)
  */
-function RenderNode({ node, backend, previewMode }) {
+
+function RenderNode({ node, backend, previewMode, liveDataCache, loadLiveData }) {
   const Renderer = RegistryV2[node.type];
   const binding = backend?.bindings?.[node.id] || null;
 
@@ -262,16 +266,92 @@ function RenderNode({ node, backend, previewMode }) {
     );
   }
 
-  let rendered = null;
+  let content = null;
 
-  if (previewMode && binding && backend) {
-    // Schema-aware preview for some common types
+  // Live data mode (previewMode = false)
+  if (!previewMode && binding && backend) {
+    const key = `${binding.table}:${binding.field || "*"}`;
+    const cached = liveDataCache[key];
+
+    if (!cached) {
+      loadLiveData(binding);
+      return (
+        <div style={{ fontSize: 12, color: "#999", marginBottom: 8 }}>
+          Loading real data…
+        </div>
+      );
+    }
+
+    if (cached.error) {
+      content = (
+        <div style={{ fontSize: 12, color: "red" }}>
+          Error loading data: {cached.error.message}
+        </div>
+      );
+    } else {
+      if (node.type === "list") {
+        const rows = cached.data || [];
+        content = (
+          <div>
+            {rows.map((row, idx) => (
+              <div
+                key={idx}
+                style={{
+                  padding: "6px 8px",
+                  borderBottom: "1px solid #eee",
+                  fontSize: 13
+                }}
+              >
+                {Object.keys(row)
+                  .filter((k) => k !== "id")
+                  .slice(0, 3)
+                  .map((field) => (
+                    <span key={field} style={{ marginRight: 8 }}>
+                      <strong>{field}:</strong> {String(row[field])}
+                    </span>
+                  ))}
+              </div>
+            ))}
+            {rows.length === 0 && (
+              <div style={{ fontSize: 12, color: "#999" }}>No rows found.</div>
+            )}
+          </div>
+        );
+      } else if (node.type === "input") {
+        content = <Renderer {...node.props} value={cached.data ?? ""} />;
+      } else if (node.type === "card") {
+        const rows = cached.data || [];
+        const row = Array.isArray(rows) ? rows[0] : null;
+        if (row) {
+          content = (
+            <div style={{ padding: 12, border: "1px solid #eee", borderRadius: 6 }}>
+              {Object.keys(row)
+                .filter((k) => k !== "id")
+                .slice(0, 4)
+                .map((field) => (
+                  <div key={field} style={{ marginBottom: 4, fontSize: 13 }}>
+                    <strong>{field}:</strong> {String(row[field])}
+                  </div>
+                ))}
+            </div>
+          );
+        } else {
+          content = <Renderer {...node.props} />;
+        }
+      } else {
+        content = <Renderer {...node.props} />;
+      }
+    }
+  }
+
+  // Preview mode (mock data)
+  if (previewMode && binding && backend && !content) {
     if (node.type === "input") {
       const value = getPreviewValueForBinding(backend, binding);
-      rendered = <Renderer {...node.props} value={value ?? ""} />;
+      content = <Renderer {...node.props} value={value ?? ""} />;
     } else if (node.type === "list") {
       const rows = getPreviewListData(backend, binding);
-      rendered = (
+      content = (
         <div>
           {rows.map((row, idx) => (
             <div
@@ -301,7 +381,7 @@ function RenderNode({ node, backend, previewMode }) {
       const rows = getPreviewListData(backend, binding);
       const row = rows[0];
       if (row) {
-        rendered = (
+        content = (
           <div style={{ padding: 12, border: "1px solid #eee", borderRadius: 6 }}>
             {Object.keys(row)
               .filter((k) => k !== "id")
@@ -314,20 +394,22 @@ function RenderNode({ node, backend, previewMode }) {
           </div>
         );
       } else {
-        rendered = <Renderer {...node.props} />;
+        content = <Renderer {...node.props} />;
       }
     } else {
-      // Default: pass through, maybe with preview value if text-like
-      rendered = <Renderer {...node.props} />;
+      content = <Renderer {...node.props} />;
     }
-  } else {
-    rendered = <Renderer {...node.props} />;
+  }
+
+  // No binding or no special handling → default render
+  if (!content) {
+    content = <Renderer {...node.props} />;
   }
 
   return (
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: "flex", alignItems: "center" }}>
-        {rendered}
+        {content}
         <BindingBadge binding={binding} />
       </div>
 
@@ -339,6 +421,8 @@ function RenderNode({ node, backend, previewMode }) {
               node={child}
               backend={backend}
               previewMode={previewMode}
+              liveDataCache={liveDataCache}
+              loadLiveData={loadLiveData}
             />
           ))}
         </div>
@@ -353,12 +437,14 @@ function RenderNode({ node, backend, previewMode }) {
  * - Navigation (tabs, sidebar, top)
  * - Data-binding badges
  * - Live Preview Mode (schema-aware mock data)
+ * - Live Data Mode (real Supabase reads)
  */
 
 export function CanvasRenderer({ components, app }) {
   const initialRoute = app?.navigation?.initialRoute || null;
   const [activeRoute, setActiveRoute] = useState(initialRoute);
   const [previewMode, setPreviewMode] = useState(true); // OWNER-ONLY TOGGLE
+  const [liveDataCache, setLiveDataCache] = useState({});
 
   const activeScreen = useMemo(() => {
     if (!app?.screens || app.screens.length === 0) return null;
@@ -373,10 +459,22 @@ export function CanvasRenderer({ components, app }) {
     setActiveRoute(route);
   }
 
+  async function loadLiveData(binding) {
+    if (!binding) return;
+    const key = `${binding.table}:${binding.field || "*"}`;
+    if (liveDataCache[key]) return;
+
+    const { data, error } = await fetchDataForBinding(binding);
+
+    setLiveDataCache((prev) => ({
+      ...prev,
+      [key]: { data, error }
+    }));
+  }
+
   if (app) {
     return (
       <div style={{ display: "flex", height: "100%" }}>
-        {/* Sidebar */}
         {app.navigation?.type === "sidebar" && (
           <Sidebar
             navigation={app.navigation}
@@ -386,7 +484,6 @@ export function CanvasRenderer({ components, app }) {
         )}
 
         <div style={{ flex: 1, padding: 24, overflow: "auto" }}>
-          {/* Top Nav */}
           {app.navigation?.type === "top" && (
             <TopNav
               navigation={app.navigation}
@@ -395,7 +492,6 @@ export function CanvasRenderer({ components, app }) {
             />
           )}
 
-          {/* Tab Bar */}
           {app.navigation?.type === "tabs" && (
             <TabBar
               navigation={app.navigation}
@@ -404,7 +500,6 @@ export function CanvasRenderer({ components, app }) {
             />
           )}
 
-          {/* Owner-only preview toggle */}
           <div style={{ marginBottom: 12, display: "flex", justifyContent: "flex-end" }}>
             <label
               style={{
@@ -422,11 +517,10 @@ export function CanvasRenderer({ components, app }) {
                 onChange={(e) => setPreviewMode(e.target.checked)}
                 style={{ cursor: "pointer" }}
               />
-              Live data preview (owner-only, mock data)
+              Live data preview (off = real Supabase data)
             </label>
           </div>
 
-          {/* Active Screen */}
           {activeScreen ? (
             <div>
               <h2 style={{ marginBottom: 16 }}>{activeScreen.name}</h2>
@@ -437,6 +531,8 @@ export function CanvasRenderer({ components, app }) {
                     node={node}
                     backend={app.backend}
                     previewMode={previewMode}
+                    liveDataCache={liveDataCache}
+                    loadLiveData={loadLiveData}
                   />
                 ))}
               </div>
@@ -449,7 +545,6 @@ export function CanvasRenderer({ components, app }) {
     );
   }
 
-  // No app → fallback to component-only rendering
   if (!components || components.length === 0) {
     return (
       <p style={{ color: "#888" }}>
@@ -461,7 +556,14 @@ export function CanvasRenderer({ components, app }) {
   return (
     <div>
       {components.map((node) => (
-        <RenderNode key={node.id} node={node} backend={null} previewMode={false} />
+        <RenderNode
+          key={node.id}
+          node={node}
+          backend={null}
+          previewMode={false}
+          liveDataCache={{}}
+          loadLiveData={() => {}}
+        />
       ))}
     </div>
   );
