@@ -1,45 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 
-const DEFAULT_COMPONENTS = [
-  { type: "text", label: "Text" },
-  { type: "button", label: "Button" },
-  { type: "image", label: "Image" }
-];
+export function ComponentPanel({ onAICommand }) {
+  const [input, setInput] = useState("");
 
-// Simple ID generator so we don't rely on external utils yet
-function generateId(prefix = "cmp") {
-  return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-}
+  const handleSubmit = () => {
+    if (!input.trim()) return;
 
-export function ComponentPanel({ onAddComponent }) {
+    // Send the user's natural language command to the parent
+    onAICommand(input.trim());
+
+    // Clear the input
+    setInput("");
+  };
+
   return (
-    <div style={{ padding: 16 }}>
-      <h3>Components</h3>
+    <div style={{ padding: 16, borderRight: "1px solid #ddd" }}>
+      <h3>AI Builder</h3>
 
-      {DEFAULT_COMPONENTS.map((item) => (
-        <div
-          key={item.type}
-          style={{
-            padding: "8px 12px",
-            marginBottom: 8,
-            border: "1px solid #ccc",
-            borderRadius: 4,
-            cursor: "pointer"
-          }}
-          onClick={() => {
-            const component = {
-              id: generateId(),
-              type: item.type,
-              props: {},
-              children: []
-            };
+      <p style={{ fontSize: 14, opacity: 0.7 }}>
+        Describe what you want to build.  
+        The AI will update the app automatically.
+      </p>
 
-            onAddComponent(component);
-          }}
-        >
-          {item.label}
-        </div>
-      ))}
+      <textarea
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Example: Create a login screen with email and password fields..."
+        style={{
+          width: "100%",
+          height: 120,
+          padding: 8,
+          marginTop: 8,
+          borderRadius: 4,
+          border: "1px solid #ccc",
+          resize: "none"
+        }}
+      />
+
+      <button
+        onClick={handleSubmit}
+        style={{
+          marginTop: 12,
+          width: "100%",
+          padding: "10px 0",
+          background: "#4a6cf7",
+          color: "white",
+          border: "none",
+          borderRadius: 4,
+          cursor: "pointer",
+          fontWeight: "bold"
+        }}
+      >
+        Build with AI
+      </button>
     </div>
   );
 }
