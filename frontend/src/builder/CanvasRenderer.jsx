@@ -1,57 +1,13 @@
 // frontend/src/builder/CanvasRenderer.jsx
 
 import React from "react";
+import { RegistryV2 } from "./components/registry";
 
 /**
- * Registry of supported component types.
- * You can expand this easily as TWIN PRIME evolves.
- */
-const COMPONENTS = {
-  "generated-text": ({ text }) => (
-    <div style={{ fontSize: 16, padding: "4px 0" }}>{text}</div>
-  ),
-
-  button: ({ text }) => (
-    <button
-      style={{
-        padding: "8px 16px",
-        background: "#4a6cf7",
-        color: "white",
-        border: "none",
-        borderRadius: 4,
-        cursor: "pointer"
-      }}
-    >
-      {text || "Button"}
-    </button>
-  ),
-
-  input: ({ text }) => (
-    <input
-      placeholder={text || "Input"}
-      style={{
-        padding: 8,
-        border: "1px solid #ccc",
-        borderRadius: 4,
-        width: "100%"
-      }}
-    />
-  ),
-
-  image: ({ src, alt }) => (
-    <img
-      src={src || "https://via.placeholder.com/150"}
-      alt={alt || "Image"}
-      style={{ maxWidth: "100%", borderRadius: 4 }}
-    />
-  )
-};
-
-/**
- * Renders a single component node.
+ * Renders a single component node using RegistryV2.
  */
 function RenderNode({ node }) {
-  const Renderer = COMPONENTS[node.type];
+  const Renderer = RegistryV2[node.type];
 
   if (!Renderer) {
     return (
@@ -69,6 +25,7 @@ function RenderNode({ node }) {
 
   return (
     <div style={{ marginBottom: 12 }}>
+      {/* Render the component */}
       <Renderer {...node.props} />
 
       {/* Render children recursively */}
