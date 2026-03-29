@@ -1,64 +1,44 @@
-import React, { useState } from "react";
-import { ComponentPanel } from "./ComponentPanel";
+import React from "react";
 
-export default function BuilderApp() {
-  const [components, setComponents] = useState([]);
+const DEFAULT_COMPONENTS = [
+  { type: "text", label: "Text" },
+  { type: "button", label: "Button" },
+  { type: "image", label: "Image" }
+];
 
-  function handleAddComponent(component) {
-    setComponents((prev) => [...prev, component]);
-  }
+function generateId(prefix = "cmp") {
+  return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
 
+export function ComponentPanel({ onAddComponent }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100%",
-        width: "100%",
-        overflow: "hidden"
-      }}
-    >
-      {/* Left Sidebar */}
-      <aside
-        style={{
-          width: 260,
-          borderRight: "1px solid #ddd",
-          background: "#fafafa",
-          overflowY: "auto"
-        }}
-      >
-        <ComponentPanel onAddComponent={handleAddComponent} />
-      </aside>
+    <div style={{ padding: 16 }}>
+      <h3>Components</h3>
 
-      {/* Canvas */}
-      <main
-        style={{
-          flex: 1,
-          background: "#fff",
-          padding: 24,
-          overflow: "auto"
-        }}
-      >
-        <h2>Canvas</h2>
+      {DEFAULT_COMPONENTS.map((item) => (
+        <div
+          key={item.type}
+          style={{
+            padding: "8px 12px",
+            marginBottom: 8,
+            border: "1px solid #ccc",
+            borderRadius: 4,
+            cursor: "pointer"
+          }}
+          onClick={() => {
+            const component = {
+              id: generateId(),
+              type: item.type,
+              props: {},
+              children: []
+            };
 
-        {components.length === 0 && (
-          <p style={{ color: "#888" }}>
-            Click a component on the left to add it to the canvas.
-          </p>
-        )}
-
-        {components.map((cmp) => (
-          <div
-            key={cmp.id}
-            style={{
-              padding: 12,
-              marginBottom: 12,
-              border: "1px dashed #ccc"
-            }}
-          >
-            {cmp.type}
-          </div>
-        ))}
-      </main>
+            onAddComponent(component);
+          }}
+        >
+          {item.label}
+        </div>
+      ))}
     </div>
   );
 }
