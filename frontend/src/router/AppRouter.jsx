@@ -13,7 +13,7 @@ export default function AppRouter() {
             <AppLayout
               left={null}
               right={
-                <div style={{ height: "100%" }}>
+                <div style={{ height: "100%", display: "flex" }}>
                   <BuilderApp />
                 </div>
               }
