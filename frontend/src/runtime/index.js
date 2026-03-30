@@ -7,6 +7,7 @@
  *  - RuntimeApp (React root)
  *  - RuntimeProvider + useRuntime (context)
  *  - Engines (State, Navigation, Action)
+ *  - Renderers (App, Screen, Canvas)
  *  - Utilities for embedding the runtime
  */
 
@@ -20,6 +21,7 @@ import ActionEngine from "./ActionEngine";
 import RenderScreen from "./RenderScreen";
 import ScreenRenderer from "./ScreenRenderer";
 import AppRenderer from "./AppRenderer";
+import CanvasRenderer from "./CanvasRenderer";
 
 import { initTWINSession } from "./twin/initTWINSession";
 
@@ -33,5 +35,6 @@ export {
   RenderScreen,
   ScreenRenderer,
   AppRenderer,
+  CanvasRenderer,
   initTWINSession,
 };
