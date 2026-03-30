@@ -1,58 +1,60 @@
-import React, { useState } from "react";
+import React from "react";
+import "./ComponentPanel.css";
 
-export function ComponentPanel({ onAICommand }) {
-  const [input, setInput] = useState("");
+const COMPONENT_CATEGORIES = [
+  {
+    id: "layout",
+    title: "Layout",
+    items: ["Container", "Grid", "Section", "Divider"],
+  },
+  {
+    id: "content",
+    title: "Content",
+    items: ["Text", "Image", "Video", "Icon"],
+  },
+  {
+    id: "interactive",
+    title: "Interactive",
+    items: ["Button", "Input", "Form", "Modal"],
+  },
+  {
+    id: "data",
+    title: "Data",
+    items: ["List", "Table", "Chart"],
+  },
+];
 
-  const handleSubmit = () => {
-    if (!input.trim()) return;
-
-    // Send the user's natural language command to the parent
-    onAICommand(input.trim());
-
-    // Clear the input
-    setInput("");
-  };
-
+export default function ComponentPanel() {
   return (
-    <div style={{ padding: 16, borderRight: "1px solid #ddd" }}>
-      <h3>AI Builder</h3>
+    <aside className="component-panel">
+      <header className="component-panel-header">
+        <h2>Components</h2>
+        <span className="component-panel-subtitle">
+          Drag or select to build
+        </span>
+      </header>
 
-      <p style={{ fontSize: 14, opacity: 0.7 }}>
-        Describe what you want to build.  
-        The AI will update the app automatically.
-      </p>
+      <div className="component-panel-body">
+        {COMPONENT_CATEGORIES.map((category) => (
+          <section key={category.id} className="component-category">
+            <h3 className="component-category-title">
+              {category.title}
+            </h3>
 
-      <textarea
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Example: Create a login screen with email and password fields..."
-        style={{
-          width: "100%",
-          height: 120,
-          padding: 8,
-          marginTop: 8,
-          borderRadius: 4,
-          border: "1px solid #ccc",
-          resize: "none"
-        }}
-      />
-
-      <button
-        onClick={handleSubmit}
-        style={{
-          marginTop: 12,
-          width: "100%",
-          padding: "10px 0",
-          background: "#4a6cf7",
-          color: "white",
-          border: "none",
-          borderRadius: 4,
-          cursor: "pointer",
-          fontWeight: "bold"
-        }}
-      >
-        Build with AI
-      </button>
-    </div>
+            <ul className="component-list">
+              {category.items.map((item) => (
+                <li
+                  key={item}
+                  className="component-item"
+                  draggable
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </aside>
   );
 }
