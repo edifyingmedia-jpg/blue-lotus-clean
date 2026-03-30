@@ -1,95 +1,63 @@
-import React from "react";
-import { useAppDefinition } from "../state/AppDefinitionContext";
-
-export default function CanvasRenderer() {
-  const { appDefinition } = useAppDefinition();
-  const screen = appDefinition.screens[0];
-
-  if (!screen) {
+export default function CanvasRenderer({ app }) {
+  if (!app) {
     return (
-      <div style={styles.empty}>
-        No screens defined.
+      <div style={emptyStyle}>
+        <h3>Canvas</h3>
+        <p>No app rendered yet.</p>
       </div>
-    );
+    )
   }
 
   return (
-    <div style={styles.canvas}>
-      <div style={styles.screen}>
-        <h1 style={styles.title}>{screen.title}</h1>
+    <div style={canvasStyle}>
+      <h3>{app.name}</h3>
 
-        <div style={styles.components}>
-          {screen.components.map((component) => {
-            switch (component.type) {
-              case "Text":
-                return (
-                  <p key={component.id} style={styles.text}>
-                    {component.props.value}
-                  </p>
-                );
+      {app.pages.map((page) => (
+        <div key={page.id} style={pageStyle}>
+          <h4>{page.title}</h4>
 
-              case "Button":
-                return (
-                  <button
-                    key={component.id}
-                    style={styles.button}
-                    disabled
-                  >
-                    {component.props.label}
-                  </button>
-                );
-
-              default:
-                return null;
-            }
-          })}
+          {page.components.map((c) => (
+            <Component key={c.id} def={c} />
+          ))}
         </div>
-      </div>
+      ))}
     </div>
-  );
+  )
 }
 
-const styles = {
-  canvas: {
-    padding: "32px",
-    height: "100%",
-    boxSizing: "border-box",
-  },
-  screen: {
-    maxWidth: "720px",
-    margin: "0 auto",
-    backgroundColor: "#0b0d12",
-    border: "1px solid #1f2937",
-    borderRadius: "12px",
-    padding: "32px",
-  },
-  title: {
-    marginBottom: "24px",
-    fontSize: "24px",
-    fontWeight: "600",
-  },
-  components: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  },
-  text: {
-    fontSize: "15px",
-    lineHeight: "1.5",
-    color: "#d1d5db",
-  },
-  button: {
-    padding: "12px 16px",
-    backgroundColor: "#2563eb",
-    color: "#ffffff",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "14px",
-    cursor: "not-allowed",
-    opacity: 0.85,
-  },
-  empty: {
-    padding: "32px",
-    color: "#9ca3af",
-  },
-};
+function Component({ def }) {
+  switch (def.type) {
+    case 'text':
+      return <p>{def.text}</p>
+
+    case 'button':
+      return <button>{def.label}</button>
+
+    case 'video':
+      return (
+        <video controls width="320">
+          <source src={def.src} />
+        </video>
+      )
+
+    default:
+      return <div>Unknown component</div>
+  }
+}
+
+const canvasStyle = {
+  padding: '16px',
+  color: '#e5e7eb'
+}
+
+const pageStyle = {
+  marginBottom: '24px',
+  padding: '12px',
+  border: '1px solid #1e293b',
+  borderRadius: '10px'
+}
+
+const emptyStyle = {
+  padding: '16px',
+  color: '#94a3b8'
+}
