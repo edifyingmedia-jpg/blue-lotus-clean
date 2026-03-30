@@ -28,9 +28,9 @@ export default function ComponentPanel() {
   return (
     <aside className="component-panel">
       <header className="component-panel-header">
-        <h2>Components</h2>
+        <h2>Available Components</h2>
         <span className="component-panel-subtitle">
-          Drag or select to build
+          Used by TWIN during builds
         </span>
       </header>
 
@@ -45,8 +45,7 @@ export default function ComponentPanel() {
               {category.items.map((item) => (
                 <li
                   key={item}
-                  className="component-item"
-                  draggable
+                  className="component-item passive"
                 >
                   {item}
                 </li>
