@@ -1,7 +1,7 @@
 // frontend/src/builder/CanvasRenderer.jsx
 
 import React, { useMemo, useState } from "react";
-import { RegistryV2 } from "./components/registry";
+import { RegistryV2 } from "./components/registry.jsx";
 import { fetchDataForBinding } from "./ai/dataEngine";
 import { AppStatusPanel } from "./AppStatusPanel";
 
@@ -11,17 +11,27 @@ import { AppStatusPanel } from "./AppStatusPanel";
 
 function TabBar({ navigation, activeRoute, onNavigate }) {
   return (
-    <div style={{ display: "flex", gap: 16, padding: 12, borderBottom: "1px solid #ddd" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: 16,
+        padding: "12px 16px",
+        borderBottom: "1px solid #ddd",
+        background: "#fafafa",
+        marginBottom: 16
+      }}
+    >
       {navigation.items.map((item) => (
         <div
           key={item.route}
           onClick={() => onNavigate(item.route)}
           style={{
             padding: "6px 12px",
-            cursor: "pointer",
             borderRadius: 6,
+            cursor: "pointer",
             background: activeRoute === item.route ? "#4a6cf7" : "transparent",
-            color: activeRoute === item.route ? "#fff" : "#333"
+            color: activeRoute === item.route ? "white" : "#333",
+            fontWeight: activeRoute === item.route ? "bold" : "normal"
           }}
         >
           {item.label}
@@ -33,18 +43,26 @@ function TabBar({ navigation, activeRoute, onNavigate }) {
 
 function Sidebar({ navigation, activeRoute, onNavigate }) {
   return (
-    <div style={{ width: 180, borderRight: "1px solid #ddd", padding: 16 }}>
+    <div
+      style={{
+        width: 180,
+        borderRight: "1px solid #ddd",
+        padding: 16,
+        background: "#fafafa"
+      }}
+    >
       {navigation.items.map((item) => (
         <div
           key={item.route}
           onClick={() => onNavigate(item.route)}
           style={{
             padding: "8px 12px",
-            marginBottom: 8,
-            cursor: "pointer",
             borderRadius: 6,
+            cursor: "pointer",
+            marginBottom: 8,
             background: activeRoute === item.route ? "#4a6cf7" : "transparent",
-            color: activeRoute === item.route ? "#fff" : "#333"
+            color: activeRoute === item.route ? "white" : "#333",
+            fontWeight: activeRoute === item.route ? "bold" : "normal"
           }}
         >
           {item.label}
@@ -56,17 +74,27 @@ function Sidebar({ navigation, activeRoute, onNavigate }) {
 
 function TopNav({ navigation, activeRoute, onNavigate }) {
   return (
-    <div style={{ display: "flex", gap: 16, padding: 12, borderBottom: "1px solid #ddd" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: 16,
+        padding: "12px 16px",
+        borderBottom: "1px solid #ddd",
+        background: "#fafafa",
+        marginBottom: 16
+      }}
+    >
       {navigation.items.map((item) => (
         <div
           key={item.route}
           onClick={() => onNavigate(item.route)}
           style={{
             padding: "6px 12px",
-            cursor: "pointer",
             borderRadius: 6,
+            cursor: "pointer",
             background: activeRoute === item.route ? "#4a6cf7" : "transparent",
-            color: activeRoute === item.route ? "#fff" : "#333"
+            color: activeRoute === item.route ? "white" : "#333",
+            fontWeight: activeRoute === item.route ? "bold" : "normal"
           }}
         >
           {item.label}
@@ -82,20 +110,26 @@ function TopNav({ navigation, activeRoute, onNavigate }) {
 
 function BindingBadge({ binding }) {
   if (!binding) return null;
+
   const label = binding.field ? `${binding.table}.${binding.field}` : binding.table;
 
   return (
-    <span
+    <div
       style={{
+        display: "inline-block",
         marginLeft: 8,
-        fontSize: 11,
         padding: "2px 6px",
+        fontSize: 11,
         background: "#e8ecff",
-        borderRadius: 4
+        color: "#3b4cca",
+        borderRadius: 4,
+        border: "1px solid #d0d7ff",
+        cursor: "default"
       }}
+      title={`Bound to ${label}`}
     >
       {label}
-    </span>
+    </div>
   );
 }
 
@@ -105,14 +139,21 @@ function BindingBadge({ binding }) {
 
 function RenderNode({ node, backend, previewMode, liveDataCache, loadLiveData }) {
   const Renderer = RegistryV2[node.type];
-  const binding = backend?.bindings?.[node.id];
+  const binding = backend?.bindings?.[node.id] || null;
 
   if (!Renderer) {
-    return <div style={{ color: "red" }}>Unknown component: {node.type}</div>;
+    return (
+      <div style={{ padding: 12, border: "1px dashed red" }}>
+        Unknown component type: <strong>{node.type}</strong>
+      </div>
+    );
   }
 
   let content = null;
 
+  /* -----------------------------
+     LIVE DATA MODE
+  ----------------------------- */
   if (!previewMode && binding) {
     const key = `${binding.table}:${binding.field || "*"}`;
     const cached = liveDataCache[key];
@@ -133,6 +174,9 @@ function RenderNode({ node, backend, previewMode, liveDataCache, loadLiveData })
     }
   }
 
+  /* -----------------------------
+     PREVIEW MODE (MOCK)
+  ----------------------------- */
   if (!content) {
     content = <Renderer {...node.props} />;
   }
@@ -144,16 +188,20 @@ function RenderNode({ node, backend, previewMode, liveDataCache, loadLiveData })
         <BindingBadge binding={binding} />
       </div>
 
-      {node.children?.map((child) => (
-        <RenderNode
-          key={child.id}
-          node={child}
-          backend={backend}
-          previewMode={previewMode}
-          liveDataCache={liveDataCache}
-          loadLiveData={loadLiveData}
-        />
-      ))}
+      {node.children?.length > 0 && (
+        <div style={{ marginLeft: 16, marginTop: 8 }}>
+          {node.children.map((child) => (
+            <RenderNode
+              key={child.id}
+              node={child}
+              backend={backend}
+              previewMode={previewMode}
+              liveDataCache={liveDataCache}
+              loadLiveData={loadLiveData}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -163,8 +211,9 @@ function RenderNode({ node, backend, previewMode, liveDataCache, loadLiveData })
 ------------------------------------------------------- */
 
 export function CanvasRenderer({ components, app }) {
+  const initialRoute = app?.navigation?.initialRoute || null;
+  const [activeRoute, setActiveRoute] = useState(initialRoute);
   const [previewMode, setPreviewMode] = useState(true);
-  const [activeRoute, setActiveRoute] = useState(app?.navigation?.initialRoute);
   const [liveDataCache, setLiveDataCache] = useState({});
 
   const activeScreen = useMemo(() => {
@@ -181,51 +230,62 @@ export function CanvasRenderer({ components, app }) {
     if (liveDataCache[key]) return;
 
     fetchDataForBinding(binding).then(({ data, error }) => {
-      setLiveDataCache((prev) => ({ ...prev, [key]: { data, error } }));
+      setLiveDataCache((prev) => ({
+        ...prev,
+        [key]: { data, error }
+      }));
     });
   }
 
   return (
     <div style={{ display: "flex", height: "100%" }}>
       {app?.navigation?.type === "sidebar" && (
-        <Sidebar navigation={app.navigation} activeRoute={activeRoute} onNavigate={setActiveRoute} />
+        <Sidebar
+          navigation={app.navigation}
+          activeRoute={activeRoute}
+          onNavigate={setActiveRoute}
+        />
       )}
 
-      <div style={{ flex: 1, padding: 24 }}>
+      <div style={{ flex: 1, padding: 24, overflow: "auto" }}>
         {app?.navigation?.type === "top" && (
-          <TopNav navigation={app.navigation} activeRoute={activeRoute} onNavigate={setActiveRoute} />
+          <TopNav
+            navigation={app.navigation}
+            activeRoute={activeRoute}
+            onNavigate={setActiveRoute}
+          />
         )}
 
         {app?.navigation?.type === "tabs" && (
-          <TabBar navigation={app.navigation} activeRoute={activeRoute} onNavigate={setActiveRoute} />
+          <TabBar
+            navigation={app.navigation}
+            activeRoute={activeRoute}
+            onNavigate={setActiveRoute}
+          />
         )}
 
-        <label style={{ fontSize: 12 }}>
-          <input
-            type="checkbox"
-            checked={previewMode}
-            onChange={(e) => setPreviewMode(e.target.checked)}
-          />{" "}
-          Preview Mode
-        </label>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontSize: 12 }}>
+            <input
+              type="checkbox"
+              checked={previewMode}
+              onChange={(e) => setPreviewMode(e.target.checked)}
+              style={{ marginRight: 6 }}
+            />
+            Preview Mode (off = real data)
+          </label>
+        </div>
 
-        {activeScreen?.components?.map((node) => (
-          <RenderNode
-            key={node.id}
-            node={node}
-            backend={app.backend}
-            previewMode={previewMode}
-            liveDataCache={liveDataCache}
-            loadLiveData={loadLiveData}
-          />
-        ))}
-      </div>
-
-      <AppStatusPanel
-        app={app}
-        previewMode={previewMode}
-        activeScreen={activeScreen}
-      />
-    </div>
-  );
-}
+        {activeScreen ? (
+          activeScreen.components.map((node) => (
+            <RenderNode
+              key={node.id}
+              node={node}
+              backend={app.backend}
+              previewMode={previewMode}
+              liveDataCache={liveDataCache}
+              loadLiveData={loadLiveData}
+            />
+          ))
+        ) : (
+          <p style={{ color: "#888" }}>No screen selected
