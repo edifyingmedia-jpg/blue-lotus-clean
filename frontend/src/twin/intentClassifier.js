@@ -5,13 +5,16 @@ export function classifyIntent(rawMessage) {
 
   if (!text) return { type: 'empty' };
 
+  // Basic greeting detection
   if (['hi', 'hey', 'hello'].includes(text)) {
     return { type: 'greeting' };
   }
 
-  if (text.includes('build') && text.includes('app builder')) {
-    return { type: 'build_app_builder' };
+  // Natural-language "build an app" detection
+  if (text.startsWith("build") || text.includes("create an app")) {
+    return { type: 'build_app', query: rawMessage };
   }
 
+  // Fallback
   return { type: 'unknown' };
 }
