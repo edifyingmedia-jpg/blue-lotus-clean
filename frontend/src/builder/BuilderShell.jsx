@@ -1,55 +1,59 @@
-import React from "react";
-import { CanvasRenderer } from "../runtime";
-import AICommandPanel from "./AICommandPanel";
-import { AppDefinitionProvider } from "../state/AppDefinitionContext";
-
 export default function BuilderShell() {
   return (
-    <AppDefinitionProvider>
-      <div style={styles.shell}>
-        <aside style={styles.left}>
-          <AICommandPanel />
+    <div style={shellStyle}>
+      <header style={headerStyle}>
+        <strong>Blue Lotus Builder</strong>
+        <span>TWIN Online</span>
+      </header>
+
+      <div style={bodyStyle}>
+        <aside style={twinPanelStyle}>
+          <h3>TWIN</h3>
+          <p>Command panel will live here.</p>
         </aside>
 
-        <main style={styles.right}>
-          <div style={styles.rightHeader}>Preview</div>
-          <div style={styles.rightBody}>
-            <CanvasRenderer />
-          </div>
+        <main style={canvasStyle}>
+          <h3>Canvas</h3>
+          <p>Runtime surface will render here.</p>
         </main>
       </div>
-    </AppDefinitionProvider>
-  );
+    </div>
+  )
 }
 
-const styles = {
-  shell: {
-    display: "grid",
-    gridTemplateColumns: "360px 1fr",
-    height: "100%",
-    minHeight: "100vh",
-    backgroundColor: "#070a10",
-    color: "#e5e7eb",
-  },
-  left: {
-    borderRight: "1px solid #1f2937",
-    display: "flex",
-    flexDirection: "column",
-    minWidth: 0,
-  },
-  right: {
-    display: "flex",
-    flexDirection: "column",
-    minWidth: 0,
-  },
-  rightHeader: {
-    padding: "14px 16px",
-    borderBottom: "1px solid #1f2937",
-    fontWeight: 600,
-    letterSpacing: "0.2px",
-  },
-  rightBody: {
-    padding: "0px",
-    overflow: "auto",
-  },
-};
+const shellStyle = {
+  height: '100vh',
+  display: 'flex',
+  flexDirection: 'column',
+  fontFamily: 'system-ui'
+}
+
+const headerStyle = {
+  height: '48px',
+  background: '#020617',
+  color: '#e5e7eb',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '0 16px'
+}
+
+const bodyStyle = {
+  flex: 1,
+  display: 'flex'
+}
+
+const twinPanelStyle = {
+  width: '280px',
+  background: '#020617',
+  color: '#e5e7eb',
+  padding: '16px',
+  borderRight: '1px solid #1e293b'
+}
+
+const canvasStyle = {
+  flex: 1,
+  background: '#0f172a',
+  color: '#e5e7eb',
+  padding: '16px'
+}
