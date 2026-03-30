@@ -1,7 +1,8 @@
 import React from "react";
-import appDefinition from "../state/appDefinition";
+import { useAppDefinition } from "../state/AppDefinitionContext";
 
 export default function CanvasRenderer() {
+  const { appDefinition } = useAppDefinition();
   const screen = appDefinition.screens[0];
 
   if (!screen) {
