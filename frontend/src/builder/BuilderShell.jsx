@@ -1,21 +1,24 @@
 import React from "react";
 import { CanvasRenderer } from "../runtime";
 import AICommandPanel from "./AICommandPanel";
+import { AppDefinitionProvider } from "../state/AppDefinitionContext";
 
 export default function BuilderShell() {
   return (
-    <div style={styles.shell}>
-      <aside style={styles.left}>
-        <AICommandPanel />
-      </aside>
+    <AppDefinitionProvider>
+      <div style={styles.shell}>
+        <aside style={styles.left}>
+          <AICommandPanel />
+        </aside>
 
-      <main style={styles.right}>
-        <div style={styles.rightHeader}>Preview</div>
-        <div style={styles.rightBody}>
-          <CanvasRenderer />
-        </div>
-      </main>
-    </div>
+        <main style={styles.right}>
+          <div style={styles.rightHeader}>Preview</div>
+          <div style={styles.rightBody}>
+            <CanvasRenderer />
+          </div>
+        </main>
+      </div>
+    </AppDefinitionProvider>
   );
 }
 
