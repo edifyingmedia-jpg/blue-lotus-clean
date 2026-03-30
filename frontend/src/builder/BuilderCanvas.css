@@ -1,0 +1,36 @@
+.builder-canvas {
+  flex: 1;
+  background-color: #ffffff;
+  padding: 24px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.builder-canvas.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.builder-placeholder {
+  text-align: center;
+  color: #6b6b6b;
+}
+
+.builder-placeholder h2 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.builder-placeholder p {
+  font-size: 14px;
+}
+
+.builder-section {
+  margin-bottom: 32px;
+}
+
+.builder-component {
+  margin-bottom: 16px;
+}
