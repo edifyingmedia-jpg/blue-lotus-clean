@@ -1,17 +1,32 @@
 import React, { useState } from "react";
 import { useAppDefinition } from "../state/AppDefinitionContext";
 import interpretCommand from "../twin/interpretCommand";
+import executeProposal from "../twin/executeProposal";
 
 export default function AICommandPanel() {
   const [input, setInput] = useState("");
   const [proposal, setProposal] = useState(null);
+  const [error, setError] = useState(null);
 
-  // NOTE: We intentionally do NOT mutate state here yet
-  useAppDefinition(); // ensures provider presence
+  const { appDefinition, setAppDefinition } = useAppDefinition();
 
   function handleInterpret() {
+    setError(null);
     const result = interpretCommand(input);
     setProposal(result);
+  }
+
+  function handleApproveAndApply() {
+    if (!proposal) return;
+
+    try {
+      const updated = executeProposal(proposal, appDefinition);
+      setAppDefinition(updated);
+      setProposal(null);
+      setInput("");
+    } catch (err) {
+      setError(err.message);
+    }
   }
 
   return (
@@ -28,7 +43,7 @@ export default function AICommandPanel() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Example: Add a text block welcoming users"
+          placeholder="Example: Add a welcome text to the home screen"
           style={styles.textarea}
         />
 
@@ -62,8 +77,19 @@ export default function AICommandPanel() {
                 TWIN could not confidently interpret this request.
               </div>
             )}
+
+            {proposal.type !== "UNRECOGNIZED" && (
+              <button
+                style={styles.approveButton}
+                onClick={handleApproveAndApply}
+              >
+                Approve & Apply
+              </button>
+            )}
           </div>
         )}
+
+        {error && <div style={styles.error}>{error}</div>}
       </div>
     </div>
   );
@@ -131,9 +157,25 @@ const styles = {
   proposalRow: {
     marginBottom: "6px",
   },
+  approveButton: {
+    marginTop: "10px",
+    padding: "8px 12px",
+    borderRadius: "6px",
+    border: "none",
+    backgroundColor: "#16a34a",
+    color: "#ffffff",
+    fontSize: "13px",
+    fontWeight: 600,
+    cursor: "pointer",
+  },
   warning: {
     marginTop: "8px",
     color: "#fbbf24",
+    fontSize: "12px",
+  },
+  error: {
+    marginTop: "8px",
+    color: "#f87171",
     fontSize: "12px",
   },
 };
