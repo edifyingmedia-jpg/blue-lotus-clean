@@ -1,33 +1,17 @@
 import React, { useState } from "react";
 import { useAppDefinition } from "../state/AppDefinitionContext";
+import interpretCommand from "../twin/interpretCommand";
 
 export default function AICommandPanel() {
   const [input, setInput] = useState("");
-  const { appDefinition, setAppDefinition } = useAppDefinition();
+  const [proposal, setProposal] = useState(null);
 
-  function handleTestMutation() {
-    const updated = {
-      ...appDefinition,
-      screens: appDefinition.screens.map((screen, index) =>
-        index === 0
-          ? {
-              ...screen,
-              components: [
-                ...screen.components,
-                {
-                  id: `text-${Date.now()}`,
-                  type: "Text",
-                  props: {
-                    value: "This component was added by TWIN.",
-                  },
-                },
-              ],
-            }
-          : screen
-      ),
-    };
+  // NOTE: We intentionally do NOT mutate state here yet
+  useAppDefinition(); // ensures provider presence
 
-    setAppDefinition(updated);
+  function handleInterpret() {
+    const result = interpretCommand(input);
+    setProposal(result);
   }
 
   return (
@@ -38,23 +22,48 @@ export default function AICommandPanel() {
         <div style={styles.instructions}>
           Describe what you want to build.
           <br />
-          TWIN will interpret and update the app.
+          TWIN will propose changes for your approval.
         </div>
 
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Example: Add a profile screen with avatar and bio"
+          placeholder="Example: Add a text block welcoming users"
           style={styles.textarea}
         />
 
-        <button style={styles.button} onClick={handleTestMutation}>
-          Test Mutation
+        <button style={styles.button} onClick={handleInterpret}>
+          Interpret Command
         </button>
 
-        <div style={styles.note}>
-          This button simulates an AI‑driven update.
-        </div>
+        {proposal && (
+          <div style={styles.proposal}>
+            <div style={styles.proposalTitle}>Proposed Action</div>
+
+            <div style={styles.proposalRow}>
+              <strong>Type:</strong> {proposal.type}
+            </div>
+
+            {proposal.explanation && (
+              <div style={styles.proposalRow}>
+                <strong>Explanation:</strong> {proposal.explanation}
+              </div>
+            )}
+
+            {proposal.confidence !== undefined && (
+              <div style={styles.proposalRow}>
+                <strong>Confidence:</strong>{" "}
+                {Math.round(proposal.confidence * 100)}%
+              </div>
+            )}
+
+            {proposal.type === "UNRECOGNIZED" && (
+              <div style={styles.warning}>
+                TWIN could not confidently interpret this request.
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -107,8 +116,24 @@ const styles = {
     fontWeight: 600,
     cursor: "pointer",
   },
-  note: {
+  proposal: {
+    marginTop: "12px",
+    padding: "12px",
+    borderRadius: "8px",
+    backgroundColor: "#0b0d12",
+    border: "1px solid #1f2937",
+    fontSize: "13px",
+  },
+  proposalTitle: {
+    fontWeight: 600,
+    marginBottom: "8px",
+  },
+  proposalRow: {
+    marginBottom: "6px",
+  },
+  warning: {
+    marginTop: "8px",
+    color: "#fbbf24",
     fontSize: "12px",
-    color: "#6b7280",
   },
 };
