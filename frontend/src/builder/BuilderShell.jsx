@@ -1,21 +1,21 @@
-// force redeploy
+import TwinPanel from '../twin/TwinPanel'
+
 export default function BuilderShell() {
   return (
     <div style={shellStyle}>
       <header style={headerStyle}>
         <strong>Blue Lotus Builder</strong>
-        <span>TWIN Online</span>
+        <span style={{ color: '#94a3b8' }}>TWIN Online</span>
       </header>
 
       <div style={bodyStyle}>
         <aside style={twinPanelStyle}>
-          <h3>TWIN</h3>
-          <p>Command panel will live here.</p>
+          <TwinPanel />
         </aside>
 
         <main style={canvasStyle}>
-          <h3>Canvas</h3>
-          <p>Runtime surface will render here.</p>
+          <h3 style={{ marginTop: 0 }}>Canvas</h3>
+          <p style={{ color: '#cbd5e1' }}>Runtime surface will render here.</p>
         </main>
       </div>
     </div>
@@ -45,10 +45,10 @@ const bodyStyle = {
 }
 
 const twinPanelStyle = {
-  width: '280px',
+  width: '340px',
   background: '#020617',
   color: '#e5e7eb',
-  padding: '16px',
+  padding: '12px',
   borderRight: '1px solid #1e293b'
 }
 
