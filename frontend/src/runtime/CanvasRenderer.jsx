@@ -1,40 +1,16 @@
 import React from "react";
-
-/**
- * Static demo app definition.
- * This will later be mutated by TWIN.
- */
-const appDefinition = {
-  screens: [
-    {
-      id: "home",
-      title: "Home",
-      components: [
-        {
-          type: "Text",
-          props: {
-            value: "Welcome to Blue Lotus.",
-          },
-        },
-        {
-          type: "Text",
-          props: {
-            value: "This workspace reflects the current app definition.",
-          },
-        },
-        {
-          type: "Button",
-          props: {
-            label: "Primary Action",
-          },
-        },
-      ],
-    },
-  ],
-};
+import appDefinition from "../state/appDefinition";
 
 export default function CanvasRenderer() {
   const screen = appDefinition.screens[0];
+
+  if (!screen) {
+    return (
+      <div style={styles.empty}>
+        No screens defined.
+      </div>
+    );
+  }
 
   return (
     <div style={styles.canvas}>
@@ -42,11 +18,11 @@ export default function CanvasRenderer() {
         <h1 style={styles.title}>{screen.title}</h1>
 
         <div style={styles.components}>
-          {screen.components.map((component, index) => {
+          {screen.components.map((component) => {
             switch (component.type) {
               case "Text":
                 return (
-                  <p key={index} style={styles.text}>
+                  <p key={component.id} style={styles.text}>
                     {component.props.value}
                   </p>
                 );
@@ -54,7 +30,7 @@ export default function CanvasRenderer() {
               case "Button":
                 return (
                   <button
-                    key={index}
+                    key={component.id}
                     style={styles.button}
                     disabled
                   >
@@ -110,5 +86,9 @@ const styles = {
     fontSize: "14px",
     cursor: "not-allowed",
     opacity: 0.85,
+  },
+  empty: {
+    padding: "32px",
+    color: "#9ca3af",
   },
 };
