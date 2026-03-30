@@ -1,56 +1,88 @@
 import { useState } from 'react'
 
 export default function App() {
-  const [authorized, setAuthorized] = useState(false)
+  const [stage, setStage] = useState('locked')
   const [password, setPassword] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault()
     if (password === 'lotus-owner') {
-      setAuthorized(true)
+      setStage('welcome')
     } else {
       alert('Access denied')
     }
   }
 
-  if (!authorized) {
+  // 🔒 SIGN-IN SCREEN
+  if (stage === 'locked') {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: '#0f172a',
-          color: '#e5e7eb',
-          fontFamily: 'system-ui'
-        }}
-      >
-        <form onSubmit={handleSubmit}>
+      <Screen>
+        <form onSubmit={handleLogin}>
           <h2>Blue Lotus Access</h2>
           <input
             type="password"
             placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{ padding: '8px', marginTop: '10px' }}
+            style={inputStyle}
           />
-          <br />
-          <button
-            type="submit"
-            style={{ marginTop: '10px', padding: '8px' }}
-          >
+          <button type="submit" style={buttonStyle}>
             Enter
           </button>
         </form>
-      </div>
+      </Screen>
     )
   }
 
+  // 🌱 WELCOME SCREEN
+  if (stage === 'welcome') {
+    return (
+      <Screen>
+        <h1>Welcome, Tiffany</h1>
+        <p>TWIN is ready.</p>
+        <button onClick={() => setStage('builder')} style={buttonStyle}>
+          Enter Builder
+        </button>
+      </Screen>
+    )
+  }
+
+  // 🧠 BUILDER PLACEHOLDER (WE BUILD HERE NEXT)
   return (
     <div style={{ padding: '20px' }}>
       <h1>Blue Lotus Builder</h1>
-      <p>Authorized access granted.</p>
+      <p>TWIN + Canvas will live here.</p>
     </div>
   )
+}
+
+function Screen({ children }) {
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#0f172a',
+        color: '#e5e7eb',
+        fontFamily: 'system-ui',
+        textAlign: 'center'
+      }}
+    >
+      <div>{children}</div>
+    </div>
+  )
+}
+
+const inputStyle = {
+  padding: '8px',
+  marginTop: '10px',
+  width: '200px'
+}
+
+const buttonStyle = {
+  marginTop: '12px',
+  padding: '8px 16px',
+  cursor: 'pointer'
 }
