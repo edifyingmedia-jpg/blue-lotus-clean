@@ -1,78 +1,24 @@
-/**
- * executeProposal.js
- * ----------------------------------------------------
- * Applies an approved proposal to the app definition.
- *
- * RULES:
- * - No interpretation
- * - No AI calls
- * - No side effects
- * - No silent failures
- * - Unknown proposals are rejected
- */
+// frontend/src/twin/executeProposal.js
 
-/**
- * @param {object} proposal - Approved proposal from interpretCommand
- * @param {object} appDefinition - Current app definition
- * @returns {object} updated app definition
- */
-export default function executeProposal(proposal, appDefinition) {
-  if (!proposal || !proposal.type) {
-    throw new Error("Invalid proposal");
-  }
+// This should be wired into your existing builder/runtime.
+// For now, it just calls a callback with a simple layout.
 
-  switch (proposal.type) {
-    case "ADD_COMPONENT": {
-      const { component } = proposal;
+export function executeProposal(proposal, { applyLayout }) {
+  if (!proposal || proposal.type !== 'proposal') return;
 
-      if (!component || !component.type || !component.props) {
-        throw new Error("Malformed ADD_COMPONENT proposal");
-      }
+  if (proposal.id === 'build-app-builder') {
+    // Minimal canonical structure – adjust to your schema.
+    const layout = {
+      type: 'builder-shell',
+      regions: {
+        sidebar: { type: 'components-panel' },
+        canvas: { type: 'canvas-root' },
+        twin: { type: 'twin-panel' },
+      },
+    };
 
-      return {
-        ...appDefinition,
-        screens: appDefinition.screens.map((screen, index) =>
-          index === 0
-            ? {
-                ...screen,
-                components: [
-                  ...screen.components,
-                  {
-                    id: `${component.type.toLowerCase()}-${Date.now()}`,
-                    type: component.type,
-                    props: component.props,
-                  },
-                ],
-              }
-            : screen
-        ),
-      };
+    if (typeof applyLayout === 'function') {
+      applyLayout(layout);
     }
-
-    case "ADD_SCREEN": {
-      const { screen } = proposal;
-
-      if (!screen || !screen.title) {
-        throw new Error("Malformed ADD_SCREEN proposal");
-      }
-
-      return {
-        ...appDefinition,
-        screens: [
-          ...appDefinition.screens,
-          {
-            id: `screen-${Date.now()}`,
-            title: screen.title,
-            components: screen.components || [],
-          },
-        ],
-      };
-    }
-
-    case "NO_OP":
-      return appDefinition;
-
-    default:
-      throw new Error(`Unsupported proposal type: ${proposal.type}`);
   }
 }
