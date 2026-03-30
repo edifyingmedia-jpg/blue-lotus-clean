@@ -288,4 +288,15 @@ export function CanvasRenderer({ components, app }) {
             />
           ))
         ) : (
-          <p style={{ color: "#888" }}>No screen selected
+          <p style={{ color: "#888" }}>No screen selected</p>
+        )}
+      </div>
+
+      <AppStatusPanel
+        app={app}
+        previewMode={previewMode}
+        activeScreen={activeScreen}
+      />
+    </div>
+  );
+}
