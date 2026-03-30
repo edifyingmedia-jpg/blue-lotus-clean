@@ -1,35 +1,37 @@
+import { useState } from 'react'
 import TwinPanel from '../twin/TwinPanel'
+import CanvasRenderer from '../runtime/CanvasRenderer'
 
 export default function BuilderShell() {
+  const [app, setApp] = useState(null)
+
   return (
-    <div style={shellStyle}>
-      <header style={headerStyle}>
+    <div style={shell}>
+      <header style={header}>
         <strong>Blue Lotus Builder</strong>
-        <span style={{ color: '#94a3b8' }}>TWIN Online</span>
+        <span style={{ color: '#94a3b8' }}>Architect Mode</span>
       </header>
 
-      <div style={bodyStyle}>
-        <aside style={twinPanelStyle}>
-          <TwinPanel />
+      <div style={body}>
+        <aside style={left}>
+          <TwinPanel onBuild={setApp} />
         </aside>
 
-        <main style={canvasStyle}>
-          <h3 style={{ marginTop: 0 }}>Canvas</h3>
-          <p style={{ color: '#cbd5e1' }}>Runtime surface will render here.</p>
+        <main style={right}>
+          <CanvasRenderer app={app} />
         </main>
       </div>
     </div>
   )
 }
 
-const shellStyle = {
+const shell = {
   height: '100vh',
   display: 'flex',
-  flexDirection: 'column',
-  fontFamily: 'system-ui'
+  flexDirection: 'column'
 }
 
-const headerStyle = {
+const header = {
   height: '48px',
   background: '#020617',
   color: '#e5e7eb',
@@ -39,22 +41,19 @@ const headerStyle = {
   padding: '0 16px'
 }
 
-const bodyStyle = {
+const body = {
   flex: 1,
   display: 'flex'
 }
 
-const twinPanelStyle = {
+const left = {
   width: '340px',
   background: '#020617',
-  color: '#e5e7eb',
-  padding: '12px',
-  borderRight: '1px solid #1e293b'
+  borderRight: '1px solid #1e293b',
+  padding: '12px'
 }
 
-const canvasStyle = {
+const right = {
   flex: 1,
-  background: '#0f172a',
-  color: '#e5e7eb',
-  padding: '16px'
+  background: '#0f172a'
 }
