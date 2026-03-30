@@ -1,7 +1,34 @@
 import React, { useState } from "react";
+import { useAppDefinition } from "../state/AppDefinitionContext";
 
 export default function AICommandPanel() {
   const [input, setInput] = useState("");
+  const { appDefinition, setAppDefinition } = useAppDefinition();
+
+  function handleTestMutation() {
+    const updated = {
+      ...appDefinition,
+      screens: appDefinition.screens.map((screen, index) =>
+        index === 0
+          ? {
+              ...screen,
+              components: [
+                ...screen.components,
+                {
+                  id: `text-${Date.now()}`,
+                  type: "Text",
+                  props: {
+                    value: "This component was added by TWIN.",
+                  },
+                },
+              ],
+            }
+          : screen
+      ),
+    };
+
+    setAppDefinition(updated);
+  }
 
   return (
     <div style={styles.panel}>
@@ -17,16 +44,16 @@ export default function AICommandPanel() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Example: Create a login screen with email and password fields"
+          placeholder="Example: Add a profile screen with avatar and bio"
           style={styles.textarea}
         />
 
-        <button style={styles.button} disabled>
-          Build with AI
+        <button style={styles.button} onClick={handleTestMutation}>
+          Test Mutation
         </button>
 
         <div style={styles.note}>
-          AI execution will be enabled in the next phase.
+          This button simulates an AI‑driven update.
         </div>
       </div>
     </div>
@@ -78,8 +105,7 @@ const styles = {
     color: "#ffffff",
     fontSize: "13px",
     fontWeight: 600,
-    cursor: "not-allowed",
-    opacity: 0.7,
+    cursor: "pointer",
   },
   note: {
     fontSize: "12px",
