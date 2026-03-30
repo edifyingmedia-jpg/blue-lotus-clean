@@ -1,6 +1,7 @@
-import React from "react";
-import AppRouter from "./router/AppRouter";
-
 export default function App() {
-  return <AppRouter />;
+  return (
+    <div style={{ padding: '20px', fontSize: '24px' }}>
+      Blue Lotus is running.
+    </div>
+  )
 }
