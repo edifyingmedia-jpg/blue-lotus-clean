@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import BuilderShell from './builder/BuilderShell'
 
 export default function App() {
   const [stage, setStage] = useState('locked')
@@ -13,7 +14,6 @@ export default function App() {
     }
   }
 
-  // 🔒 SIGN-IN SCREEN
   if (stage === 'locked') {
     return (
       <Screen>
@@ -34,12 +34,11 @@ export default function App() {
     )
   }
 
-  // 🌱 WELCOME SCREEN
   if (stage === 'welcome') {
     return (
       <Screen>
         <h1>Welcome, Tiffany</h1>
-        <p>TWIN is ready.</p>
+        <p>TWIN is online and ready.</p>
         <button onClick={() => setStage('builder')} style={buttonStyle}>
           Enter Builder
         </button>
@@ -47,13 +46,7 @@ export default function App() {
     )
   }
 
-  // 🧠 BUILDER PLACEHOLDER (WE BUILD HERE NEXT)
-  return (
-    <div style={{ padding: '20px' }}>
-      <h1>Blue Lotus Builder</h1>
-      <p>TWIN + Canvas will live here.</p>
-    </div>
-  )
+  return <BuilderShell />
 }
 
 function Screen({ children }) {
