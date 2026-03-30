@@ -1,35 +1,36 @@
-import { useMemo, useState } from 'react'
+import "./TwinPanel.css";
+import { useMemo, useState } from "react";
 
 export default function TwinPanel({ onBuild }) {
-  const [command, setCommand] = useState('')
+  const [command, setCommand] = useState("");
   const [log, setLog] = useState([
     {
       id: id(),
-      role: 'system',
+      role: "system",
       text:
-        'TWIN online — Architect Mode active.\n' +
-        'I will imagine the app and build immediately.\n' +
-        'You can correct anything afterward.'
+        "TWIN online — Architect Mode active.\n" +
+        "I will imagine the app and build immediately.\n" +
+        "You can correct anything afterward."
     }
-  ])
+  ]);
 
-  const canSend = useMemo(() => command.trim().length > 0, [command])
+  const canSend = useMemo(() => command.trim().length > 0, [command]);
 
   const send = () => {
-    const text = command.trim()
-    if (!text) return
+    const text = command.trim();
+    if (!text) return;
 
-    const userMsg = { id: id(), role: 'user', text }
-    const twinMsg = executeArchitectCommand(text, onBuild)
+    const userMsg = { id: id(), role: "user", text };
+    const twinMsg = executeArchitectCommand(text, onBuild);
 
-    setLog((prev) => [...prev, userMsg, twinMsg])
-    setCommand('')
-  }
+    setLog((prev) => [...prev, userMsg, twinMsg]);
+    setCommand("");
+  };
 
   return (
     <div style={panel}>
       <header style={header}>
-        <strong>TWIN</strong>
+        <strong style={{ color: "#e5e7eb" }}>TWIN</strong>
         <span style={sub}>Architect</span>
       </header>
 
@@ -38,7 +39,9 @@ export default function TwinPanel({ onBuild }) {
           <div key={m.id} style={bubbleWrap(m.role)}>
             <div style={bubble(m.role)}>
               <div style={label(m.role)}>{m.role}</div>
-              <div style={{ whiteSpace: 'pre-wrap' }}>{m.text}</div>
+              <div style={{ whiteSpace: "pre-wrap", color: "#e5e7eb" }}>
+                {m.text}
+              </div>
             </div>
           </div>
         ))}
@@ -46,8 +49,8 @@ export default function TwinPanel({ onBuild }) {
 
       <form
         onSubmit={(e) => {
-          e.preventDefault()
-          send()
+          e.preventDefault();
+          send();
         }}
         style={composer}
       >
@@ -63,7 +66,7 @@ export default function TwinPanel({ onBuild }) {
         </button>
       </form>
     </div>
-  )
+  );
 }
 
 /* ============================
@@ -71,85 +74,61 @@ export default function TwinPanel({ onBuild }) {
 ============================ */
 
 function executeArchitectCommand(text, onBuild) {
-  const t = text.toLowerCase()
+  const t = text.toLowerCase();
 
-  if (t.includes('youtube')) {
+  if (t.includes("youtube")) {
     const app = {
-      name: 'YouTube MVP',
+      name: "YouTube MVP",
       pages: [
         {
-          id: 'feed',
-          title: 'Feed',
+          id: "feed",
+          title: "Feed",
           components: [
-            {
-              id: 'feed-title',
-              type: 'text',
-              text: 'Recommended Videos'
-            },
-            {
-              id: 'feed-video',
-              type: 'video',
-              src: ''
-            }
+            { id: "feed-title", type: "text", text: "Recommended Videos" },
+            { id: "feed-video", type: "video", src: "" }
           ]
         },
         {
-          id: 'watch',
-          title: 'Watch',
+          id: "watch",
+          title: "Watch",
           components: [
-            {
-              id: 'watch-video',
-              type: 'video',
-              src: ''
-            },
-            {
-              id: 'watch-desc',
-              type: 'text',
-              text: 'Video description'
-            }
+            { id: "watch-video", type: "video", src: "" },
+            { id: "watch-desc", type: "text", text: "Video description" }
           ]
         },
         {
-          id: 'upload',
-          title: 'Upload',
+          id: "upload",
+          title: "Upload",
           components: [
-            {
-              id: 'upload-text',
-              type: 'text',
-              text: 'Upload a video'
-            },
-            {
-              id: 'upload-button',
-              type: 'button',
-              label: 'Upload'
-            }
+            { id: "upload-text", type: "text", text: "Upload a video" },
+            { id: "upload-button", type: "button", label: "Upload" }
           ]
         }
       ]
-    }
+    };
 
-    onBuild(app)
+    onBuild(app);
 
     return {
       id: id(),
-      role: 'twin',
+      role: "twin",
       text:
-        'YouTube‑style MVP built and rendered.\n\n' +
-        '• Feed page\n' +
-        '• Watch page\n' +
-        '• Upload UI\n\n' +
-        'Tell me what looks wrong or what you want next.'
-    }
+        "YouTube‑style MVP built and rendered.\n\n" +
+        "• Feed page\n" +
+        "• Watch page\n" +
+        "• Upload UI\n\n" +
+        "Tell me what looks wrong or what you want next."
+    };
   }
 
   return {
     id: id(),
-    role: 'twin',
+    role: "twin",
     text:
-      'Executing inferred build.\n' +
-      'I will construct the canonical structure and render it.\n' +
-      'Correct me if anything is off.'
-  }
+      "Executing inferred build.\n" +
+      "I will construct the canonical structure and render it.\n" +
+      "Correct me if anything is off."
+  };
 }
 
 /* ============================
@@ -157,7 +136,7 @@ function executeArchitectCommand(text, onBuild) {
 ============================ */
 
 function id() {
-  return crypto.randomUUID ? crypto.randomUUID() : Date.now().toString()
+  return crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
 }
 
 /* ============================
@@ -165,73 +144,74 @@ function id() {
 ============================ */
 
 const panel = {
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '10px'
-}
+  height: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px"
+};
 
 const header = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center'
-}
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center"
+};
 
 const sub = {
-  fontSize: '12px',
-  color: '#94a3b8'
-}
+  fontSize: "12px",
+  color: "#94a3b8"
+};
 
 const logBox = {
   flex: 1,
-  overflow: 'auto',
-  padding: '8px',
-  border: '1px solid #1e293b',
-  borderRadius: '10px',
-  background: '#020617'
-}
+  overflow: "auto",
+  padding: "8px",
+  border: "1px solid #1e293b",
+  borderRadius: "10px",
+  background: "#020617"
+};
 
 const bubbleWrap = (r) => ({
-  display: 'flex',
-  justifyContent: r === 'user' ? 'flex-end' : 'flex-start',
-  marginBottom: '8px'
-})
+  display: "flex",
+  justifyContent: r === "user" ? "flex-end" : "flex-start",
+  marginBottom: "8px"
+});
 
 const bubble = (r) => ({
-  maxWidth: '90%',
-  padding: '10px',
-  borderRadius: '12px',
-  background: r === 'user' ? '#0f172a' : '#07101f',
-  border: '1px solid #1e293b'
-})
+  maxWidth: "90%",
+  padding: "10px",
+  borderRadius: "12px",
+  background: r === "user" ? "#0f172a" : "#07101f",
+  border: "1px solid #1e293b",
+  color: "#e5e7eb"
+});
 
 const label = (r) => ({
-  fontSize: '11px',
-  color: r === 'user' ? '#a5b4fc' : '#67e8f9',
-  marginBottom: '4px'
-})
+  fontSize: "11px",
+  color: r === "user" ? "#a5b4fc" : "#67e8f9",
+  marginBottom: "4px"
+});
 
 const composer = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '6px'
-}
+  display: "flex",
+  flexDirection: "column",
+  gap: "6px"
+};
 
 const input = {
-  resize: 'none',
-  padding: '10px',
-  borderRadius: '10px',
-  border: '1px solid #1e293b',
-  background: '#020617',
-  color: '#e5e7eb'
-}
+  resize: "none",
+  padding: "10px",
+  borderRadius: "10px",
+  border: "1px solid #1e293b",
+  background: "#020617",
+  color: "#e5e7eb"
+};
 
 const sendBtn = (disabled) => ({
-  alignSelf: 'flex-end',
-  padding: '8px 14px',
-  borderRadius: '10px',
-  border: '1px solid #1e293b',
-  background: disabled ? '#020617' : '#2563eb',
-  color: disabled ? '#64748b' : '#e5e7eb',
-  cursor: disabled ? 'not-allowed' : 'pointer'
-})
+  alignSelf: "flex-end",
+  padding: "8px 14px",
+  borderRadius: "10px",
+  border: "1px solid #1e293b",
+  background: disabled ? "#020617" : "#2563eb",
+  color: disabled ? "#64748b" : "#e5e7eb",
+  cursor: disabled ? "not-allowed" : "pointer"
+});
