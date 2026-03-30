@@ -1,0 +1,36 @@
+.twin-panel {
+  background-color: #0f172a;
+  color: #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.twin-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  color: #e5e7eb;
+}
+
+.twin-message {
+  margin-bottom: 12px;
+  line-height: 1.6;
+  color: #e5e7eb;
+}
+
+.twin-input {
+  border-top: 1px solid #1e293b;
+  padding: 12px;
+  background-color: #020617;
+  color: #e5e7eb;
+}
+
+.twin-input textarea,
+.twin-input input {
+  width: 100%;
+  background-color: #020617;
+  color: #e5e7eb;
+  border: none;
+  outline: none;
+}
