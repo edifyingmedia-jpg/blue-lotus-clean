@@ -1,2 +1,1 @@
-export { default as BuilderApp } from "./BuilderApp";
-export { ComponentPanel } from "./ComponentPanel";
+export { generateBuilder } from "./generate";
