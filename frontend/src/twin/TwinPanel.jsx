@@ -13,7 +13,6 @@ export default function TwinPanel({
   const [input, setInput] = useState("");
   const [ready, setReady] = useState(false);
 
-  // Ensure TwinPanel never crashes on mount
   useEffect(() => {
     setReady(true);
   }, []);
@@ -26,26 +25,41 @@ export default function TwinPanel({
     );
   }
 
+  const isBuildIntent = text =>
+    /build|create|generate|app|builder/i.test(text);
+
   const handleSend = () => {
     if (!input.trim()) return;
 
-    const userMessage = {
-      role: "user",
-      content: input.trim()
-    };
+    const userText = input.trim();
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [
+      ...prev,
+      { role: "user", content: userText }
+    ]);
+
     setInput("");
 
-    // Placeholder AI response (no repetition loop)
     setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Acknowledged. Awaiting explicit build instruction."
-        }
-      ]);
+      if (isBuildIntent(userText)) {
+        setMessages(prev => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              "Build intent detected. Preparing app‑level scaffold proposal."
+          }
+        ]);
+      } else {
+        setMessages(prev => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              "Acknowledged. Please provide an explicit build instruction."
+          }
+        ]);
+      }
     }, 300);
   };
 
@@ -59,7 +73,6 @@ export default function TwinPanel({
         flexDirection: "column"
       }}
     >
-      {/* Header */}
       <div
         style={{
           padding: "16px",
@@ -70,7 +83,6 @@ export default function TwinPanel({
         TWIN — Owner Forge
       </div>
 
-      {/* Messages */}
       <div
         style={{
           flex: 1,
@@ -79,20 +91,13 @@ export default function TwinPanel({
         }}
       >
         {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            style={{
-              marginBottom: "12px",
-              opacity: 0.95
-            }}
-          >
+          <div key={idx} style={{ marginBottom: "12px" }}>
             <strong>{msg.role === "user" ? "You" : "TWIN"}:</strong>{" "}
             {msg.content}
           </div>
         ))}
       </div>
 
-      {/* Input */}
       <div
         style={{
           padding: "16px",
