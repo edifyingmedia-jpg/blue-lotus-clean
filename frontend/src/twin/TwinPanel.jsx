@@ -1,45 +1,31 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { execute } from "../runtime/ActionEngine";
 
 export default function TwinPanel({
-  authority = {
-    isOwner: false,
-    actorId: null,
-    ownerId: null,
-    scope: "unknown"
-  },
-  onBuild = () => {}
+  authority = { isOwner: false, actorId: null, ownerId: null, scope: "unknown" }
 }) {
-  const [ready, setReady] = useState(false);
   const [messages, setMessages] = useState(() => [
-    {
-      role: "assistant",
-      content:
-        "TWIN online. Give me a build command like: “Build an app builder for X.”"
-    }
+    { role: "assistant", content: 'Ready. Try: "Build an app builder called Lotus Forge".' }
   ]);
   const [input, setInput] = useState("");
+  const [artifact, setArtifact] = useState(null);
+  const [activeFile, setActiveFile] = useState(null);
 
-  useEffect(() => {
-    setReady(true);
-  }, []);
+  const safeAuthority = useMemo(() => ({
+    isOwner: !!authority?.isOwner,
+    actorId: authority?.actorId ?? null,
+    ownerId: authority?.ownerId ?? null,
+    scope: authority?.scope ?? "unknown"
+  }), [authority]);
 
-  const safeAuthority = useMemo(() => {
-    const a = authority || {};
-    return {
-      isOwner: !!a.isOwner,
-      actorId: a.actorId ?? null,
-      ownerId: a.ownerId ?? null,
-      scope: a.scope ?? "unknown"
-    };
-  }, [authority]);
+  const append = (role, content) => setMessages(prev => [...prev, { role, content }]);
 
-  const append = (role, content) => {
-    setMessages(prev => [...prev, { role, content }]);
-  };
+  const files = artifact?.files || {};
+  const fileKeys = useMemo(() => Object.keys(files).sort(), [artifact]);
+  const activeContent = activeFile ? files?.[activeFile] : "";
 
   const handleSend = () => {
-    const text = (input || "").trim();
+    const text = String(input || "").trim();
     if (!text) return;
 
     setInput("");
@@ -49,113 +35,132 @@ export default function TwinPanel({
     try {
       result = execute(text, safeAuthority);
     } catch (e) {
-      append(
-        "assistant",
-        `Runtime error in ActionEngine: ${e?.message || "Unknown error"}`
-      );
+      append("assistant", `ActionEngine crash: ${e?.message || "Unknown error"}`);
       return;
     }
 
-    const message =
-      result?.message ||
-      "No response returned from ActionEngine. Check execute() return shape.";
+    append("assistant", result?.message || "No message returned.");
 
-    append("assistant", message);
-
-    if (result?.type === "build") {
-      try {
-        onBuild(result);
-      } catch (e) {
-        append(
-          "assistant",
-          `Build handler error: ${e?.message || "Unknown error"}`
-        );
-      }
+    if (result?.type === "build" && result?.artifact?.files) {
+      setArtifact(result.artifact);
+      const first = Object.keys(result.artifact.files).sort()[0] || null;
+      setActiveFile(first);
     }
   };
 
-  const handleKeyDown = e => {
+  const onKeyDown = e => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
 
-  if (!ready) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#020617", color: "white", padding: "40px" }}>
-        Initializing TWIN…
-      </div>
-    );
-  }
-
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#020617",
-        color: "white",
-        display: "flex",
-        flexDirection: "column"
-      }}
-    >
-      <div
-        style={{
-          padding: "16px",
-          borderBottom: "1px solid #1e293b",
-          fontWeight: 700
-        }}
-      >
-        TWIN — Owner Forge
+    <div style={{ minHeight: "100vh", background: "#020617", color: "#e2e8f0", display: "grid", gridTemplateColumns: artifact ? "380px 1fr" : "1fr" }}>
+      <div style={{ borderRight: artifact ? "1px solid #1e293b" : "none", display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <div style={{ padding: 16, borderBottom: "1px solid #1e293b", fontWeight: 900 }}>
+          TWIN — Brain Online
+        </div>
+
+        <div style={{ flex: 1, padding: 16, overflowY: "auto" }}>
+          {messages.map((m, i) => (
+            <div key={i} style={{ marginBottom: 10, lineHeight: 1.35 }}>
+              <strong>{m.role === "user" ? "You" : "TWIN"}:</strong>{" "}
+              <span>{m.content}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ padding: 16, borderTop: "1px solid #1e293b", display: "flex", gap: 8 }}>
+          <textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={onKeyDown}
+            rows={2}
+            placeholder='Build an app builder called "Lotus Forge"'
+            style={{
+              flex: 1,
+              padding: 10,
+              borderRadius: 12,
+              border: "1px solid #334155",
+              background: "#020617",
+              color: "#e2e8f0",
+              resize: "none",
+              outline: "none"
+            }}
+          />
+          <button
+            onClick={handleSend}
+            style={{
+              padding: "10px 14px",
+              borderRadius: 12,
+              border: "none",
+              background: "#2563eb",
+              color: "white",
+              cursor: "pointer",
+              fontWeight: 900
+            }}
+          >
+            Send
+          </button>
+        </div>
       </div>
 
-      <div style={{ flex: 1, padding: "16px", overflowY: "auto" }}>
-        {messages.map((m, i) => (
-          <div key={i} style={{ marginBottom: "12px", lineHeight: 1.4 }}>
-            <strong>{m.role === "user" ? "You" : "TWIN"}:</strong>{" "}
-            <span>{m.content}</span>
-          </div>
-        ))}
-      </div>
+      {artifact && (
+        <div style={{ minHeight: "100vh", display: "grid", gridTemplateColumns: "320px 1fr" }}>
+          <aside style={{ padding: 16, borderRight: "1px solid #1e293b" }}>
+            <div style={{ fontWeight: 900, marginBottom: 6 }}>Generated</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 12 }}>
+              {artifact.appName} ({artifact.kind}) — template: {artifact.templateId}
+            </div>
 
-      <div
-        style={{
-          padding: "16px",
-          borderTop: "1px solid #1e293b",
-          display: "flex",
-          gap: "8px"
-        }}
-      >
-        <textarea
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder='Try: "Build an app builder for landing pages"'
-          rows={2}
-          style={{
-            flex: 1,
-            padding: "10px",
-            background: "#020617",
-            color: "white",
-            border: "1px solid #334155",
-            resize: "none",
-            outline: "none"
-          }}
-        />
-        <button
-          onClick={handleSend}
-          style={{
-            padding: "10px 16px",
-            background: "#2563eb",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-            fontWeight: 600
-          }}
-        >
-          Send
-        </button>
-      </div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 8 }}>Files</div>
+            <div style={{ display: "grid", gap: 6 }}>
+              {fileKeys.map(k => (
+                <button
+                  key={k}
+                  onClick={() => setActiveFile(k)}
+                  style={{
+                    textAlign: "left",
+                    padding: "8px 10px",
+                    borderRadius: 10,
+                    border: "1px solid #1e293b",
+                    background: k === activeFile ? "#0b1220" : "#020617",
+                    color: "#e2e8f0",
+                    cursor: "pointer"
+                  }}
+                >
+                  {k}
+                </button>
+              ))}
+            </div>
+          </aside>
+
+          <main style={{ padding: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <div style={{ fontWeight: 900 }}>{activeFile}</div>
+              <button
+                onClick={() => navigator.clipboard.writeText(String(activeContent || ""))}
+                style={{
+                  padding: "10px 12px",
+                  borderRadius: 12,
+                  border: "1px solid #334155",
+                  background: "#0b1220",
+                  color: "#e2e8f0",
+                  cursor: "pointer",
+                  fontWeight: 900
+                }}
+              >
+                Copy
+              </button>
+            </div>
+
+            <pre style={{ marginTop: 12, padding: 14, borderRadius: 14, border: "1px solid #1e293b", background: "#0b1220", overflow: "auto", minHeight: "80vh", whiteSpace: "pre" }}>
+{String(activeContent || "")}
+            </pre>
+          </main>
+        </div>
+      )}
     </div>
   );
 }
