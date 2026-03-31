@@ -1,6 +1,6 @@
-import { parseCommandToBlueprint } from "./brain/parseCommand";
-import { validateBlueprintOrThrow } from "./brain/QualityGate";
-import { generateFromBlueprint } from "./brain/GeneratorEngine";
+import { parseCommandToBlueprint } from "./brain/parsecommand.js";
+import { validateBlueprintOrThrow } from "./brain/QualityGate.js";
+import { generateFromBlueprint } from "./brain/GeneratorEngine.js";
 
 export function execute(command, authority) {
   if (!authority?.isOwner) {
@@ -14,7 +14,10 @@ export function execute(command, authority) {
   try {
     blueprint = parseCommandToBlueprint(text);
   } catch (e) {
-    return { type: "error", message: `Parse error: ${e?.message || "Unknown error"}` };
+    return {
+      type: "error",
+      message: `Parse error: ${e?.message || "Unknown error"}`
+    };
   }
 
   if (blueprint.intent === "help") {
@@ -28,7 +31,10 @@ export function execute(command, authority) {
   try {
     validateBlueprintOrThrow(blueprint);
   } catch (e) {
-    return { type: "error", message: `QualityGate failed: ${e?.message || "Invalid blueprint"}` };
+    return {
+      type: "error",
+      message: `QualityGate failed: ${e?.message || "Invalid blueprint"}`
+    };
   }
 
   const artifact = generateFromBlueprint(blueprint);
