@@ -2,7 +2,21 @@ import "./TwinPanel.css";
 import { useMemo, useState } from "react";
 import { classifyIntent } from "./intentClassifier";
 
-export default function TwinPanel({ onBuild }) {
+/**
+ * Authority model (enforced here):
+ * - OWNER: can build app builders, meta-builders, and anything else.
+ * - NON-OWNER: can build apps, but cannot build app builders, clone TWIN, or expose TWIN internals.
+ *
+ * How OWNER is detected (any one true):
+ * - props.authority?.isOwner === true
+ * - window.__BLUE_LOTUS_OWNER__ === true
+ * - localStorage["bl_owner"] === "true"
+ * - import.meta.env.VITE_BLUE_LOTUS_OWNER === "true"
+ *
+ * Optional props:
+ * - authority: { isOwner?: boolean, actorId?: string, ownerId?: string, scope?: "owner"|"platform"|"user" }
+ */
+export default function TwinPanel({ onBuild, authority }) {
   const [command, setCommand] = useState("");
   const [log, setLog] = useState([
     {
@@ -10,8 +24,8 @@ export default function TwinPanel({ onBuild }) {
       role: "system",
       text:
         "TWIN online — Architect Mode active.\n" +
-        "I will imagine the app and build immediately.\n" +
-        "You can correct anything afterward."
+        "Default: Meta-builder forge (builds app builders).\n" +
+        "Authority enforced: only the owner can generate app builders or clone TWIN."
     }
   ]);
 
@@ -22,7 +36,7 @@ export default function TwinPanel({ onBuild }) {
     if (!text) return;
 
     const userMsg = { id: id(), role: "user", text };
-    const twinMsg = executeArchitectCommand(text, onBuild);
+    const twinMsg = executeArchitectCommand(text, onBuild, authority);
 
     setLog((prev) => [...prev, userMsg, twinMsg]);
     setCommand("");
@@ -58,7 +72,7 @@ export default function TwinPanel({ onBuild }) {
         <textarea
           value={command}
           onChange={(e) => setCommand(e.target.value)}
-          placeholder="Build something…"
+          placeholder="Tell me what to build…"
           rows={3}
           style={input}
         />
@@ -74,74 +88,249 @@ export default function TwinPanel({ onBuild }) {
    ARCHITECT EXECUTION LOGIC
 ============================ */
 
-function executeArchitectCommand(text, onBuild) {
+function executeArchitectCommand(text, onBuild, authority) {
   const intent = classifyIntent(text);
+  const auth = resolveAuthority(authority);
+
+  // Hard blocks (non-owner)
+  if (!auth.isOwner) {
+    const blocked = detectBlockedNonOwnerRequest(text);
+    if (blocked) {
+      return {
+        id: id(),
+        role: "twin",
+        text:
+          "Denied.\n" +
+          blocked +
+          "\n\n" +
+          "I can still build apps for you (trackers, stores, booking, websites, tools). " +
+          "Tell me what app you want."
+      };
+    }
+  }
 
   switch (intent.type) {
     case "greeting":
       return {
         id: id(),
         role: "twin",
-        text: "Architect Mode active. Tell me what you want to build."
+        text: auth.isOwner
+          ? "Architect Mode active (OWNER). Say what to build—I will generate immediately."
+          : "Architect Mode active. Tell me what app you want—I will generate immediately."
       };
 
     case "build_app": {
-      const appBuilder = {
-        name: "Generated App Builder",
-        pages: [
-          {
-            id: "builder",
-            title: "Builder",
-            components: [
-              {
-                id: "components-panel",
-                type: "panel",
-                role: "components",
-                title: "Components"
-              },
-              {
-                id: "canvas-root",
-                type: "canvas",
-                title: "Canvas"
-              },
-              {
-                id: "twin-panel",
-                type: "panel",
-                role: "twin",
-                title: "TWIN"
-              }
-            ]
-          }
-        ],
-        meta: {
-          generatedBy: "TWIN",
-          mode: "architect",
-          intent: intent.query
-        }
-      };
+      // OWNER default: meta-builder forge (builds app builders)
+      if (auth.isOwner) {
+        const metaBuilder = makeMetaBuilderForge({ prompt: intent.query, auth });
 
-      onBuild(appBuilder);
+        safeOnBuild(onBuild, metaBuilder);
+
+        return {
+          id: id(),
+          role: "twin",
+          text:
+            "Meta-builder forge generated and rendered.\n\n" +
+            "Capabilities (OWNER):\n" +
+            "• Generates app builders\n" +
+            "• Generates apps\n" +
+            "• Owner-locked builder generation\n\n" +
+            "Tell me what builder you want next (e.g., “Build a booking app builder”)."
+        };
+      }
+
+      // NON-OWNER: generate an app (not a builder)
+      const app = makeUserAppScaffold({ prompt: intent.query, auth });
+
+      safeOnBuild(onBuild, app);
 
       return {
         id: id(),
         role: "twin",
         text:
-          "App builder scaffold generated and rendered.\n\n" +
-          "• Components panel\n" +
-          "• Canvas root\n" +
-          "• TWIN control panel\n\n" +
-          "Tell me what to change or extend."
+          "App scaffold generated and rendered.\n\n" +
+          "Tell me what to add next (pages, forms, lists, payments, booking, etc.)."
       };
     }
+
+    case "empty":
+      return {
+        id: id(),
+        role: "twin",
+        text: auth.isOwner
+          ? "Say: “Build an app builder that…” or “Build an app that…”"
+          : "Say: “Build an app that…”"
+      };
 
     default:
       return {
         id: id(),
         role: "twin",
-        text:
-          "State what you want to build. Example: “Build an app builder for SaaS dashboards.”"
+        text: auth.isOwner
+          ? "State what to build. Example: “Build an app builder for booking apps.”"
+          : "State what app to build. Example: “Build a booking app for my salon.”"
       };
   }
+}
+
+/* ============================
+   AUTHORITY
+============================ */
+
+function resolveAuthority(authority) {
+  const fromProps = authority?.isOwner === true;
+
+  const fromWindow =
+    typeof window !== "undefined" && window.__BLUE_LOTUS_OWNER__ === true;
+
+  const fromLocalStorage =
+    typeof window !== "undefined" &&
+    typeof window.localStorage !== "undefined" &&
+    window.localStorage.getItem("bl_owner") === "true";
+
+  const fromEnv =
+    typeof import.meta !== "undefined" &&
+    import.meta.env &&
+    import.meta.env.VITE_BLUE_LOTUS_OWNER === "true";
+
+  const isOwner = Boolean(fromProps || fromWindow || fromLocalStorage || fromEnv);
+
+  return {
+    isOwner,
+    scope: authority?.scope || (isOwner ? "owner" : "user"),
+    actorId: authority?.actorId || null,
+    ownerId: authority?.ownerId || null
+  };
+}
+
+function detectBlockedNonOwnerRequest(raw) {
+  const t = (raw || "").toLowerCase();
+
+  // Builder / forge / meta-builder attempts
+  const asksForBuilder =
+    t.includes("app builder") ||
+    t.includes("builder that builds") ||
+    t.includes("build a builder") ||
+    t.includes("meta builder") ||
+    t.includes("metabuilder") ||
+    t.includes("forge") ||
+    t.includes("generate builders") ||
+    t.includes("create builders");
+
+  // Self-clone / TWIN internals attempts
+  const asksToCloneTwin =
+    t.includes("clone twin") ||
+    t.includes("copy twin") ||
+    t.includes("replicate twin") ||
+    t.includes("make another twin") ||
+    t.includes("build twin") ||
+    t.includes("recreate twin") ||
+    t.includes("export twin") ||
+    t.includes("twin source") ||
+    t.includes("twin code") ||
+    t.includes("twin internals");
+
+  if (asksForBuilder) {
+    return "App-builder generation is owner-only on this platform.";
+  }
+
+  if (asksToCloneTwin) {
+    return "Cloning TWIN or exposing TWIN internals is owner-only.";
+  }
+
+  return null;
+}
+
+/* ============================
+   BUILD OUTPUTS
+============================ */
+
+function makeMetaBuilderForge({ prompt, auth }) {
+  return {
+    kind: "blue-lotus-builder",
+    builderType: "meta-forge",
+    name: "Blue Lotus Meta-Builder Forge",
+    capabilities: {
+      canGenerateApps: true,
+      canGenerateBuilders: true,
+      canCloneTwin: false, // still explicit—owner can override elsewhere, but default is no
+      ownerOnlyBuilderGeneration: true
+    },
+    governance: {
+      ownerOnly: {
+        builders: true,
+        twinInternals: true,
+        twinCloning: true
+      },
+      actor: {
+        isOwner: auth.isOwner,
+        scope: auth.scope,
+        actorId: auth.actorId,
+        ownerId: auth.ownerId
+      }
+    },
+    workspace: {
+      panels: [
+        { id: "registry", type: "panel", role: "registry", title: "Registry" },
+        { id: "schema", type: "panel", role: "schema", title: "Schema" },
+        { id: "canvas", type: "canvas", role: "canvas", title: "Canvas" },
+        { id: "twin", type: "panel", role: "twin", title: "TWIN" }
+      ]
+    },
+    builderKernel: {
+      // Minimal kernel contract—expand later without breaking shape
+      appDefinition: {
+        pages: [],
+        components: [],
+        data: { models: [] },
+        navigation: { type: "tabs", items: [] }
+      },
+      builderDefinition: {
+        templates: [
+          { id: "generic-app", label: "Generic app" },
+          { id: "booking-app", label: "Booking app" },
+          { id: "store-app", label: "Store app" },
+          { id: "tracker-app", label: "Tracker app" }
+        ],
+        rules: {
+          // Enforced at runtime by governance + UI gating
+          ownerOnlyBuilderGeneration: true
+        }
+      }
+    },
+    meta: {
+      generatedBy: "TWIN",
+      mode: "architect",
+      prompt
+    }
+  };
+}
+
+function makeUserAppScaffold({ prompt }) {
+  return {
+    kind: "blue-lotus-app",
+    appType: "generic",
+    name: "Generated App",
+    pages: [
+      {
+        id: "home",
+        title: "Home",
+        components: [
+          { id: "hero", type: "text", title: "Welcome" },
+          { id: "primary-action", type: "button", title: "Get started" }
+        ]
+      }
+    ],
+    meta: {
+      generatedBy: "TWIN",
+      mode: "architect",
+      prompt
+    }
+  };
+}
+
+function safeOnBuild(onBuild, payload) {
+  if (typeof onBuild === "function") onBuild(payload);
 }
 
 /* ============================
