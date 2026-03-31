@@ -1,18 +1,17 @@
-import { Navigate } from "react-router-dom";
-
-export default function SignInGate({ children }) {
-  const { user, loading } = useAuth();
-
-  // Wait until auth state is resolved
-  if (loading) {
-    return null; // or a loading spinner if you prefer
-  }
-
-  // Not signed in → go to sign-in page
-  if (!user) {
-    return <Navigate to="/signin" replace />;
-  }
-
-  // Signed in → allow access
-  return children;
+export default function SignInGate() {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#020617",
+        color: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "24px"
+      }}
+    >
+      Forge Loaded
+    </div>
+  );
 }
