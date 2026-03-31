@@ -2,27 +2,22 @@ import { useEffect, useState } from "react";
 import TwinPanel from "../twin/TwinPanel";
 
 /**
- * SignInGate
- * -----------
- * Enforces signed authority before TWIN is mounted.
- *
- * Authority rules:
- * - OWNER: full meta-builder access
- * - USER: app generation only
- *
- * This file assumes:
- * - You will later replace `mockSignIn()` with real auth
- * - Session object is authoritative
+ * OWNER-ONLY SIGN IN GATE
+ * ----------------------
+ * This forge is private.
+ * Only the owner may enter.
+ * No user mode exists here.
  */
+
+const OWNER_EMAIL = "tiffany@owner";
 
 export default function SignInGate({ onBuild }) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Replace this with real auth lookup later
     const existing = loadSession();
-    if (existing) {
+    if (existing && existing.role === "owner") {
       setSession(existing);
     }
     setLoading(false);
@@ -33,31 +28,42 @@ export default function SignInGate({ onBuild }) {
   }
 
   if (!session) {
-    return <SignIn onSignedIn={setSession} />;
+    return <OwnerSignIn onSignedIn={setSession} />;
   }
 
   return (
     <TwinPanel
       onBuild={onBuild}
       authority={{
-        isOwner: session.role === "owner",
+        isOwner: true,
         actorId: session.userId,
-        ownerId: session.ownerId,
-        scope: session.role
+        ownerId: session.userId,
+        scope: "owner"
       }}
     />
   );
 }
 
 /* ============================
-   SIGN IN UI
+   OWNER SIGN IN
 ============================ */
 
-function SignIn({ onSignedIn }) {
+function OwnerSignIn({ onSignedIn }) {
   const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
 
   const submit = () => {
-    const session = mockSignIn(email);
+    if (email.toLowerCase() !== OWNER_EMAIL) {
+      setError("Access denied.");
+      return;
+    }
+
+    const session = {
+      userId: email,
+      role: "owner",
+      issuedAt: Date.now()
+    };
+
     saveSession(session);
     onSignedIn(session);
   };
@@ -65,15 +71,16 @@ function SignIn({ onSignedIn }) {
   return (
     <Centered>
       <div style={card}>
-        <h2>Sign in</h2>
+        <h2>Blue Lotus Forge</h2>
         <input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
+          placeholder="Owner email"
           style={input}
         />
+        {error && <div style={errorText}>{error}</div>}
         <button onClick={submit} style={button}>
-          Continue
+          Enter Forge
         </button>
       </div>
     </Centered>
@@ -81,31 +88,20 @@ function SignIn({ onSignedIn }) {
 }
 
 /* ============================
-   SESSION (TEMPORARY)
+   SESSION
 ============================ */
 
-function mockSignIn(email) {
-  const isOwner = email.toLowerCase() === "tiffany@owner";
-
-  return {
-    userId: email,
-    role: isOwner ? "owner" : "user",
-    ownerId: isOwner ? email : "tiffany@owner",
-    issuedAt: Date.now()
-  };
-}
-
 function saveSession(session) {
-  localStorage.setItem("bl_session", JSON.stringify(session));
+  localStorage.setItem("bl_owner_session", JSON.stringify(session));
 }
 
 function loadSession() {
-  const raw = localStorage.getItem("bl_session");
+  const raw = localStorage.getItem("bl_owner_session");
   return raw ? JSON.parse(raw) : null;
 }
 
 /* ============================
-   UI HELPERS
+   UI
 ============================ */
 
 function Centered({ children }) {
@@ -151,4 +147,9 @@ const button = {
   background: "#2563eb",
   color: "#e5e7eb",
   cursor: "pointer"
+};
+
+const errorText = {
+  color: "#f87171",
+  fontSize: "12px"
 };
