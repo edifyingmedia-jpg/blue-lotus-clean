@@ -11,18 +11,22 @@ export default function TwinPanel({
   const [artifact, setArtifact] = useState(null);
   const [activeFile, setActiveFile] = useState(null);
 
-  const safeAuthority = useMemo(() => ({
-    isOwner: !!authority?.isOwner,
-    actorId: authority?.actorId ?? null,
-    ownerId: authority?.ownerId ?? null,
-    scope: authority?.scope ?? "unknown"
-  }), [authority]);
+  const safeAuthority = useMemo(
+    () => ({
+      isOwner: !!authority?.isOwner,
+      actorId: authority?.actorId ?? null,
+      ownerId: authority?.ownerId ?? null,
+      scope: authority?.scope ?? "unknown"
+    }),
+    [authority]
+  );
 
-  const append = (role, content) => setMessages(prev => [...prev, { role, content }]);
+  const append = (role, content) =>
+    setMessages(prev => [...prev, { role, content }]);
 
   const files = artifact?.files || {};
-  const fileKeys = useMemo(() => Object.keys(files).sort(), [artifact]);
-  const activeContent = activeFile ? files?.[activeFile] : "";
+  const fileKeys = useMemo(() => Object.keys(files).sort(), [files]);
+  const activeContent = activeFile ? files[activeFile] : "";
 
   const handleSend = () => {
     const text = String(input || "").trim();
@@ -56,9 +60,30 @@ export default function TwinPanel({
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#020617", color: "#e2e8f0", display: "grid", gridTemplateColumns: artifact ? "380px 1fr" : "1fr" }}>
-      <div style={{ borderRight: artifact ? "1px solid #1e293b" : "none", display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-        <div style={{ padding: 16, borderBottom: "1px solid #1e293b", fontWeight: 900 }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#020617",
+        color: "#e2e8f0",
+        display: "grid",
+        gridTemplateColumns: artifact ? "380px 1fr" : "1fr"
+      }}
+    >
+      <div
+        style={{
+          borderRight: artifact ? "1px solid #1e293b" : "none",
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh"
+        }}
+      >
+        <div
+          style={{
+            padding: 16,
+            borderBottom: "1px solid #1e293b",
+            fontWeight: 900
+          }}
+        >
           TWIN — Brain Online
         </div>
 
@@ -71,7 +96,14 @@ export default function TwinPanel({
           ))}
         </div>
 
-        <div style={{ padding: 16, borderTop: "1px solid #1e293b", display: "flex", gap: 8 }}>
+        <div
+          style={{
+            padding: 16,
+            borderTop: "1px solid #1e293b",
+            display: "flex",
+            gap: 8
+          }}
+        >
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -107,14 +139,23 @@ export default function TwinPanel({
       </div>
 
       {artifact && (
-        <div style={{ minHeight: "100vh", display: "grid", gridTemplateColumns: "320px 1fr" }}>
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "grid",
+            gridTemplateColumns: "320px 1fr"
+          }}
+        >
           <aside style={{ padding: 16, borderRight: "1px solid #1e293b" }}>
             <div style={{ fontWeight: 900, marginBottom: 6 }}>Generated</div>
             <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 12 }}>
-              {artifact.appName} ({artifact.kind}) — template: {artifact.templateId}
+              {artifact.appName} ({artifact.kind}) — template:{" "}
+              {artifact.templateId}
             </div>
 
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 8 }}>Files</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 8 }}>
+              Files
+            </div>
             <div style={{ display: "grid", gap: 6 }}>
               {fileKeys.map(k => (
                 <button
@@ -125,7 +166,8 @@ export default function TwinPanel({
                     padding: "8px 10px",
                     borderRadius: 10,
                     border: "1px solid #1e293b",
-                    background: k === activeFile ? "#0b1220" : "#020617",
+                    background:
+                      k === activeFile ? "#0b1220" : "#020617",
                     color: "#e2e8f0",
                     cursor: "pointer"
                   }}
@@ -137,10 +179,19 @@ export default function TwinPanel({
           </aside>
 
           <main style={{ padding: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12
+              }}
+            >
               <div style={{ fontWeight: 900 }}>{activeFile}</div>
               <button
-                onClick={() => navigator.clipboard.writeText(String(activeContent || ""))}
+                onClick={() =>
+                  navigator.clipboard.writeText(String(activeContent || ""))
+                }
                 style={{
                   padding: "10px 12px",
                   borderRadius: 12,
@@ -155,8 +206,19 @@ export default function TwinPanel({
               </button>
             </div>
 
-            <pre style={{ marginTop: 12, padding: 14, borderRadius: 14, border: "1px solid #1e293b", background: "#0b1220", overflow: "auto", minHeight: "80vh", whiteSpace: "pre" }}>
-{String(activeContent || "")}
+            <pre
+              style={{
+                marginTop: 12,
+                padding: 14,
+                borderRadius: 14,
+                border: "1px solid #1e293b",
+                background: "#0b1220",
+                overflow: "auto",
+                minHeight: "80vh",
+                whiteSpace: "pre"
+              }}
+            >
+              {String(activeContent || "")}
             </pre>
           </main>
         </div>
