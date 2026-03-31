@@ -7,24 +7,25 @@ export function TwinPanel({ artifact }) {
   const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
-    if (!selectedFile && fileNames.length) setSelectedFile(fileNames[0]);
-    if (selectedFile && !files[selectedFile]) setSelectedFile(fileNames[0] || null);
-  }, [fileNames, files, selectedFile]);
+    if (!selectedFile && fileNames.length) {
+      setSelectedFile(fileNames[0]);
+    }
+  }, [fileNames, selectedFile]);
+
+  if (!artifact) {
+    return (
+      <div style={{ color: "#64748b", padding: 16 }}>
+        TWIN: Ready. Try: "Build an app builder called Lotus Forge".
+      </div>
+    );
+  }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "240px 1fr",
-        height: "100%",
-        minHeight: "100vh",
-        background: "#020617",
-        color: "#e2e8f0",
-      }}
-    >
+    <div style={{ display: "flex", height: "100%" }}>
       {/* File List */}
       <div
         style={{
+          width: 240,
           borderRight: "1px solid #1e293b",
           padding: 16,
           overflowY: "auto",
@@ -42,33 +43,29 @@ export function TwinPanel({ artifact }) {
           Generated Files
         </div>
 
-        {fileNames.length ? (
-          fileNames.map((name) => (
-            <div
-              key={name}
-              onClick={() => setSelectedFile(name)}
-              style={{
-                padding: "6px 8px",
-                cursor: "pointer",
-                borderRadius: 4,
-                background: selectedFile === name ? "#1e293b" : "transparent",
-                color: selectedFile === name ? "#e2e8f0" : "#94a3b8",
-                fontFamily: "monospace",
-                fontSize: 13,
-              }}
-            >
-              {name}
-            </div>
-          ))
-        ) : (
-          <div style={{ color: "#64748b", fontSize: 13, lineHeight: 1.4 }}>
-            TWIN: Ready. Try: "Build an app builder called Lotus Forge".
+        {fileNames.map((name) => (
+          <div
+            key={name}
+            onClick={() => setSelectedFile(name)}
+            style={{
+              padding: "6px 8px",
+              cursor: "pointer",
+              borderRadius: 4,
+              background:
+                selectedFile === name ? "#1e293b" : "transparent",
+              color:
+                selectedFile === name ? "#e2e8f0" : "#94a3b8",
+              fontFamily: "monospace",
+              fontSize: 13,
+            }}
+          >
+            {name}
           </div>
-        )}
+        ))}
       </div>
 
       {/* File Viewer */}
-      <div style={{ padding: 24, overflow: "auto" }}>
+      <div style={{ flex: 1, padding: 24, overflow: "auto" }}>
         {selectedFile ? (
           <>
             <div
@@ -99,7 +96,7 @@ export function TwinPanel({ artifact }) {
           </>
         ) : (
           <div style={{ color: "#64748b" }}>
-            Build something to view generated files.
+            Select a file to view its contents.
           </div>
         )}
       </div>
