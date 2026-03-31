@@ -1,9 +1,11 @@
 function slugify(name) {
-  return String(name || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "blue-lotus-app";
+  return (
+    String(name || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "blue-lotus-app"
+  );
 }
 
 function pickQuoted(text) {
@@ -35,13 +37,16 @@ export function parseCommandToBlueprint(commandText) {
     /\bbuilder\b/.test(lower);
 
   const wantsBuild =
-    /\bbuild\b/.test(lower) || /\bcreate\b/.test(lower) || /\bgenerate\b/.test(lower);
+    /\bbuild\b/.test(lower) ||
+    /\bcreate\b/.test(lower) ||
+    /\bgenerate\b/.test(lower);
 
   if (!wantsBuild && !wantsBuilder) {
     return { intent: "help" };
   }
 
-  const templateId = pickUsingTemplate(text) || (wantsBuilder ? "builder-core" : "dashboard");
+  const templateId =
+    pickUsingTemplate(text) || (wantsBuilder ? "builder-core" : "dashboard");
 
   const name =
     pickQuoted(text) ||
