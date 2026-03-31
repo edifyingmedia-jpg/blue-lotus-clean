@@ -1,33 +1,12 @@
 import { useState } from "react";
-import AppRouter from "./AppRouter";
-import RuntimeApp from "./runtime/RuntimeApp";
+import TwinPanel from "./components/TwinPanel";
 
-/**
- * Root application shell.
- *
- * Default behavior:
- *   - Renders Blue Lotus (RuntimeApp)
- *
- * New behavior:
- *   - If an app-builder artifact is mounted, render it instead
- */
 export default function App() {
   const [activeArtifact, setActiveArtifact] = useState(null);
 
   /**
-   * Called by RuntimeApp when a build completes.
-   * If the artifact is an app-builder, we mount it.
-   */
-  function handleBuildResult(result) {
-    if (result?.artifact?.kind === "app-builder") {
-      setActiveArtifact(result.artifact);
-    }
-  }
-
-  /**
-   * If a builder is active, render its App.jsx dynamically.
-   * For now, this is a simple placeholder shell that proves mounting works.
-   * (We will wire real execution next.)
+   * Temporary mount view for generated app builders.
+   * This proves execution without breaking the runtime.
    */
   if (activeArtifact?.kind === "app-builder") {
     return (
@@ -47,11 +26,15 @@ export default function App() {
   }
 
   /**
-   * Default: render Blue Lotus runtime
+   * Default Blue Lotus UI
    */
   return (
-    <RuntimeApp onBuildResult={handleBuildResult}>
-      <AppRouter />
-    </RuntimeApp>
+    <TwinPanel
+      onBuild={(result) => {
+        if (result?.artifact?.kind === "app-builder") {
+          setActiveArtifact(result.artifact);
+        }
+      }}
+    />
   );
 }
