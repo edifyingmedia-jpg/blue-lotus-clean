@@ -1,48 +1,36 @@
-import { parseCommandToBlueprint } from "./brain/parsecommand.js";
-import { validateBlueprintOrThrow } from "./brain/QualityGate.js";
-import { generateFromBlueprint } from "./brain/GeneratorEngine.js";
+import { generateBuilder } from "../builder/generate";
 
-export function execute(command, authority) {
+export function execute(input, authority) {
   if (!authority?.isOwner) {
-    return { type: "error", message: "Unauthorized: owner access required." };
-  }
-
-  const text = String(command || "").trim();
-  if (!text) return { type: "noop", message: "No command provided." };
-
-  let blueprint;
-  try {
-    blueprint = parseCommandToBlueprint(text);
-  } catch (e) {
     return {
       type: "error",
-      message: `Parse error: ${e?.message || "Unknown error"}`
+      message: "Unauthorized: owner access required."
     };
   }
 
-  if (blueprint.intent === "help") {
+  const text = String(input || "").toLowerCase();
+
+  if (text.includes("build") && text.includes("app builder")) {
+    const nameMatch =
+      input.match(/called\s+["']?([^"']+)["']?/i) ||
+      input.match(/named\s+["']?([^"']+)["']?/i);
+
+    const appName = nameMatch?.[1]?.trim() || "untitled-builder";
+
+    const artifact = generateBuilder({
+      appName,
+      templateId: "builder-core"
+    });
+
     return {
-      type: "info",
-      message:
-        'Try: "Build an app builder called Lotus Forge" or "Build an app called My Storefront using dashboard".'
+      type: "build",
+      message: `Built: ${artifact.appName} (${artifact.kind}) using template "${artifact.templateId}".`,
+      artifact
     };
   }
-
-  try {
-    validateBlueprintOrThrow(blueprint);
-  } catch (e) {
-    return {
-      type: "error",
-      message: `QualityGate failed: ${e?.message || "Invalid blueprint"}`
-    };
-  }
-
-  const artifact = generateFromBlueprint(blueprint);
 
   return {
-    type: "build",
-    message: `Built: ${artifact.appName} (${artifact.kind}) using template "${artifact.templateId}".`,
-    artifact,
-    blueprint
+    type: "message",
+    message: "I didn't understand that command."
   };
 }
