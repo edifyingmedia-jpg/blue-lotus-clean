@@ -1,18 +1,15 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-export default function TwinPanel({ artifact }) {
+export function TwinPanel({ artifact }) {
+  const files = useMemo(() => artifact?.files || {}, [artifact]);
+  const fileNames = useMemo(() => Object.keys(files), [files]);
+
   const [selectedFile, setSelectedFile] = useState(null);
 
-  if (!artifact) {
-    return (
-      <div style={{ padding: 24, color: "#94a3b8" }}>
-        TWIN: Ready. Try: "Build an app builder called Lotus Forge".
-      </div>
-    );
-  }
-
-  const files = artifact.files || {};
-  const fileNames = Object.keys(files);
+  useEffect(() => {
+    if (!selectedFile && fileNames.length) setSelectedFile(fileNames[0]);
+    if (selectedFile && !files[selectedFile]) setSelectedFile(fileNames[0] || null);
+  }, [fileNames, files, selectedFile]);
 
   return (
     <div
@@ -20,6 +17,7 @@ export default function TwinPanel({ artifact }) {
         display: "grid",
         gridTemplateColumns: "240px 1fr",
         height: "100%",
+        minHeight: "100vh",
         background: "#020617",
         color: "#e2e8f0",
       }}
@@ -44,25 +42,29 @@ export default function TwinPanel({ artifact }) {
           Generated Files
         </div>
 
-        {fileNames.map((name) => (
-          <div
-            key={name}
-            onClick={() => setSelectedFile(name)}
-            style={{
-              padding: "6px 8px",
-              cursor: "pointer",
-              borderRadius: 4,
-              background:
-                selectedFile === name ? "#1e293b" : "transparent",
-              color:
-                selectedFile === name ? "#e2e8f0" : "#94a3b8",
-              fontFamily: "monospace",
-              fontSize: 13,
-            }}
-          >
-            {name}
+        {fileNames.length ? (
+          fileNames.map((name) => (
+            <div
+              key={name}
+              onClick={() => setSelectedFile(name)}
+              style={{
+                padding: "6px 8px",
+                cursor: "pointer",
+                borderRadius: 4,
+                background: selectedFile === name ? "#1e293b" : "transparent",
+                color: selectedFile === name ? "#e2e8f0" : "#94a3b8",
+                fontFamily: "monospace",
+                fontSize: 13,
+              }}
+            >
+              {name}
+            </div>
+          ))
+        ) : (
+          <div style={{ color: "#64748b", fontSize: 13, lineHeight: 1.4 }}>
+            TWIN: Ready. Try: "Build an app builder called Lotus Forge".
           </div>
-        ))}
+        )}
       </div>
 
       {/* File Viewer */}
@@ -82,7 +84,8 @@ export default function TwinPanel({ artifact }) {
 
             <pre
               style={{
-                background: "#020617",
+                background: "#0b1220",
+                border: "1px solid #1e293b",
                 color: "#e2e8f0",
                 padding: 16,
                 borderRadius: 6,
@@ -96,10 +99,12 @@ export default function TwinPanel({ artifact }) {
           </>
         ) : (
           <div style={{ color: "#64748b" }}>
-            Select a file to view its contents.
+            Build something to view generated files.
           </div>
         )}
       </div>
     </div>
   );
 }
+
+export default TwinPanel;
