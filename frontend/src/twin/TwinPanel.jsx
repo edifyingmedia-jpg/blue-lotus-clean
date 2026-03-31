@@ -5,7 +5,10 @@ export default function TwinPanel({
   authority = { isOwner: false, actorId: null, ownerId: null, scope: "unknown" }
 }) {
   const [messages, setMessages] = useState(() => [
-    { role: "assistant", content: 'Ready. Try: "Build an app builder called Lotus Forge".' }
+    {
+      role: "assistant",
+      content: 'Ready. Try: "Build an app builder called Lotus Forge".'
+    }
   ]);
   const [input, setInput] = useState("");
   const [artifact, setArtifact] = useState(null);
@@ -47,7 +50,8 @@ export default function TwinPanel({
 
     if (result?.type === "build" && result?.artifact?.files) {
       setArtifact(result.artifact);
-      const first = Object.keys(result.artifact.files).sort()[0] || null;
+      const first =
+        Object.keys(result.artifact.files).sort()[0] || null;
       setActiveFile(first);
     }
   };
@@ -69,6 +73,7 @@ export default function TwinPanel({
         gridTemplateColumns: artifact ? "380px 1fr" : "1fr"
       }}
     >
+      {/* Chat Panel */}
       <div
         style={{
           borderRight: artifact ? "1px solid #1e293b" : "none",
@@ -138,6 +143,7 @@ export default function TwinPanel({
         </div>
       </div>
 
+      {/* Workspace */}
       {artifact && (
         <div
           style={{
