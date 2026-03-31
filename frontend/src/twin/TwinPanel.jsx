@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { execute } from "../runtime/ActionEngine";
 
 export default function TwinPanel({
   authority = {
@@ -9,59 +10,84 @@ export default function TwinPanel({
   },
   onBuild = () => {}
 }) {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
   const [ready, setReady] = useState(false);
+  const [messages, setMessages] = useState(() => [
+    {
+      role: "assistant",
+      content:
+        "TWIN online. Give me a build command like: “Build an app builder for X.”"
+    }
+  ]);
+  const [input, setInput] = useState("");
 
   useEffect(() => {
     setReady(true);
   }, []);
 
+  const safeAuthority = useMemo(() => {
+    const a = authority || {};
+    return {
+      isOwner: !!a.isOwner,
+      actorId: a.actorId ?? null,
+      ownerId: a.ownerId ?? null,
+      scope: a.scope ?? "unknown"
+    };
+  }, [authority]);
+
+  const append = (role, content) => {
+    setMessages(prev => [...prev, { role, content }]);
+  };
+
+  const handleSend = () => {
+    const text = (input || "").trim();
+    if (!text) return;
+
+    setInput("");
+    append("user", text);
+
+    let result;
+    try {
+      result = execute(text, safeAuthority);
+    } catch (e) {
+      append(
+        "assistant",
+        `Runtime error in ActionEngine: ${e?.message || "Unknown error"}`
+      );
+      return;
+    }
+
+    const message =
+      result?.message ||
+      "No response returned from ActionEngine. Check execute() return shape.";
+
+    append("assistant", message);
+
+    if (result?.type === "build") {
+      try {
+        onBuild(result);
+      } catch (e) {
+        append(
+          "assistant",
+          `Build handler error: ${e?.message || "Unknown error"}`
+        );
+      }
+    }
+  };
+
+  const handleKeyDown = e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   if (!ready) {
     return (
-      <div style={{ color: "white", padding: "40px" }}>
+      <div style={{ minHeight: "100vh", background: "#020617", color: "white", padding: "40px" }}>
         Initializing TWIN…
       </div>
     );
   }
-
-  const isBuildIntent = text =>
-    /build|create|generate|app|builder/i.test(text);
-
-  const handleSend = () => {
-    if (!input.trim()) return;
-
-    const userText = input.trim();
-
-    setMessages(prev => [
-      ...prev,
-      { role: "user", content: userText }
-    ]);
-
-    setInput("");
-
-    setTimeout(() => {
-      if (isBuildIntent(userText)) {
-        setMessages(prev => [
-          ...prev,
-          {
-            role: "assistant",
-            content:
-              "Build intent detected. Preparing app‑level scaffold proposal."
-          }
-        ]);
-      } else {
-        setMessages(prev => [
-          ...prev,
-          {
-            role: "assistant",
-            content:
-              "Acknowledged. Please provide an explicit build instruction."
-          }
-        ]);
-      }
-    }, 300);
-  };
 
   return (
     <div
@@ -77,23 +103,17 @@ export default function TwinPanel({
         style={{
           padding: "16px",
           borderBottom: "1px solid #1e293b",
-          fontWeight: "bold"
+          fontWeight: 700
         }}
       >
         TWIN — Owner Forge
       </div>
 
-      <div
-        style={{
-          flex: 1,
-          padding: "16px",
-          overflowY: "auto"
-        }}
-      >
-        {messages.map((msg, idx) => (
-          <div key={idx} style={{ marginBottom: "12px" }}>
-            <strong>{msg.role === "user" ? "You" : "TWIN"}:</strong>{" "}
-            {msg.content}
+      <div style={{ flex: 1, padding: "16px", overflowY: "auto" }}>
+        {messages.map((m, i) => (
+          <div key={i} style={{ marginBottom: "12px", lineHeight: 1.4 }}>
+            <strong>{m.role === "user" ? "You" : "TWIN"}:</strong>{" "}
+            <span>{m.content}</span>
           </div>
         ))}
       </div>
@@ -106,16 +126,20 @@ export default function TwinPanel({
           gap: "8px"
         }}
       >
-        <input
+        <textarea
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder="Type a command…"
+          onKeyDown={handleKeyDown}
+          placeholder='Try: "Build an app builder for landing pages"'
+          rows={2}
           style={{
             flex: 1,
             padding: "10px",
             background: "#020617",
             color: "white",
-            border: "1px solid #334155"
+            border: "1px solid #334155",
+            resize: "none",
+            outline: "none"
           }}
         />
         <button
@@ -125,7 +149,8 @@ export default function TwinPanel({
             background: "#2563eb",
             color: "white",
             border: "none",
-            cursor: "pointer"
+            cursor: "pointer",
+            fontWeight: 600
           }}
         >
           Send
