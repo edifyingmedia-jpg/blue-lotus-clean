@@ -1,17 +1,20 @@
+import TwinPanel from "../twin/TwinPanel";
+
 export default function SignInGate() {
+  const session = {
+    userId: "owner",
+    email: "tiffany@owner"
+  };
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#020617",
-        color: "white",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "24px"
+    <TwinPanel
+      authority={{
+        isOwner: true,
+        actorId: session.userId,
+        ownerId: session.userId,
+        scope: "owner"
       }}
-    >
-      Forge Loaded
-    </div>
+      onBuild={() => {}}
+    />
   );
 }
