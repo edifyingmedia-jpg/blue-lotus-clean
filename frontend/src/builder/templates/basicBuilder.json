@@ -1,28 +1,36 @@
 {
-  "meta": {
-    "name": "basic-builder",
-    "version": "0.1.0",
-    "description": "A minimal, self-contained builder template using Card and Button primitives",
-    "createdAt": "2026-04-01T00:00:00.000Z"
-  },
+  "name": "basic-builder",
+  "label": "Basic Builder",
+  "description": "A minimal starter builder template for Blue Lotus.",
   "manifest": [
-    {
-      "name": "Card",
-      "label": "Card",
-      "description": "A simple container with a title and content area.",
-      "props": {
-        "title": "Card Title",
-        "children": "Card content goes here."
-      }
-    },
     {
       "name": "Button",
       "label": "Button",
-      "description": "A clickable button with text.",
+      "description": "A clickable button component.",
       "props": {
-        "children": "Click me",
-        "variant": "primary",
-        "size": "md"
+        "text": {
+          "type": "string",
+          "default": "Click me"
+        },
+        "variant": {
+          "type": "string",
+          "default": "primary"
+        }
+      }
+    },
+    {
+      "name": "Card",
+      "label": "Card",
+      "description": "A simple container card.",
+      "props": {
+        "title": {
+          "type": "string",
+          "default": "Card Title"
+        },
+        "body": {
+          "type": "string",
+          "default": "Card content goes here."
+        }
       }
     }
   ],
@@ -31,29 +39,21 @@
       "background": "#071018",
       "surface": "#0b1220",
       "text": "#e6eef2",
-      "muted": "#9aa6b2",
-      "primary": "#06b6d4",
-      "primaryAlt": "#0ea5a4",
-      "border": "rgba(255,255,255,0.06)"
+      "primary": "#06b6d4"
     },
-    "spacing": { "xs": 4, "sm": 8, "md": 16, "lg": 24, "xl": 40 },
-    "radius": { "sm": 6, "md": 8, "lg": 12 },
-    "type": { "base": 14, "scale": [12, 14, 16, 20, 24] },
-    "elevation": { "low": "0 4px 10px rgba(2,6,10,0.35)", "med": "0 6px 18px rgba(2,6,10,0.45)" }
+    "spacing": {
+      "sm": 8,
+      "md": 16,
+      "lg": 24
+    }
   },
   "nodes": [
     {
-      "id": "n-1",
       "type": "Card",
-      "props": { "title": "Welcome to Blue Lotus", "children": "Use this template to create apps and new builders." },
-      "children": [
-        {
-          "id": "n-2",
-          "type": "Button",
-          "props": { "children": "Get started", "variant": "primary", "size": "md" },
-          "children": []
-        }
-      ]
+      "props": {
+        "title": "Welcome",
+        "body": "This is your starter builder template."
+      }
     }
   ]
 }
