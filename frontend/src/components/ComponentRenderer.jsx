@@ -1,45 +1,17 @@
+// frontend/src/components/ComponentRenderer.jsx
 import React from "react";
-import { formatValue } from "../utils";
-import { COMPONENT_TYPES } from "./ComponentRegistry.js";
+import componentRegistry from "./ComponentRegistry";
 
-export function ComponentRenderer({ component }) {
-  if (!component) {
-    return null;
+export default function ComponentRenderer({ name, props }) {
+  const Comp = componentRegistry[name];
+  if (!Comp) {
+    return (
+      <div style={{ color: "#fff", padding: 12, background: "#111" }}>
+        Unknown component: {name}
+      </div>
+    );
   }
-
-  const { type, props } = component;
-
-  switch (type) {
-    case "text":
-      return (
-        <div style={{ marginBottom: 12 }}>
-          {formatValue(props.text || COMPONENT_TYPES.text.defaultProps.text)}
-        </div>
-      );
-
-    case "button":
-      return (
-        <button
-          style={{ marginBottom: 12, padding: "8px 16px" }}
-        >
-          {formatValue(props.label || COMPONENT_TYPES.button.defaultProps.label)}
-        </button>
-      );
-
-    case "image":
-      return (
-        <img
-          src={props.src || COMPONENT_TYPES.image.defaultProps.src}
-          alt=""
-          style={{ maxWidth: "100%", marginBottom: 12 }}
-        />
-      );
-
-    default:
-      return (
-        <div style={{ marginBottom: 12 }}>
-          Unknown component: {type}
-        </div>
-      );
-  }
+  return <Comp {...(props || {})} />;
 }
+
+export { ComponentRenderer };
