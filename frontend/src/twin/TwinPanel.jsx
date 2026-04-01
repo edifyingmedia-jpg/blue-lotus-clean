@@ -4,7 +4,10 @@ import "./TwinPanel.css";
 export default function TwinPanel({ artifact, onBuild }) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([
-    { role: "twin", text: 'TWIN: Ready. Try "Build an app builder called Lotus Forge".' }
+    {
+      role: "twin",
+      text: 'TWIN: Ready. Try "Build an app builder called Lotus Forge".'
+    }
   ]);
 
   const handleSubmit = () => {
@@ -31,18 +34,35 @@ export default function TwinPanel({ artifact, onBuild }) {
         ))}
       </div>
 
-      <div className="twin-input">
+      <div className="twin-inputRow">
         <textarea
+          className="twin-textarea"
           value={input}
+          rows={4}
+          placeholder='Try: "Build an app builder called Lotus Forge"'
           onChange={(e) => setInput(e.target.value)}
+          onInput={(e) => {
+            e.target.style.height = "auto";
+            e.target.style.height = `${Math.min(
+              e.target.scrollHeight,
+              240
+            )}px`;
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               handleSubmit();
             }
           }}
-          placeholder='Try: "Build an app builder called Lotus Forge"'
         />
+
+        <button
+          className="twin-send"
+          onClick={handleSubmit}
+          disabled={!input.trim()}
+        >
+          Send
+        </button>
       </div>
     </div>
   );
