@@ -6,9 +6,12 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "lint": "eslint ./src --ext .js,.jsx",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "lint": "eslint . --ext .js,.jsx"
+    "test:a11y": "axe --exit",
+    "build:storybook": "build-storybook -o storybook-static",
+    "validate:templates": "node scripts/validate-templates.js",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -16,7 +19,10 @@
   },
   "devDependencies": {
     "react-scripts": "5.0.1",
-    "eslint": "^8.45.0"
+    "eslint": "^8.45.0",
+    "axe-core": "^4.7.0",
+    "@storybook/react": "^7.6.0",
+    "@storybook/addon-essentials": "^7.6.0"
   },
   "browserslist": [
     ">0.2%",
