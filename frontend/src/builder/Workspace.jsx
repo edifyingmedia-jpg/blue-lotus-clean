@@ -1,30 +1,23 @@
-export default function Workspace({ content }) {
+export default function Workspace() {
   return (
     <div
       style={{
-        height: "100%",
+        backgroundColor: "#202020",
+        borderRadius: "12px",
         padding: "32px",
-        boxSizing: "border-box",
-        background: "#f4f4f4",
-        fontFamily: "system-ui, sans-serif",
+        color: "#fff",
+        boxShadow: "0 0 20px rgba(0,0,0,0.4)",
+        minHeight: "100%",
       }}
     >
-      <div
-        style={{
-          height: "100%",
-          borderRadius: "12px",
-          background: "#fff",
-          border: "1px solid #ddd",
-          padding: "24px",
-          boxSizing: "border-box",
-        }}
-      >
-        {content ? (
-          <pre style={{ whiteSpace: "pre-wrap" }}>{content}</pre>
-        ) : (
-          <div style={{ color: "#666" }}>Workspace idle.</div>
-        )}
-      </div>
+      <h1 style={{ marginBottom: "12px" }}>Workspace</h1>
+      <p style={{ opacity: 0.75, marginBottom: "8px" }}>
+        Workspace ready. No app loaded yet.
+      </p>
+      <p style={{ opacity: 0.6, fontSize: "13px" }}>
+        In later phases, this surface will render live Blue Lotus apps generated
+        from TWIN instructions.
+      </p>
     </div>
   );
 }
