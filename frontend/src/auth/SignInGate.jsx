@@ -1,9 +1,9 @@
 import TwinPanel from "../twin/TwinPanel";
 
-export default function SignInGate() {
+export default function SignInGate({ onSend }) {
   const session = {
     userId: "owner",
-    email: "tiffany@owner"
+    email: "tiffany@owner",
   };
 
   return (
@@ -12,9 +12,9 @@ export default function SignInGate() {
         isOwner: true,
         actorId: session.userId,
         ownerId: session.userId,
-        scope: "owner"
+        scope: "owner",
       }}
-      onBuild={() => {}}
+      onSend={onSend}
     />
   );
 }
