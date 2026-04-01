@@ -1,0 +1,4 @@
+[
+  { "name": "Button", "label": "Button", "props": { "children": "Click" } },
+  { "name": "Card", "label": "Card", "props": { "title": "Sample Card" } }
+]
