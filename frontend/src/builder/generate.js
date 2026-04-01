@@ -1,57 +1,55 @@
 // frontend/src/builder/generate.js
+import { loadManifest } from "./registry";
 
-import { builderCoreTemplate } from "./templates";
+/**
+ * generateBuilder returns a tiny builder API the UI can call.
+ * This is intentionally small: it exposes `renderSpec` and `createApp`.
+ *
+ * - renderSpec(spec): returns a renderable spec for the workspace
+ * - createApp(meta, spec): placeholder that returns a saved object (no backend)
+ *
+ * The builder UI can call generateBuilder().renderSpec(...) to convert
+ * a simple JSON description into something the workspace can render.
+ */
 
-export function generateBuilder(input) {
-  const name = normalizeName(input);
-  return builderCoreTemplate(name);
+export async function generateBuilder() {
+  const manifest = await loadManifest();
+
+  function findComponent(name) {
+    return manifest.find((m) => m.name === name) || null;
+  }
+
+  function renderSpec(spec) {
+    // spec example:
+    // { type: "Card", props: { title: "Hello" }, children: [{ type: "Button", props: { children: "Click me" } }] }
+    if (!spec) return null;
+    const node = {
+      name: spec.type,
+      props: spec.props || {},
+      children: Array.isArray(spec.children)
+        ? spec.children.map((c) => renderSpec(c))
+        : [],
+    };
+    return node;
+  }
+
+  async function createApp(meta = {}, spec = {}) {
+    // Minimal in-memory "save" that returns an object the UI can preview.
+    const app = {
+      id: `local-${Date.now()}`,
+      meta,
+      spec,
+      createdAt: new Date().toISOString(),
+    };
+    return app;
+  }
+
+  return {
+    manifest,
+    findComponent,
+    renderSpec,
+    createApp,
+  };
 }
 
 export default generateBuilder;
-
-function normalizeName(input) {
-  if (!input) return "Lotus Builder";
-
-  // Accept either a string prompt or an object payload
-  const raw =
-    typeof input === "string"
-      ? input
-      : typeof input === "object" && input !== null
-      ? input.name || input.title || input.prompt || ""
-      : "";
-
-  const extracted = extractBuilderName(raw);
-  return extracted || "Lotus Builder";
-}
-
-function extractBuilderName(text) {
-  const t = String(text || "").trim();
-  if (!t) return "";
-
-  // Examples:
-  // "Build an app builder called Lotus Forge"
-  // "Create a builder named Lotus Forge"
-  // "app builder: Lotus Forge"
-  const patterns = [
-    /app builder called\s+["']?([^"'\n]+)["']?/i,
-    /builder called\s+["']?([^"'\n]+)["']?/i,
-    /builder named\s+["']?([^"'\n]+)["']?/i,
-    /app builder:\s*["']?([^"'\n]+)["']?/i,
-    /^["']?([^"'\n]+)["']?$/i,
-  ];
-
-  for (const re of patterns) {
-    const m = t.match(re);
-    if (m && m[1]) return cleanName(m[1]);
-  }
-
-  return "";
-}
-
-function cleanName(name) {
-  return String(name)
-    .replace(/\s+/g, " ")
-    .replace(/[^\w\s\-]/g, "")
-    .trim()
-    .slice(0, 60);
-}
