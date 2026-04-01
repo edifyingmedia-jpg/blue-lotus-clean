@@ -3,7 +3,7 @@ import React from "react";
 import componentRegistry from "./ComponentRegistry";
 
 export default function ComponentRenderer({ name, props }) {
-  const Comp = componentRegistry[name];
+  const Comp = componentRegistry && componentRegistry[name];
   if (!Comp) {
     return (
       <div style={{ color: "#fff", padding: 12, background: "#111" }}>
