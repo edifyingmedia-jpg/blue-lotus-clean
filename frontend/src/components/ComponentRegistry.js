@@ -1,4 +1,5 @@
 // frontend/src/components/ComponentRegistry.js
+
 /**
  * ComponentRegistry
  *
@@ -7,7 +8,13 @@
  *   at runtime (e.g., when a template provides its own manifest and component set).
  *
  * Usage:
- *   import { getComponent, registerComponent, componentNames } from './components/ComponentRegistry';
+ *   import componentRegistry, {
+ *     getComponent,
+ *     registerComponent,
+ *     registerComponents,
+ *     componentNames
+ *   } from './ComponentRegistry';
+ *
  *   const Cmp = getComponent('Button');
  *   registerComponent('MyWidget', MyWidget);
  */
@@ -45,10 +52,17 @@ export function componentNames() {
   return Object.keys(registry);
 }
 
-/** Export the registry for advanced use (read-only recommended) */
-export default {
+/**
+ * Default export:
+ * A stable object exposing the registry API.
+ * This is what you should import when you see:
+ *   import componentRegistry from "../components/ComponentRegistry";
+ */
+const componentRegistry = {
   getComponent,
   registerComponent,
   registerComponents,
   componentNames,
 };
+
+export default componentRegistry;
