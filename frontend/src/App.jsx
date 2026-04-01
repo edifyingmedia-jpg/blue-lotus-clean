@@ -1,7 +1,10 @@
+import { useState } from "react";
 import SignInGate from "./auth/SignInGate";
 import Workspace from "./builder/Workspace";
 
 export default function App() {
+  const [workspaceContent, setWorkspaceContent] = useState(null);
+
   return (
     <div
       style={{
@@ -11,7 +14,7 @@ export default function App() {
         overflow: "hidden",
       }}
     >
-      {/* TWIN PANEL (AUTH + CONTROL) */}
+      {/* TWIN PANEL */}
       <div
         style={{
           width: "420px",
@@ -22,11 +25,11 @@ export default function App() {
           backgroundColor: "#000",
         }}
       >
-        <SignInGate />
+        <SignInGate onSend={setWorkspaceContent} />
       </div>
 
-      {/* WORKSPACE (APP SURFACE) */}
-      <Workspace />
+      {/* WORKSPACE */}
+      <Workspace content={workspaceContent} />
     </div>
   );
 }
