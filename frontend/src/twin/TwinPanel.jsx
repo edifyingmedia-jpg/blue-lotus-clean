@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-export default function TwinPanel({ artifact, onSubmit }) {
+export default function TwinPanel({ artifact, onBuild }) {
   const [input, setInput] = useState("");
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (input.trim()) {
-        onSubmit(input.trim());
+        onBuild(input.trim());
         setInput("");
       }
     }
