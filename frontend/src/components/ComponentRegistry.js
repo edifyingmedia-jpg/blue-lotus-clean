@@ -1,25 +1,10 @@
-// ComponentRegistry.js
-// Central registry of all supported component types.
+// frontend/src/components/ComponentRegistry.js
+import Button from "./Button";
+import Card from "./Card";
 
-export const COMPONENT_TYPES = {
-  text: {
-    label: "Text",
-    defaultProps: {
-      text: "Text"
-    }
-  },
-
-  button: {
-    label: "Button",
-    defaultProps: {
-      label: "Button"
-    }
-  },
-
-  image: {
-    label: "Image",
-    defaultProps: {
-      src: ""
-    }
-  }
+export const componentRegistry = {
+  Button,
+  Card,
 };
+
+export default componentRegistry;
