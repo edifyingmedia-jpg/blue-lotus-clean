@@ -1,0 +1,166 @@
+# .github/workflows/ci.yml
+name: CI / Build / Deploy
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: 18
+
+jobs:
+  setup:
+    name: Setup and Install
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-node.outputs.cache-hit }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Cache node modules
+        id: cache-node
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci
+
+  lint-and-test:
+    name: Lint, Test, Accessibility
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm test -- --ci --reporters=default
+
+      - name: Run accessibility checks (axe)
+        run: npm run test:a11y || true
+        # test:a11y should exit non-zero on critical failures in your local config;
+        # CI can be configured to fail here by removing "|| true" once stable.
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+      - name: Build Storybook (for visual review)
+        run: npm run build:storybook
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-build
+          path: |
+            build
+            storybook-static
+
+  visual-regression:
+    name: Visual regression (optional)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' || github.event.pull_request
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site-build
+          path: ./artifacts
+
+      - name: Run visual regression (example harness)
+        run: |
+          # Placeholder: integrate Percy/Chromatic or local image-diff script
+          echo "Run visual regression here (Percy/Chromatic or custom)."
+
+  deploy:
+    name: Deploy to Netlify (preview & production)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Netlify CLI
+        run: npm ci --no-audit --no-fund && npm install -g netlify-cli
+
+      - name: Deploy to Netlify (preview for PRs)
+        if: github.event_name == 'pull_request'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          # Deploy the build folder as a preview deploy and print the URL
+          netlify deploy --dir=build --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN --message="PR #${{ github.event.pull_request.number }} preview"
+
+      - name: Deploy to Netlify (production on push to main)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          netlify deploy --dir=build --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN --prod --message="Deploy from CI: $GITHUB_SHA"
+
+  publish-templates:
+    name: Validate and Publish Templates
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate templates
+        run: |
+          # Validate JSON templates against builderSpecSchema (implement script)
+          npm run validate:templates
+
+      - name: Publish templates to registry (optional)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          # Placeholder: push templates to a registry, GitHub Pages, or S3
+          echo "Publishing templates to registry (implement registry publish step)."
