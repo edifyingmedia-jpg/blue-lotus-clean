@@ -1,7 +1,7 @@
 // frontend/src/components/Button.jsx
 import React from "react";
 
-export default function Button({ children = "Button", onClick }) {
+export default function Button({ children = "Button", onClick, style }) {
   return (
     <button
       onClick={onClick}
@@ -12,6 +12,8 @@ export default function Button({ children = "Button", onClick }) {
         background: "#0ea5a4",
         color: "#fff",
         cursor: "pointer",
+        fontSize: 14,
+        ...style,
       }}
     >
       {children}
