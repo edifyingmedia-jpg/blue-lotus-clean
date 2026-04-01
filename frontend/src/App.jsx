@@ -8,27 +8,25 @@ export default function App() {
   return (
     <div
       style={{
-        display: "flex",
+        display: "grid",
+        gridTemplateColumns: "420px 1fr",
         height: "100vh",
         width: "100vw",
         overflow: "hidden",
       }}
     >
-      {/* TWIN PANEL */}
+      {/* LEFT: TWIN PANEL (FIXED WIDTH) */}
       <div
         style={{
-          width: "420px",
-          display: "flex",
-          flexDirection: "column",
           height: "100%",
-          borderRight: "1px solid #222",
           backgroundColor: "#000",
+          borderRight: "1px solid #222",
         }}
       >
         <SignInGate onSend={setWorkspaceContent} />
       </div>
 
-      {/* WORKSPACE */}
+      {/* RIGHT: WORKSPACE (FULL REMAINING WIDTH) */}
       <Workspace content={workspaceContent} />
     </div>
   );
