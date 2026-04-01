@@ -14,6 +14,7 @@ export default function SignInGate() {
         ownerId: session.userId,
         scope: "owner"
       }}
+      onBuild={() => {}}
     />
   );
 }
