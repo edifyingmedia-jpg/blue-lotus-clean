@@ -1,64 +1,29 @@
-export default function Workspace({ artifact }) {
-  if (!artifact) {
-    return (
-      <div
-        style={{
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#64748b",
-          fontSize: 14,
-        }}
-      >
-        Generated apps will appear here.
-      </div>
-    );
-  }
-
-  const entry =
-    artifact.files["src/main.jsx"] ||
-    artifact.files["src/App.jsx"] ||
-    Object.values(artifact.files)[0];
-
+export default function Workspace({ content }) {
   return (
     <div
       style={{
         height: "100%",
-        padding: 24,
-        overflow: "auto",
-        background: "#0b1220",
+        padding: "32px",
+        boxSizing: "border-box",
+        background: "#f4f4f4",
+        fontFamily: "system-ui, sans-serif",
       }}
     >
       <div
         style={{
-          marginBottom: 12,
-          fontSize: 13,
-          color: "#94a3b8",
-          fontFamily: "monospace",
+          height: "100%",
+          borderRadius: "12px",
+          background: "#fff",
+          border: "1px solid #ddd",
+          padding: "24px",
+          boxSizing: "border-box",
         }}
       >
-        App Preview
-      </div>
-
-      <div
-        style={{
-          border: "1px solid #1e293b",
-          borderRadius: 8,
-          padding: 16,
-          background: "#020617",
-        }}
-      >
-        <pre
-          style={{
-            fontSize: 13,
-            lineHeight: 1.5,
-            whiteSpace: "pre-wrap",
-            color: "#e2e8f0",
-          }}
-        >
-          {entry}
-        </pre>
+        {content ? (
+          <pre style={{ whiteSpace: "pre-wrap" }}>{content}</pre>
+        ) : (
+          <div style={{ color: "#666" }}>Workspace idle.</div>
+        )}
       </div>
     </div>
   );
