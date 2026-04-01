@@ -1,4 +1,19 @@
 [
-  { "name": "Button", "label": "Button", "props": { "children": "Click" } },
-  { "name": "Card", "label": "Card", "props": { "title": "Sample Card" } }
+  {
+    "name": "Card",
+    "label": "Card",
+    "description": "A simple container with a title and content area.",
+    "props": {
+      "title": "Card Title",
+      "children": "Card content goes here."
+    }
+  },
+  {
+    "name": "Button",
+    "label": "Button",
+    "description": "A clickable button with text.",
+    "props": {
+      "children": "Click me"
+    }
+  }
 ]
