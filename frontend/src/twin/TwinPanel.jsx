@@ -1,68 +1,55 @@
 import { useState } from "react";
 import "./TwinPanel.css";
 
-export default function TwinPanel({ artifact, onBuild }) {
-  const [input, setInput] = useState("");
+export default function TwinPanel() {
   const [messages, setMessages] = useState([
     {
-      role: "twin",
-      text: 'TWIN: Ready. Try "Build an app builder called Lotus Forge".'
-    }
+      role: "ai",
+      text: "TWIN is online. This panel will later control app generation and workspace behavior.",
+    },
   ]);
+  const [input, setInput] = useState("");
 
-  const handleSubmit = () => {
+  const sendMessage = () => {
     if (!input.trim()) return;
 
-    const userMessage = { role: "user", text: input.trim() };
-    const twinReply = {
-      role: "twin",
-      text: "Acknowledged. Builder generation pipeline will be connected next."
-    };
-
-    setMessages((prev) => [...prev, userMessage, twinReply]);
-    onBuild(input.trim());
+    setMessages((prev) => [...prev, { role: "user", text: input }]);
     setInput("");
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   };
 
   return (
     <div className="twin-panel">
+      <div className="twin-header">
+        <div className="twin-title">TWIN Console</div>
+        <div className="twin-subtitle">Owner runtime control surface</div>
+      </div>
+
       <div className="twin-messages">
         {messages.map((m, i) => (
-          <div key={i} className="twin-message">
+          <div
+            key={i}
+            className={`twin-msg ${m.role === "user" ? "user" : "ai"}`}
+          >
             {m.text}
           </div>
         ))}
       </div>
 
-      <div className="twin-inputRow">
+      <div className="twin-input-bar">
         <textarea
-          className="twin-textarea"
           value={input}
-          rows={4}
-          placeholder='Try: "Build an app builder called Lotus Forge"'
           onChange={(e) => setInput(e.target.value)}
-          onInput={(e) => {
-            e.target.style.height = "auto";
-            e.target.style.height = `${Math.min(
-              e.target.scrollHeight,
-              240
-            )}px`;
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit();
-            }
-          }}
+          onKeyDown={handleKeyDown}
+          placeholder="Type to TWIN (no backend yet — this is a visual console only)..."
         />
-
-        <button
-          className="twin-send"
-          onClick={handleSubmit}
-          disabled={!input.trim()}
-        >
-          Send
-        </button>
+        <button onClick={sendMessage}>Send</button>
       </div>
     </div>
   );
