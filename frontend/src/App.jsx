@@ -18,13 +18,22 @@ export default function App() {
           height: "100%",
           backgroundColor: "#000",
           borderRight: "1px solid #222",
+          padding: "20px",
         }}
       >
         <SignInGate />
       </div>
 
       {/* RIGHT: WORKSPACE (APP SURFACE) */}
-      <Workspace />
+      <div
+        style={{
+          backgroundColor: "#181818",
+          padding: "32px",
+          overflowY: "auto",
+        }}
+      >
+        <Workspace />
+      </div>
     </div>
   );
 }
