@@ -1,63 +1,40 @@
-export default function CanvasRenderer({ app }) {
-  if (!app) {
+// CanvasRenderer.jsx
+// Renders an entire app tree by recursively rendering nodes.
+
+import React from "react";
+import ComponentRenderer from "./ComponentRenderer";
+
+export default function CanvasRenderer({ tree }) {
+  if (!tree) {
     return (
-      <div style={emptyStyle}>
-        <h3>Canvas</h3>
-        <p>No app rendered yet.</p>
+      <div style={{ padding: "12px", color: "#666" }}>
+        No app rendered yet.
       </div>
-    )
+    );
   }
 
   return (
-    <div style={canvasStyle}>
-      <h3>{app.name}</h3>
+    <div style={{ width: "100%", height: "100%" }}>
+      {renderNode(tree)}
+    </div>
+  );
+}
 
-      {app.pages.map((page) => (
-        <div key={page.id} style={pageStyle}>
-          <h4>{page.title}</h4>
+function renderNode(node) {
+  if (!node) return null;
 
-          {page.components.map((c) => (
-            <Component key={c.id} def={c} />
-          ))}
-        </div>
+  // If this is a leaf component
+  if (!node.children || node.children.length === 0) {
+    return <ComponentRenderer node={node} />;
+  }
+
+  // If this component has children, wrap them
+  return (
+    <div>
+      <ComponentRenderer node={node} />
+      {node.children.map((child, index) => (
+        <div key={index}>{renderNode(child)}</div>
       ))}
     </div>
-  )
-}
-
-function Component({ def }) {
-  switch (def.type) {
-    case 'text':
-      return <p>{def.text}</p>
-
-    case 'button':
-      return <button>{def.label}</button>
-
-    case 'video':
-      return (
-        <video controls width="320">
-          <source src={def.src} />
-        </video>
-      )
-
-    default:
-      return <div>Unknown component</div>
-  }
-}
-
-const canvasStyle = {
-  padding: '16px',
-  color: '#e5e7eb'
-}
-
-const pageStyle = {
-  marginBottom: '24px',
-  padding: '12px',
-  border: '1px solid #1e293b',
-  borderRadius: '10px'
-}
-
-const emptyStyle = {
-  padding: '16px',
-  color: '#94a3b8'
+  );
 }
