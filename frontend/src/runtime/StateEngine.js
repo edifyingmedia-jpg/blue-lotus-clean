@@ -1,26 +1,42 @@
-// frontend/src/runtime/StateEngine.js
-
-import componentRegistry from "../components/ComponentRegistry";
-
-export function initializeState(appDefinition) {
-  if (!appDefinition || !appDefinition.state) {
-    return {};
+export default class StateEngine {
+  constructor() {
+    this.state = {};
+    this.listeners = new Set();
   }
 
-  return { ...appDefinition.state };
-}
-
-export function updateState(state, action) {
-  if (!action || !action.type) {
-    return state;
+  init(initialState = {}) {
+    this.state = { ...initialState };
   }
 
-  const handler = componentRegistry.getStateHandler(action.type);
-
-  if (!handler) {
-    console.warn("Unknown state action:", action.type);
-    return state;
+  getState() {
+    return this.state;
   }
 
-  return handler(state, action.payload || {});
+  setState(partial) {
+    if (typeof partial !== "object") return;
+
+    this.state = {
+      ...this.state,
+      ...partial,
+    };
+
+    this.notify();
+  }
+
+  subscribe(fn) {
+    if (typeof fn === "function") {
+      this.listeners.add(fn);
+      return () => this.listeners.delete(fn);
+    }
+  }
+
+  notify() {
+    for (const fn of this.listeners) {
+      try {
+        fn(this.state);
+      } catch (err) {
+        console.error("StateEngine listener error:", err);
+      }
+    }
+  }
 }
