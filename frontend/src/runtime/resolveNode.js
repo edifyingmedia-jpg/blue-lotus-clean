@@ -1,25 +1,32 @@
-// frontend/src/runtime/resolveNode.js
+import React from "react";
+import ComponentRenderer from "./ComponentRenderer";
 
-import componentRegistry from "../components/ComponentRegistry";
+/**
+ * resolveNode
+ * -----------
+ * Takes a node definition and returns a rendered React element.
+ */
 
-export function resolveNode(node) {
-  if (!node || !node.type) {
+export default function resolveNode(node) {
+  if (!node || typeof node !== "object") {
+    console.warn("resolveNode: invalid node:", node);
     return null;
   }
 
-  const Component = componentRegistry.getComponent(node.type);
+  const { type, props = {}, children = [] } = node;
 
-  if (!Component) {
-    return {
-      render: () => (
-        <div style={{ padding: 8, background: "#330000", color: "white" }}>
-          Unknown component: {node.type}
-        </div>
-      ),
-    };
+  // If this is a primitive component, render it directly
+  if (!children || children.length === 0) {
+    return <ComponentRenderer node={node} />;
   }
 
-  return {
-    render: () => <Component {...(node.props || {})} />,
-  };
+  // If this component has children, wrap them
+  return (
+    <div>
+      <ComponentRenderer node={node} />
+      {children.map((child, index) => (
+        <div key={index}>{resolveNode(child)}</div>
+      ))}
+    </div>
+  );
 }
