@@ -1,25 +1,40 @@
 import React from "react";
-import { getComponent } from "./ComponentRegistry";
 
-export default function ComponentRenderer({ node }) {
-  if (!node || !node.type) return null;
-
-  const Component = getComponent(node.type);
-  if (!Component) {
-    return (
-      <div style={{ color: "red", padding: "8px" }}>
-        Unknown component type: {node.type}
-      </div>
-    );
+export default function ComponentRenderer({ component }) {
+  if (!component || typeof component !== "object") {
+    return <div style={{ color: "red" }}>Invalid component</div>;
   }
 
-  try {
-    return <Component {...node.props} />;
-  } catch (err) {
-    return (
-      <div style={{ color: "red", padding: "8px" }}>
-        Error rendering {node.type}: {err.message}
-      </div>
-    );
+  const { type, props } = component;
+
+  switch (type) {
+    case "text":
+      return <p {...props}>{props?.text || ""}</p>;
+
+    case "heading":
+      return <h1 {...props}>{props?.text || ""}</h1>;
+
+    case "button":
+      return (
+        <button
+          {...props}
+          onClick={props?.onClick || (() => console.log("Button clicked"))}
+        >
+          {props?.text || "Button"}
+        </button>
+      );
+
+    case "image":
+      return <img {...props} alt={props?.alt || "image"} />;
+
+    case "input":
+      return <input {...props} />;
+
+    default:
+      return (
+        <div style={{ color: "orange" }}>
+          Unknown component type: {type}
+        </div>
+      );
   }
 }
