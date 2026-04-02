@@ -1,38 +1,33 @@
-import { getTemplateOrThrow } from "./TemplateRegistry";
+// GeneratorEngine.js
+// Responsible for generating code or structures based on templates.
 
-function slugify(name) {
-  return String(name || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "blue-lotus-app";
-}
+import TemplateRegistry from "./TemplateRegistry";
+import QualityGate from "./QualityGate";
 
-export function generateFromBlueprint(blueprint) {
-  const template = getTemplateOrThrow(blueprint.templateId);
-
-  const kind =
-    blueprint.intent === "build_app_builder" ? "app-builder" : "app";
-
-  const appName = slugify(blueprint.name);
-
-  const files = template.generateFiles({
-    name: blueprint.name,
-    appName,
-    kind,
-    templateId: template.id
-  });
-
-  // Hard minimum: app-level scaffold must include these
-  const required = ["index.html", "src/main.jsx", "src/App.jsx"];
-  for (const k of required) {
-    if (!files?.[k]) throw new Error(`Template "${template.id}" missing required file: ${k}`);
+export default class GeneratorEngine {
+  constructor() {
+    this.registry = new TemplateRegistry();
+    this.quality = new QualityGate();
   }
 
-  return {
-    appName,
-    kind,
-    templateId: template.id,
-    files
-  };
+  /**
+   * Generates output from a named template.
+   */
+  generate(templateName, context = {}) {
+    const template = this.registry.get(templateName);
+
+    if (!template) {
+      throw new Error(`Template not found: ${templateName}`);
+    }
+
+    const output = template.render(context);
+
+    const passed = this.quality.validate(output);
+    if (!passed) {
+      throw new Error(`QualityGate failed for template: ${templateName}`);
+    }
+
+    return output;
+  }
 }
+
