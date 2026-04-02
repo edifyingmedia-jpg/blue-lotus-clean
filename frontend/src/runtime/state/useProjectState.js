@@ -1,62 +1,98 @@
-// frontend/src/runtime/state/useProjectState.js
-
 import { useState, useCallback } from "react";
 
 /**
  * useProjectState
- * --------------------------------------------------
- * Centralized state hook for managing the project definition.
- * This powers both the builder and the runtime preview.
+ * ----------------------------------------------------
+ * Manages the active project structure inside the
+ * Blue Lotus runtime + builder environment.
+ *
+ * This includes:
+ * - project metadata
+ * - screens/pages
+ * - components on each screen
+ * - selection helpers
+ * - safe update helpers
  */
 
-export function useProjectState(initialProject) {
+export default function useProjectState(initialProject = null) {
   const [project, setProject] = useState(initialProject);
 
-  /**
-   * Update a component's props
-   */
-  const updateComponentProps = useCallback((pageId, componentId, newProps) => {
-    setProject((prev) => {
-      const pages = prev.pages.map((page) => {
-        if (page.id !== pageId) return page;
-
-        const components = page.components.map((component) => {
-          if (component.id !== componentId) return component;
-          return { ...component, props: { ...component.props, ...newProps } };
-        });
-
-        return { ...page, components };
-      });
-
-      return { ...prev, pages };
-    });
-  }, []);
-
-  /**
-   * Select a component
-   */
-  const selectComponent = useCallback((componentId) => {
+  // -----------------------------
+  // Update project root
+  // -----------------------------
+  const updateProject = useCallback((patch) => {
     setProject((prev) => ({
       ...prev,
-      selectedComponentId: componentId,
+      ...(typeof patch === "function" ? patch(prev) : patch),
     }));
   }, []);
 
-  /**
-   * Change the current page
-   */
-  const setCurrentPage = useCallback((pageId) => {
-    setProject((prev) => ({
+  // -----------------------------
+  // Screen helpers
+  // -----------------------------
+  const addScreen = useCallback((screen) => {
+    updateProject((prev) => ({
       ...prev,
-      currentPageId: pageId,
+      screens: [...(prev?.screens || []), screen],
     }));
-  }, []);
+  }, [updateProject]);
 
+  const updateScreen = useCallback((id, patch) => {
+    updateProject((prev) => ({
+      ...prev,
+      screens: prev.screens.map((s) =>
+        s.id === id ? { ...s, ...(typeof patch === "function" ? patch(s) : patch) } : s
+      ),
+    }));
+  }, [updateProject]);
+
+  const removeScreen = useCallback((id) => {
+    updateProject((prev) => ({
+      ...prev,
+      screens: prev.screens.filter((s) => s.id !== id),
+    }));
+  }, [updateProject]);
+
+  // -----------------------------
+  // Component helpers
+  // -----------------------------
+  const addComponent = useCallback((screenId, component) => {
+    updateScreen(screenId, (screen) => ({
+      ...screen,
+      components: [...(screen.components || []), component],
+    }));
+  }, [updateScreen]);
+
+  const updateComponent = useCallback((screenId, componentId, patch) => {
+    updateScreen(screenId, (screen) => ({
+      ...screen,
+      components: screen.components.map((c) =>
+        c.id === componentId
+          ? { ...c, ...(typeof patch === "function" ? patch(c) : patch) }
+          : c
+      ),
+    }));
+  }, [updateScreen]);
+
+  const removeComponent = useCallback((screenId, componentId) => {
+    updateScreen(screenId, (screen) => ({
+      ...screen,
+      components: screen.components.filter((c) => c.id !== componentId),
+    }));
+  }, [updateScreen]);
+
+  // -----------------------------
+  // Return API
+  // -----------------------------
   return {
     project,
     setProject,
-    updateComponentProps,
-    selectComponent,
-    setCurrentPage,
+    updateProject,
+    addScreen,
+    updateScreen,
+    removeScreen,
+    addComponent,
+    updateComponent,
+    removeComponent,
   };
 }
