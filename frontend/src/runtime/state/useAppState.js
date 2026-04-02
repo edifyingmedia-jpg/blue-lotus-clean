@@ -1,71 +1,30 @@
-// frontend/src/runtime/state/useAppState.js
-
 import { useState, useCallback } from "react";
 
 /**
- * useAppState manages the full app definition.
- * This is the single source of truth for:
- * - pages
- * - components
- * - layout
- * - props
+ * useAppState
+ * ----------------------------------------------------
+ * Lightweight runtime state container for app‑level UI.
+ * This is NOT the builder state — this is for the
+ * running app’s own ephemeral UI state.
  */
 
-export default function useAppState(initialAppDefinition) {
-  const [appDefinition, setAppDefinition] = useState(initialAppDefinition);
+export default function useAppState(initial = {}) {
+  const [state, setState] = useState(initial);
 
-  /**
-   * Replace the entire app definition.
-   */
-  const setApp = useCallback((nextDefinition) => {
-    setAppDefinition(nextDefinition);
-  }, []);
-
-  /**
-   * Update a page by id.
-   */
-  const updatePage = useCallback((pageId, updater) => {
-    setAppDefinition((prev) => ({
+  const update = useCallback((patch) => {
+    setState((prev) => ({
       ...prev,
-      pages: prev.pages.map((page) =>
-        page.id === pageId ? updater(page) : page
-      ),
+      ...(typeof patch === "function" ? patch(prev) : patch),
     }));
   }, []);
 
-  /**
-   * Update a component by id (deep search).
-   */
-  const updateComponent = useCallback((componentId, updater) => {
-    const updateTree = (components) =>
-      components.map((component) => {
-        if (component.id === componentId) {
-          return updater(component);
-        }
-
-        if (component.children) {
-          return {
-            ...component,
-            children: updateTree(component.children),
-          };
-        }
-
-        return component;
-      });
-
-    setAppDefinition((prev) => ({
-      ...prev,
-      pages: prev.pages.map((page) => ({
-        ...page,
-        components: updateTree(page.components),
-      })),
-    }));
-  }, []);
+  const reset = useCallback(() => {
+    setState(initial);
+  }, [initial]);
 
   return {
-    appDefinition,
-    setApp,
-    updatePage,
-    updateComponent,
+    state,
+    update,
+    reset,
   };
 }
