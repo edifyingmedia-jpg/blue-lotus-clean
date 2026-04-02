@@ -1,57 +1,23 @@
-/**
- * StateManager.js
- * ----------------------------------------------------
- * Thin wrapper around StateEngine for components that
- * need direct access to runtime state without prop drilling.
- *
- * Responsibilities:
- *  - Provide get/set/patch helpers
- *  - Expose subscribe/unsubscribe for reactive updates
- *  - Never mutate state directly
- */
-
-import eventBus from "./utils/eventBus";
+import StateEngine from "./StateEngine";
 
 export default class StateManager {
-  constructor(stateEngine) {
-    if (!stateEngine) {
-      throw new Error("StateManager requires a StateEngine instance");
-    }
-
-    this.engine = stateEngine;
+  constructor() {
+    this.engine = new StateEngine();
   }
 
-  /**
-   * Read a value from the state tree
-   */
-  get(path) {
-    return this.engine.get(path);
+  init(initialState = {}) {
+    this.engine.init(initialState);
   }
 
-  /**
-   * Set a value in the state tree
-   */
-  set(path, value) {
-    this.engine.set(path, value);
+  getState() {
+    return this.engine.getState();
   }
 
-  /**
-   * Apply a partial update
-   */
-  patch(patchObj) {
-    this.engine.patch(patchObj);
+  setState(partial) {
+    this.engine.setState(partial);
   }
 
-  /**
-   * Subscribe to state changes
-   */
-  subscribe(callback) {
-    if (typeof callback !== "function") return;
-
-    eventBus.on("state:changed", callback);
-
-    return () => {
-      eventBus.off("state:changed", callback);
-    };
+  subscribe(fn) {
+    return this.engine.subscribe(fn);
   }
 }
