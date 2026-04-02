@@ -1,40 +1,18 @@
-/**
- * index.js
- * ----------------------------------------------------
- * Public runtime entrypoint.
- *
- * Exports:
- *  - RuntimeApp (React root)
- *  - RuntimeProvider + useRuntime (context)
- *  - Engines (State, Navigation, Action)
- *  - Renderers (App, Screen, Canvas)
- *  - Utilities for embedding the runtime
- */
-
-import RuntimeApp from "./RuntimeApp.jsx";
-import { RuntimeProvider, useRuntime } from "./RuntimeContext";
-
-import StateEngine from "./StateEngine";
-import NavigationEngine from "./NavigationEngine";
-import ActionEngine from "./ActionEngine";
-
-import RenderScreen from "./RenderScreen";
-import ScreenRenderer from "./ScreenRenderer";
-import AppRenderer from "./AppRenderer";
-import CanvasRenderer from "./CanvasRenderer";
-
-import { initTWINSession } from "./twin/initTWINSession";
-
-export {
-  RuntimeApp,
-  RuntimeProvider,
-  useRuntime,
-  StateEngine,
-  NavigationEngine,
-  ActionEngine,
-  RenderScreen,
-  ScreenRenderer,
-  AppRenderer,
-  CanvasRenderer,
-  initTWINSession,
-};
+export { default as ActionDispatcher } from "./ActionDispatcher";
+export { default as ActionEngine } from "./ActionEngine";
+export { default as AppDefinitionValidator } from "./AppDefinitionValidator";
+export { default as AppRenderer } from "./AppRenderer";
+export { default as CanvasRenderer } from "./CanvasRenderer";
+export { default as ComponentRegistry } from "./ComponentRegistry";
+export { default as ComponentRenderer } from "./ComponentRenderer";
+export { default as LivePreview } from "./LivePreview";
+export { default as NavigationEngine } from "./NavigationEngine";
+export { default as PageRenderer } from "./PageRenderer";
+export { default as PreviewHost } from "./PreviewHost";
+export { default as ProjectLoader } from "./ProjectLoader";
+export { default as RenderScreen } from "./RenderScreen";
+export { default as RuntimeApp } from "./RuntimeApp";
+export { default as RuntimeContext } from "./RuntimeContext";
+export { default as StateEngine } from "./StateEngine";
+export { default as StateManager } from "./StateManager";
+export { default as resolveNode } from "./resolveNode";
