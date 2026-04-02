@@ -1,23 +1,59 @@
-import StateEngine from "./StateEngine";
+// frontend/src/runtime/StateManager.js
 
 export default class StateManager {
   constructor() {
-    this.engine = new StateEngine();
+    this.appStates = new Map();
   }
 
-  init(initialState = {}) {
-    this.engine.init(initialState);
+  /**
+   * Initialize state for an app.
+   */
+  initialize(appId, initialState = {}) {
+    if (!appId) {
+      throw new Error("StateManager.initialize: appId is required.");
+    }
+
+    this.appStates.set(appId, { ...initialState });
+    return this.get(appId);
   }
 
-  getState() {
-    return this.engine.getState();
+  /**
+   * Get current state for an app.
+   */
+  get(appId) {
+    const state = this.appStates.get(appId);
+    if (!state) {
+      throw new Error(`StateManager.get: no state found for app '${appId}'.`);
+    }
+    return { ...state };
   }
 
-  setState(partial) {
-    this.engine.setState(partial);
+  /**
+   * Apply updates to an app's state.
+   */
+  update(appId, updates) {
+    if (!appId) {
+      throw new Error("StateManager.update: appId is required.");
+    }
+    if (!updates || typeof updates !== "object") {
+      throw new Error("StateManager.update: updates must be an object.");
+    }
+
+    const current = this.appStates.get(appId);
+    if (!current) {
+      throw new Error(`StateManager.update: no state found for app '${appId}'.`);
+    }
+
+    const newState = { ...current, ...updates };
+    this.appStates.set(appId, newState);
+
+    return { ...newState };
   }
 
-  subscribe(fn) {
-    return this.engine.subscribe(fn);
+  /**
+   * Remove state for an app.
+   */
+  clear(appId) {
+    this.appStates.delete(appId);
   }
 }
