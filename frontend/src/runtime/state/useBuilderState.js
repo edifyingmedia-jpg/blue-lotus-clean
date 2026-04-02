@@ -1,56 +1,60 @@
+import { useState, useCallback } from "react";
+
 /**
- * useBuilderState.js
+ * useBuilderState
  * ----------------------------------------------------
- * React hook for interacting with the runtime state
- * inside the builder environment.
- *
- * Responsibilities:
- *  - Subscribe to state changes from StateEngine
- *  - Provide get/set/patch helpers
- *  - Keep builder UI reactive to preview state
+ * Local state container for the Builder environment.
+ * This manages:
+ * - selected screen
+ * - selected component
+ * - builder mode (screens, components, navigation, preview)
+ * - temporary UI state for the builder panels
  */
 
-import { useEffect, useState } from "react";
-import eventBus from "../utils/eventBus";
+export default function useBuilderState() {
+  const [builder, setBuilder] = useState({
+    mode: "screens",        // screens | components | navigation | preview
+    selectedScreen: null,
+    selectedComponent: null,
+    hoveredComponent: null,
+    panelWidth: 320,
+    panelOpen: true,
+  });
 
-export default function useBuilderState(stateEngine) {
-  if (!stateEngine) {
-    throw new Error("useBuilderState requires a StateEngine instance");
-  }
-
-  const [version, setVersion] = useState(0);
-
-  useEffect(() => {
-    const handler = () => {
-      setVersion((v) => v + 1);
-    };
-
-    eventBus.on("state:changed", handler);
-
-    return () => {
-      eventBus.off("state:changed", handler);
-    };
+  const update = useCallback((patch) => {
+    setBuilder((prev) => ({
+      ...prev,
+      ...(typeof patch === "function" ? patch(prev) : patch),
+    }));
   }, []);
 
+  const selectScreen = useCallback((id) => {
+    update({
+      selectedScreen: id,
+      selectedComponent: null,
+    });
+  }, [update]);
+
+  const selectComponent = useCallback((id) => {
+    update({
+      selectedComponent: id,
+    });
+  }, [update]);
+
+  const setMode = useCallback((mode) => {
+    update({ mode });
+  }, [update]);
+
+  const togglePanel = useCallback(() => {
+    update((prev) => ({ panelOpen: !prev.panelOpen }));
+  }, [update]);
+
   return {
-    /**
-     * Read a value from the state tree
-     */
-    get: (path) => stateEngine.get(path),
-
-    /**
-     * Set a value in the state tree
-     */
-    set: (path, value) => stateEngine.set(path, value),
-
-    /**
-     * Apply a partial update
-     */
-    patch: (patchObj) => stateEngine.patch(patchObj),
-
-    /**
-     * Used only to force React re-renders
-     */
-    version,
+    builder,
+    update,
+    selectScreen,
+    selectComponent,
+    setMode,
+    togglePanel,
   };
 }
