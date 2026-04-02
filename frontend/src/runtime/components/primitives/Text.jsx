@@ -1,38 +1,25 @@
-// frontend/src/components/primitives/Text.jsx
-
 import React from "react";
 
-/**
- * BLText
- * --------------------------------------------------
- * Basic text component for the Blue Lotus runtime.
- * Supports:
- * - text content
- * - font size
- * - color
- * - weight
- * - alignment
- */
-
-export default function BLText({
-  text = "",
-  fontSize = 16,
-  color = "#333",
-  fontWeight = "normal",
-  textAlign = "left",
-  margin = "0 0 8px 0",
+export default function Text({
+  children,
+  color = "#000",
+  size = 16,
+  weight = "normal",
+  align = "left",
+  style = {}
 }) {
   return (
-    <p
+    <span
       style={{
-        fontSize,
         color,
-        fontWeight,
-        textAlign,
-        margin,
+        fontSize: size,
+        fontWeight: weight,
+        textAlign: align,
+        display: "block",
+        ...style
       }}
     >
-      {text}
-    </p>
+      {children}
+    </span>
   );
 }
