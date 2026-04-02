@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import TwinPanel from "../twin/TwinPanel";
 
-export default function SignInGate() {
+export default function SignInGate({ children }) {
   const [email, setEmail] = useState("");
   const [authorized, setAuthorized] = useState(false);
 
@@ -66,5 +65,5 @@ export default function SignInGate() {
     );
   }
 
-  return <TwinPanel />;
+  return <>{children}</>;
 }
