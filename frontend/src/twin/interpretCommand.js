@@ -1,82 +1,38 @@
-/**
- * interpretCommand.js
- * ----------------------------------------------------
- * Interprets natural language input and returns a
- * structured proposal describing intended changes.
- *
- * IMPORTANT:
- * - This file does NOT mutate state
- * - This file does NOT execute changes
- * - This file does NOT call AI yet
- *
- * It only returns intent.
- */
+// frontend/src/twin/interpretCommand.js
 
 /**
- * @param {string} input - Natural language command from the user
- * @returns {object} proposal
+ * Very small, safe command interpreter.
+ * Turns raw text into structured commands for TWIN.
  */
+
 export default function interpretCommand(input) {
   if (!input || typeof input !== "string") {
+    return { type: "invalid", reason: "Input must be a string." };
+  }
+
+  const text = input.trim().toLowerCase();
+
+  // Build app
+  if (text.startsWith("build app")) {
     return {
-      type: "NO_OP",
-      reason: "Empty or invalid input",
+      type: "build_app",
+      spec: { name: "Untitled App", pages: [] }
     };
   }
 
-  const normalized = input.toLowerCase().trim();
-
-  // --- Simple intent detection (stub) ---
-
-  if (normalized.includes("add") && normalized.includes("text")) {
+  // Run app
+  if (text.startsWith("run app")) {
+    const parts = text.split(" ");
+    const appId = parts[2] || null;
     return {
-      type: "ADD_COMPONENT",
-      target: "screen",
-      component: {
-        type: "Text",
-        props: {
-          value: "New text added by TWIN.",
-        },
-      },
-      confidence: 0.4,
-      explanation: "User requested adding a text component.",
+      type: "run_app",
+      appId
     };
   }
 
-  if (normalized.includes("add") && normalized.includes("button")) {
-    return {
-      type: "ADD_COMPONENT",
-      target: "screen",
-      component: {
-        type: "Button",
-        props: {
-          label: "New Button",
-        },
-      },
-      confidence: 0.4,
-      explanation: "User requested adding a button component.",
-    };
-  }
-
-  if (normalized.includes("create") && normalized.includes("screen")) {
-    return {
-      type: "ADD_SCREEN",
-      screen: {
-        title: "New Screen",
-        components: [],
-      },
-      confidence: 0.3,
-      explanation: "User requested creating a new screen.",
-    };
-  }
-
-  // --- Fallback ---
-
+  // Unknown
   return {
-    type: "UNRECOGNIZED",
-    originalInput: input,
-    confidence: 0.1,
-    explanation:
-      "TWIN could not confidently interpret this command yet.",
+    type: "unknown",
+    raw: input
   };
 }
