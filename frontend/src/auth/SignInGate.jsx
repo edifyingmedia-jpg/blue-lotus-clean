@@ -1,75 +1,66 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function SignInGate({ children }) {
-  const [authorized, setAuthorized] = useState(false);
   const [email, setEmail] = useState("");
+  const [authorized, setAuthorized] = useState(false);
+
+  const OWNER_EMAIL = "tiffany@edifyingmedia.com"; // replace with your real owner email
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (email.trim().toLowerCase() === "tiffany@bluelotus.ai") {
+    if (email.trim().toLowerCase() === OWNER_EMAIL.toLowerCase()) {
       setAuthorized(true);
     } else {
-      alert("Access restricted to owner.");
+      alert("Access denied. Owner only.");
     }
   };
 
-  if (authorized) {
-    return <>{children}</>;
+  if (!authorized) {
+    return (
+      <div
+        style={{
+          height: "100vh",
+          width: "100vw",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#0d0d0d",
+          color: "white",
+          flexDirection: "column",
+          gap: "1rem",
+        }}
+      >
+        <h1>Owner Sign‑In</h1>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          <input
+            type="email"
+            placeholder="Owner email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              padding: "0.5rem",
+              borderRadius: "6px",
+              border: "1px solid #444",
+              width: "250px",
+            }}
+          />
+          <button
+            type="submit"
+            style={{
+              padding: "0.5rem",
+              borderRadius: "6px",
+              background: "#4a90e2",
+              color: "white",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Enter
+          </button>
+        </form>
+      </div>
+    );
   }
 
-  return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        backgroundColor: "#000",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        color: "#fff",
-        zIndex: 9999,
-      }}
-    >
-      <h2 style={{ marginBottom: "20px" }}>Owner Sign‑In</h2>
-
-      <form
-        onSubmit={handleSubmit}
-        style={{ width: "300px", display: "flex", flexDirection: "column" }}
-      >
-        <input
-          type="email"
-          placeholder="Owner email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "12px",
-            borderRadius: "6px",
-            border: "1px solid #333",
-            backgroundColor: "#111",
-            color: "#fff",
-          }}
-        />
-
-        <button
-          type="submit"
-          style={{
-            width: "100%",
-            padding: "12px",
-            borderRadius: "6px",
-            backgroundColor: "#4a7aff",
-            border: "none",
-            color: "#fff",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Enter
-        </button>
-      </form>
-    </div>
-  );
+  return <>{children}</>;
 }
