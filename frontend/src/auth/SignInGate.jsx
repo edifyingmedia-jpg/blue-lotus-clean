@@ -1,14 +1,12 @@
 import { useState } from "react";
-import TwinPanel from "../twin/TwinPanel";
 
-export default function SignInGate() {
+export default function SignInGate({ children }) {
   const [authorized, setAuthorized] = useState(false);
   const [email, setEmail] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // You can change this to whatever you want as the "owner" email
     if (email.trim().toLowerCase() === "tiffany@bluelotus.ai") {
       setAuthorized(true);
     } else {
@@ -17,14 +15,29 @@ export default function SignInGate() {
   };
 
   if (authorized) {
-    return <TwinPanel />;
+    return <>{children}</>;
   }
 
   return (
-    <div style={{ color: "#fff", marginTop: "40px" }}>
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        backgroundColor: "#000",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        color: "#fff",
+        zIndex: 9999,
+      }}
+    >
       <h2 style={{ marginBottom: "20px" }}>Owner Sign‑In</h2>
 
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ width: "300px", display: "flex", flexDirection: "column" }}
+      >
         <input
           type="email"
           placeholder="Owner email"
