@@ -1,26 +1,51 @@
-/**
- * twinClient.js
- * ----------------------------------------------------
- * Safe, minimal frontend wrapper for calling backend
- * TWIN actions. This file contains zero privileged logic.
- *
- * All sensitive operations remain server-side inside:
- *   backend/api/twin.js
- *   backend/twin/engine.js
- */
+// frontend/src/twin/twinClient.js
 
-export async function twinRequest(action, payload = {}) {
-  const res = await fetch("/api/twin", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action, payload })
-  });
+import TWIN from "./twin";
 
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(data.error || "TWIN request failed");
+class TwinClient {
+  constructor() {
+    this.twin = new TWIN();
   }
 
-  return data;
+  /**
+   * Send a command to TWIN.
+   * Example:
+   *   send({ type: "build_app", spec: {...} })
+   */
+  async send(command) {
+    try {
+      return await this.twin.handleCommand(command);
+    } catch (err) {
+      console.error("TwinClient error:", err);
+      throw err;
+    }
+  }
+
+  /**
+   * Build an app directly.
+   */
+  async buildApp(spec) {
+    return this.send({ type: "build_app", spec });
+  }
+
+  /**
+   * Run an app by ID.
+   */
+  async runApp(appId) {
+    return this.send({ type: "run_app", appId });
+  }
+
+  /**
+   * Execute an action inside a running app.
+   */
+  async runAction(appId, actionName, payload) {
+    return this.send({
+      type: "action",
+      appId,
+      actionName,
+      payload,
+    });
+  }
 }
+
+export default new TwinClient();
