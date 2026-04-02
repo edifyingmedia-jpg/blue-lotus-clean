@@ -1,16 +1,10 @@
-// ComponentRenderer.jsx
-// Renders a component from the registry with its props.
-
 import React from "react";
 import { getComponent } from "./ComponentRegistry";
 
 export default function ComponentRenderer({ node }) {
-  if (!node || !node.type) {
-    return null;
-  }
+  if (!node || !node.type) return null;
 
   const Component = getComponent(node.type);
-
   if (!Component) {
     return (
       <div style={{ color: "red", padding: "8px" }}>
