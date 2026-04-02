@@ -1,36 +1,18 @@
-import { generateBuilder } from "../builder/generate";
+// frontend/src/runtime/ActionEngine.js
 
-export function execute(input, authority) {
-  if (!authority?.isOwner) {
-    return {
-      type: "error",
-      message: "Unauthorized: owner access required."
-    };
+import componentRegistry from "../components/ComponentRegistry";
+
+export function executeAction(action) {
+  if (!action || !action.type) {
+    return;
   }
 
-  const text = String(input || "").toLowerCase();
+  const handler = componentRegistry.getAction(action.type);
 
-  if (text.includes("build") && text.includes("app builder")) {
-    const nameMatch =
-      input.match(/called\s+["']?([^"']+)["']?/i) ||
-      input.match(/named\s+["']?([^"']+)["']?/i);
-
-    const appName = nameMatch?.[1]?.trim() || "untitled-builder";
-
-    const artifact = generateBuilder({
-      appName,
-      templateId: "builder-core"
-    });
-
-    return {
-      type: "build",
-      message: `Built: ${artifact.appName} (${artifact.kind}) using template "${artifact.templateId}".`,
-      artifact
-    };
+  if (!handler) {
+    console.warn("Unknown action:", action.type);
+    return;
   }
 
-  return {
-    type: "message",
-    message: "I didn't understand that command."
-  };
+  return handler(action.payload || {});
 }
