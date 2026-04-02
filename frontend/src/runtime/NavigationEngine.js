@@ -1,76 +1,88 @@
-/**
- * NavigationEngine.js
- * ----------------------------------------------------
- * Deterministic navigation state manager for runtime.
- *
- * Responsibilities:
- *  - Track current screen + params
- *  - Provide navigate() with full lifecycle events
- *  - Integrate with ActionEngine + AppRenderer
- *  - Never mutate appDefinition
- *  - Emit navigation events through eventBus
- */
-
-import eventBus from "./utils/eventBus";
-
 export default class NavigationEngine {
   constructor() {
-    this.current = {
-      screen: null,
-      params: {},
-    };
+    this.stack = [];
+    this.onNavigate = null;
+
+    // Default initial screen
+    this.initialScreen = "Home";
   }
 
   /**
-   * Navigate to a new screen
+   * Initialize navigation with project + document context
    */
-  async navigate(screen, params = {}) {
-    if (!screen || typeof screen !== "string") {
-      console.warn("NavigationEngine.navigate: invalid screen:", screen);
-      return;
+  init({ project, document, onNavigate }) {
+    this.project = project;
+    this.document = document;
+    this.onNavigate = onNavigate;
+
+    // Reset navigation stack
+    this.stack = [this.initialScreen];
+  }
+
+  /**
+   * Return the first screen to mount
+   */
+  getInitialScreen() {
+    return this.initialScreen;
+  }
+
+  /**
+   * Core navigation dispatcher
+   */
+  navigate = (type, screen, params = {}) => {
+    const action = { type, screen, params };
+
+    switch (type) {
+      case "PUSH":
+        this.stack.push(screen);
+        break;
+
+      case "REPLACE":
+        this.stack.pop();
+        this.stack.push(screen);
+        break;
+
+      case "RESET":
+        this.stack = [screen];
+        break;
+
+      case "MODAL":
+        // Future modal system
+        break;
+
+      default:
+        console.warn("[NavigationEngine] Unknown navigation type:", type);
+        return;
     }
 
-    const previous = { ...this.current };
+    if (this.onNavigate) {
+      this.onNavigate(action);
+    }
+  };
 
-    this.current = {
-      screen,
-      params: { ...params },
-    };
+  /**
+   * Convenience wrappers
+   */
+  push(screen, params = {}) {
+    this.navigate("PUSH", screen, params);
+  }
 
-    eventBus.emit("navigation:changed", {
-      from: previous,
-      to: this.current,
-    });
+  replace(screen, params = {}) {
+    this.navigate("REPLACE", screen, params);
+  }
+
+  reset(screen, params = {}) {
+    this.navigate("RESET", screen, params);
+  }
+
+  modal(screen, params = {}) {
+    this.navigate("MODAL", screen, params);
   }
 
   /**
-   * Get current screen name
+   * Return the current screen name
    */
-  getScreen() {
-    return this.current.screen;
-  }
-
-  /**
-   * Get current params
-   */
-  getParams() {
-    return this.current.params;
-  }
-
-  /**
-   * Reset navigation state
-   */
-  reset() {
-    const previous = { ...this.current };
-
-    this.current = {
-      screen: null,
-      params: {},
-    };
-
-    eventBus.emit("navigation:changed", {
-      from: previous,
-      to: this.current,
-    });
+  getCurrentScreen() {
+    return this.stack[this.stack.length - 1] || null;
   }
 }
