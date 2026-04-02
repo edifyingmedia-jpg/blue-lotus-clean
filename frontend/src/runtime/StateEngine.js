@@ -1,42 +1,52 @@
+// frontend/src/runtime/StateEngine.js
+
 export default class StateEngine {
   constructor() {
     this.state = {};
-    this.listeners = new Set();
   }
 
-  init(initialState = {}) {
-    this.state = { ...initialState };
-  }
+  /**
+   * Initialize state from an app definition.
+   */
+  initialize(appDefinition) {
+    const initial = {};
 
-  getState() {
+    if (Array.isArray(appDefinition.pages)) {
+      for (const page of appDefinition.pages) {
+        if (Array.isArray(page.components)) {
+          for (const component of page.components) {
+            if (component.stateKey) {
+              initial[component.stateKey] = component.defaultValue ?? null;
+            }
+          }
+        }
+      }
+    }
+
+    this.state = initial;
     return this.state;
   }
 
-  setState(partial) {
-    if (typeof partial !== "object") return;
+  /**
+   * Apply updates to the state.
+   */
+  update(updates) {
+    if (!updates || typeof updates !== "object") {
+      throw new Error("StateEngine.update: updates must be an object.");
+    }
 
     this.state = {
       ...this.state,
-      ...partial,
+      ...updates,
     };
 
-    this.notify();
+    return this.state;
   }
 
-  subscribe(fn) {
-    if (typeof fn === "function") {
-      this.listeners.add(fn);
-      return () => this.listeners.delete(fn);
-    }
-  }
-
-  notify() {
-    for (const fn of this.listeners) {
-      try {
-        fn(this.state);
-      } catch (err) {
-        console.error("StateEngine listener error:", err);
-      }
-    }
+  /**
+   * Get the current state snapshot.
+   */
+  getState() {
+    return { ...this.state };
   }
 }
