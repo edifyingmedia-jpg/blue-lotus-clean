@@ -1,55 +1,96 @@
-import { useState } from "react";
-import "./TwinPanel.css";
+import React, { useState } from "react";
 
 export default function TwinPanel() {
-  const [messages, setMessages] = useState([
-    {
-      role: "ai",
-      text: "TWIN is online. This panel will later control app generation and workspace behavior.",
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
   const sendMessage = () => {
     if (!input.trim()) return;
 
-    setMessages((prev) => [...prev, { role: "user", text: input }]);
+    const userMessage = { role: "user", content: input };
+    setMessages((prev) => [...prev, userMessage]);
+
+    const aiMessage = {
+      role: "assistant",
+      content: "TWIN is not wired yet — but your panel is working.",
+    };
+
+    setMessages((prev) => [...prev, aiMessage]);
     setInput("");
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
-
   return (
-    <div className="twin-panel">
-      <div className="twin-header">
-        <div className="twin-title">TWIN Console</div>
-        <div className="twin-subtitle">Owner runtime control surface</div>
-      </div>
-
-      <div className="twin-messages">
-        {messages.map((m, i) => (
+    <div
+      style={{
+        height: "100vh",
+        width: "100vw",
+        background: "#0d0d0d",
+        color: "white",
+        display: "flex",
+        flexDirection: "column",
+        padding: "1rem",
+        boxSizing: "border-box",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem",
+        }}
+      >
+        {messages.map((msg, i) => (
           <div
             key={i}
-            className={`twin-msg ${m.role === "user" ? "user" : "ai"}`}
+            style={{
+              alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
+              background: msg.role === "user" ? "#4a90e2" : "#222",
+              padding: "0.75rem 1rem",
+              borderRadius: "8px",
+              maxWidth: "70%",
+            }}
           >
-            {m.text}
+            {msg.content}
           </div>
         ))}
       </div>
 
-      <div className="twin-input-bar">
-        <textarea
+      <div
+        style={{
+          display: "flex",
+          gap: "0.5rem",
+          marginTop: "1rem",
+        }}
+      >
+        <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Type to TWIN (no backend yet — this is a visual console only)..."
+          placeholder="Talk to TWIN…"
+          style={{
+            flex: 1,
+            padding: "0.75rem",
+            borderRadius: "6px",
+            border: "1px solid #444",
+            background: "#111",
+            color: "white",
+          }}
         />
-        <button onClick={sendMessage}>Send</button>
+
+        <button
+          onClick={sendMessage}
+          style={{
+            padding: "0.75rem 1rem",
+            borderRadius: "6px",
+            background: "#4a90e2",
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Send
+        </button>
       </div>
     </div>
   );
