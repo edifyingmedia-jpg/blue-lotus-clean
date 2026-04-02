@@ -1,11 +1,13 @@
+import React from "react";
 import SignInGate from "./auth/SignInGate";
-import Workspace from "./builder/Workspace";
-import "./global.css";
+import TwinPanel from "./components/TwinPanel";
 
 export default function App() {
   return (
-    <SignInGate>
-      <Workspace />
-    </SignInGate>
+    <div style={{ height: "100vh", width: "100vw", overflow: "hidden" }}>
+      <SignInGate>
+        <TwinPanel />
+      </SignInGate>
+    </div>
   );
 }
