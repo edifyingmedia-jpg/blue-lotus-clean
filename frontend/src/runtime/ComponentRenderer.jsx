@@ -1,63 +1,31 @@
-// frontend/src/runtime/ComponentRenderer.jsx
+// ComponentRenderer.jsx
+// Renders a component from the registry with its props.
 
 import React from "react";
 import { getComponent } from "./ComponentRegistry";
 
-/**
- * ComponentRenderer dynamically renders a component
- * based on its type and props from the app definition.
- *
- * This is the core of the Blue Lotus runtime.
- */
-export default function ComponentRenderer({
-  component,
-  selectedComponentId,
-}) {
-  if (!component) return null;
+export default function ComponentRenderer({ node }) {
+  if (!node || !node.type) {
+    return null;
+  }
 
-  const { id, type, props, children } = component;
+  const Component = getComponent(node.type);
 
-  // Look up the actual React component from the registry
-  const ResolvedComponent = getComponent(type);
-
-  if (!ResolvedComponent) {
+  if (!Component) {
     return (
-      <div style={{
-        padding: "0.5rem",
-        background: "#ffe6e6",
-        border: "1px solid #ffb3b3",
-        borderRadius: "4px",
-        color: "#990000",
-        margin: "0.25rem 0"
-      }}>
-        Unknown component type: <strong>{type}</strong>
+      <div style={{ color: "red", padding: "8px" }}>
+        Unknown component type: {node.type}
       </div>
     );
   }
 
-  // Highlight selected component in the preview
-  const isSelected = id === selectedComponentId;
-
-  const wrapperStyle = isSelected
-    ? {
-        outline: "2px solid #4A90E2",
-        borderRadius: "4px",
-        padding: "2px",
-      }
-    : {};
-
-  return (
-    <div style={wrapperStyle}>
-      <ResolvedComponent {...props}>
-        {Array.isArray(children) &&
-          children.map((child) => (
-            <ComponentRenderer
-              key={child.id}
-              component={child}
-              selectedComponentId={selectedComponentId}
-            />
-          ))}
-      </ResolvedComponent>
-    </div>
-  );
+  try {
+    return <Component {...node.props} />;
+  } catch (err) {
+    return (
+      <div style={{ color: "red", padding: "8px" }}>
+        Error rendering {node.type}: {err.message}
+      </div>
+    );
+  }
 }
