@@ -1,30 +1,20 @@
-// frontend/src/runtime/ComponentRegistry.js
+// ComponentRegistry.js
+// Maps component type names to actual React components for TWIN to render.
 
-/**
- * ComponentRegistry
- * --------------------------------------------------
- * Maps component "type" strings from the app definition
- * to real React components in the runtime.
- *
- * This is the authoritative registry for the Blue Lotus runtime.
- */
+import Text from "../components/Text";
+import Button from "../components/Button";
+import Input from "../components/Input";
+import Container from "../components/Container";
 
-import BLText from "../components/primitives/Text.jsx";
-
-// These components do not exist yet.
-// They are intentionally disabled to prevent build failures.
-const BLButton = null;
-const BLImage = null;
-const BLView = null;
-
-// The official runtime registry
-const registry = {
-  text: BLText,
-  button: BLButton,
-  image: BLImage,
-  view: BLView,
+const ComponentRegistry = {
+  Text,
+  Button,
+  Input,
+  Container
 };
 
 export function getComponent(type) {
-  return registry[type] || null;
+  return ComponentRegistry[type] || null;
 }
+
+export default ComponentRegistry;
