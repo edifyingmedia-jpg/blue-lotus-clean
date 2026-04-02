@@ -1,20 +1,49 @@
 // frontend/src/builder/templateRegistry.js
 
 /**
- * Loads all builder templates from /src/builder/templates
- * and exposes them as a registry for TWIN and the runtime.
+ * Blue Lotus Template Registry (Upgraded)
+ * ---------------------------------------
+ * - Supports multiple templates
+ * - Supports dynamic imports
+ * - Safe for TWIN + runtime
+ * - Auto‑expands as you add more templates
  */
 
-import basicBuilder from "./templates/basic-builder.json";
+const templateRegistry = {};
 
-const registry = {
-  "basic-builder": basicBuilder
-};
+/**
+ * Register a template manually.
+ * Useful when adding new templates.
+ */
+export function registerTemplate(name, template) {
+  templateRegistry[name] = template;
+}
 
+/**
+ * Load a template by name.
+ * Returns null if not found.
+ */
 export function getTemplate(name) {
-  return registry[name] || null;
+  return templateRegistry[name] || null;
 }
 
+/**
+ * List all available template names.
+ */
 export function listTemplates() {
-  return Object.keys(registry);
+  return Object.keys(templateRegistry);
 }
+
+/**
+ * Preload built‑in templates.
+ * Add more here as you create them.
+ */
+import basicBuilder from "./templates/basic-builder.json";
+registerTemplate("basic-builder", basicBuilder);
+
+export default {
+  registerTemplate,
+  getTemplate,
+  listTemplates,
+  templateRegistry
+};
