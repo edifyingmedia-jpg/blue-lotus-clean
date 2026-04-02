@@ -1,38 +1,31 @@
-// frontend/src/runtime/components/primitives/View.jsx
-
 import React from "react";
 
-/**
- * BLView
- * --------------------------------------------------
- * A flexible container component for grouping children.
- * Supports:
- * - padding
- * - margin
- * - background color
- * - border radius
- * - layout direction
- */
-
-export default function BLView({
+export default function View({
   children,
-  padding = "0",
-  margin = "0 0 8px 0",
-  background = "transparent",
-  borderRadius = "0",
-  flexDirection = "column",
-  gap = "0",
+  direction = "column",
+  padding = 0,
+  margin = 0,
+  gap = 0,
+  width = "100%",
+  height = "auto",
+  background,
+  radius,
+  style = {}
 }) {
   return (
     <div
       style={{
+        display: "flex",
+        flexDirection: direction,
         padding,
         margin,
-        background,
-        borderRadius,
-        display: "flex",
-        flexDirection,
         gap,
+        width,
+        height,
+        background,
+        borderRadius: radius,
+        boxSizing: "border-box",
+        ...style
       }}
     >
       {children}
