@@ -1,97 +1,69 @@
 import React, { useState } from "react";
+import executeProposal from "./executeProposal";
 
 export default function TwinPanel() {
-  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]);
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-    const userMessage = { role: "user", content: input };
+    const userMessage = { role: "user", text: input };
     setMessages((prev) => [...prev, userMessage]);
 
-    const aiMessage = {
-      role: "assistant",
-      content: "TWIN is not wired yet — but your panel is working.",
-    };
+    const result = await executeProposal(input);
 
-    setMessages((prev) => [...prev, aiMessage]);
+    const twinMessage = result.ok
+      ? { role: "twin", text: JSON.stringify(result.result, null, 2) }
+      : { role: "twin", text: `Error: ${result.error}` };
+
+    setMessages((prev) => [...prev, twinMessage]);
     setInput("");
-  };
+  }
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        width: "100vw",
-        background: "#0d0d0d",
-        color: "white",
-        display: "flex",
-        flexDirection: "column",
-        padding: "1rem",
-        boxSizing: "border-box",
-      }}
-    >
+    <div style={{ padding: "1rem", background: "#111", color: "#eee" }}>
+      <h2 style={{ marginBottom: "1rem" }}>TWIN Panel</h2>
+
       <div
         style={{
-          flex: 1,
+          height: "300px",
           overflowY: "auto",
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
+          padding: "1rem",
+          background: "#222",
+          borderRadius: "6px",
+          marginBottom: "1rem",
         }}
       >
-        {messages.map((msg, i) => (
+        {messages.map((m, i) => (
           <div
             key={i}
             style={{
-              alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
-              background: msg.role === "user" ? "#4a90e2" : "#222",
-              padding: "0.75rem 1rem",
-              borderRadius: "8px",
-              maxWidth: "70%",
+              marginBottom: "0.75rem",
+              color: m.role === "user" ? "#9cf" : "#cfc",
+              whiteSpace: "pre-wrap",
             }}
           >
-            {msg.content}
+            <strong>{m.role === "user" ? "You" : "TWIN"}:</strong> {m.text}
           </div>
         ))}
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "0.5rem",
-          marginTop: "1rem",
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Talk to TWIN…"
+          placeholder="Type a command..."
           style={{
-            flex: 1,
+            width: "100%",
             padding: "0.75rem",
             borderRadius: "6px",
             border: "1px solid #444",
-            background: "#111",
-            color: "white",
+            background: "#000",
+            color: "#fff",
           }}
         />
-
-        <button
-          onClick={sendMessage}
-          style={{
-            padding: "0.75rem 1rem",
-            borderRadius: "6px",
-            background: "#4a90e2",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Send
-        </button>
-      </div>
+      </form>
     </div>
   );
 }
