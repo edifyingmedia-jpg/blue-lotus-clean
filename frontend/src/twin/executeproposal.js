@@ -1,24 +1,39 @@
 // frontend/src/twin/executeProposal.js
 
-// This should be wired into your existing builder/runtime.
-// For now, it just calls a callback with a simple layout.
+import twinClient from "./twinClient";
+import interpretCommand from "./interpretCommand";
 
-export function executeProposal(proposal, { applyLayout }) {
-  if (!proposal || proposal.type !== 'proposal') return;
+/**
+ * Takes raw text from the user, interprets it,
+ * and executes the resulting TWIN command.
+ */
+export default async function executeProposal(input) {
+  const command = interpretCommand(input);
 
-  if (proposal.id === 'build-app-builder') {
-    // Minimal canonical structure – adjust to your schema.
-    const layout = {
-      type: 'builder-shell',
-      regions: {
-        sidebar: { type: 'components-panel' },
-        canvas: { type: 'canvas-root' },
-        twin: { type: 'twin-panel' },
-      },
+  if (!command || command.type === "invalid") {
+    return {
+      ok: false,
+      error: "Invalid command input."
     };
+  }
 
-    if (typeof applyLayout === 'function') {
-      applyLayout(layout);
-    }
+  if (command.type === "unknown") {
+    return {
+      ok: false,
+      error: `Unknown command: "${input}"`
+    };
+  }
+
+  try {
+    const result = await twinClient.send(command);
+    return {
+      ok: true,
+      result
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err.message || "Execution failed."
+    };
   }
 }
