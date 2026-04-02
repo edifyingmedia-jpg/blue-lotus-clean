@@ -1,54 +1,38 @@
-// AppDefinitionValidator.js
-// Ensures the project definition coming from the Builder is valid and safe.
+// frontend/src/runtime/AppDefinitionValidator.js
 
-export function validateAppDefinition(project) {
-  if (!project) {
-    return { valid: false, error: "Project is missing." };
+import componentRegistry from "../components/ComponentRegistry";
+
+export function validateAppDefinition(appDefinition) {
+  if (!appDefinition || !appDefinition.sections) {
+    return { valid: false, errors: ["Missing sections array"] };
   }
 
-  if (!Array.isArray(project.pages)) {
-    return { valid: false, error: "Project.pages must be an array." };
-  }
+  const errors = [];
 
-  for (const page of project.pages) {
-    if (!page.id || typeof page.id !== "string") {
-      return { valid: false, error: "Each page must have a valid id." };
+  appDefinition.sections.forEach((section, sIndex) => {
+    if (!section.components) {
+      errors.push(`Section ${sIndex} is missing components array`);
+      return;
     }
 
-    if (!page.name || typeof page.name !== "string") {
-      return { valid: false, error: `Page ${page.id} is missing a name.` };
-    }
-
-    if (!Array.isArray(page.components)) {
-      return {
-        valid: false,
-        error: `Page ${page.id} has invalid components array.`
-      };
-    }
-
-    for (const component of page.components) {
-      if (!component.id || typeof component.id !== "string") {
-        return {
-          valid: false,
-          error: `Component missing id on page ${page.id}.`
-        };
+    section.components.forEach((component, cIndex) => {
+      if (!component.type) {
+        errors.push(`Component ${cIndex} in section ${sIndex} has no type`);
+        return;
       }
 
-      if (!component.type || typeof component.type !== "string") {
-        return {
-          valid: false,
-          error: `Component ${component.id} missing type on page ${page.id}.`
-        };
-      }
+      const exists = componentRegistry.getComponent(component.type);
 
-      if (typeof component.props !== "object") {
-        return {
-          valid: false,
-          error: `Component ${component.id} has invalid props.`
-        };
+      if (!exists) {
+        errors.push(
+          `Unknown component type "${component.type}" in section ${sIndex}, component ${cIndex}`
+        );
       }
-    }
-  }
+    });
+  });
 
-  return { valid: true, error: null };
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
 }
