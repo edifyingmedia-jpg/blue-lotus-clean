@@ -1,18 +1,9 @@
-import { useEffect } from "react";
-import { useRuntime } from "./index";
-import { ActionTypes } from "./actions/ActionTypes";
+import React from "react";
 
 export default function RuntimeApp() {
-  const { action } = useRuntime();
-
-  useEffect(() => {
-    action.execute({
-      type: ActionTypes.LOG_MESSAGE,
-      payload: {
-        message: "TWIN governance pipeline verified",
-      },
-    });
-  }, [action]);
-
-  return null;
+  return (
+    <div>
+      Runtime App Loaded
+    </div>
+  );
 }
