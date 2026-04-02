@@ -1,48 +1,53 @@
-// frontend/src/runtime/state/useSelectionState.js
-
 import { useState, useCallback } from "react";
 
 /**
- * useSelectionState manages the builder's selection:
- * - selected page
+ * useSelectionState
+ * ----------------------------------------------------
+ * Manages selection inside the builder + runtime:
  * - selected component
- *
- * This hook is used by both the Builder UI and the Live Preview
- * so they stay in sync.
+ * - hovered component
+ * - clear / update helpers
  */
 
-export default function useSelectionState(initialPageId = null) {
-  const [selectedPageId, setSelectedPageId] = useState(initialPageId);
-  const [selectedComponentId, setSelectedComponentId] = useState(null);
+export default function useSelectionState() {
+  const [selection, setSelection] = useState({
+    selectedId: null,
+    hoveredId: null,
+  });
 
-  /**
-   * Select a page and clear component selection.
-   */
-  const selectPage = useCallback((pageId) => {
-    setSelectedPageId(pageId);
-    setSelectedComponentId(null);
+  const select = useCallback((id) => {
+    setSelection((prev) => ({
+      ...prev,
+      selectedId: id,
+    }));
   }, []);
 
-  /**
-   * Select a component inside the current page.
-   */
-  const selectComponent = useCallback((componentId) => {
-    setSelectedComponentId(componentId);
+  const hover = useCallback((id) => {
+    setSelection((prev) => ({
+      ...prev,
+      hoveredId: id,
+    }));
   }, []);
 
-  /**
-   * Clear all selections.
-   */
   const clearSelection = useCallback(() => {
-    setSelectedPageId(null);
-    setSelectedComponentId(null);
+    setSelection((prev) => ({
+      ...prev,
+      selectedId: null,
+    }));
+  }, []);
+
+  const clearHover = useCallback(() => {
+    setSelection((prev) => ({
+      ...prev,
+      hoveredId: null,
+    }));
   }, []);
 
   return {
-    selectedPageId,
-    selectedComponentId,
-    selectPage,
-    selectComponent,
+    selection,
+    select,
+    hover,
     clearSelection,
+    clearHover,
   };
 }
