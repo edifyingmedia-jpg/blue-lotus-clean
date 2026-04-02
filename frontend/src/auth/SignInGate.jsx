@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import TwinPanel from "../twin/TwinPanel";
 
-export default function SignInGate({ children }) {
+export default function SignInGate() {
   const [email, setEmail] = useState("");
   const [authorized, setAuthorized] = useState(false);
 
-  const OWNER_EMAIL = "tiffany@edifyingmedia.com"; // replace with your real owner email
+  const OWNER_EMAIL = "tiffany@edifyingmedia.com";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,7 +32,10 @@ export default function SignInGate({ children }) {
         }}
       >
         <h1>Owner Sign‑In</h1>
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+        >
           <input
             type="email"
             placeholder="Owner email"
@@ -62,5 +66,5 @@ export default function SignInGate({ children }) {
     );
   }
 
-  return <>{children}</>;
+  return <TwinPanel />;
 }
