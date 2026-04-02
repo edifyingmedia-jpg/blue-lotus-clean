@@ -1,17 +1,28 @@
 // frontend/src/components/ComponentRenderer.jsx
+
 import React from "react";
 import componentRegistry from "./ComponentRegistry";
 
-export default function ComponentRenderer({ name, props }) {
-  const Comp = componentRegistry && componentRegistry[name];
-  if (!Comp) {
+export default function ComponentRenderer({ component }) {
+  if (!component || !component.type) {
+    return null;
+  }
+
+  const Component = componentRegistry.getComponent(component.type);
+
+  if (!Component) {
     return (
-      <div style={{ color: "#fff", padding: 12, background: "#111" }}>
-        Unknown component: {name}
+      <div
+        style={{
+          padding: 8,
+          background: "#330000",
+          color: "white",
+        }}
+      >
+        Unknown component: {component.type}
       </div>
     );
   }
-  return <Comp {...(props || {})} />;
-}
 
-export { ComponentRenderer };
+  return <Component {...(component.props || {})} />;
+}
