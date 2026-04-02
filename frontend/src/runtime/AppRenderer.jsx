@@ -1,39 +1,24 @@
-// frontend/src/runtime/AppRenderer.jsx
+// AppRenderer.jsx
+// Top-level renderer that validates the app definition and renders the canvas.
 
 import React from "react";
-import componentRegistry from "../components/ComponentRegistry";
+import AppDefinitionValidator from "./AppDefinitionValidator";
+import CanvasRenderer from "./CanvasRenderer";
 
 export default function AppRenderer({ appDefinition }) {
-  if (!appDefinition || !appDefinition.sections) {
-    return null;
+  const validation = AppDefinitionValidator.validate(appDefinition);
+
+  if (!validation.valid) {
+    return (
+      <div style={{ color: "red", padding: "12px" }}>
+        {validation.error}
+      </div>
+    );
   }
 
   return (
-    <>
-      {appDefinition.sections.map((section, index) => (
-        <div key={index}>
-          {section.components.map((component, idx) => {
-            const Component = componentRegistry.getComponent(component.type);
-
-            if (!Component) {
-              return (
-                <div
-                  key={idx}
-                  style={{
-                    padding: 8,
-                    background: "#330000",
-                    color: "white",
-                  }}
-                >
-                  Unknown component: {component.type}
-                </div>
-              );
-            }
-
-            return <Component key={idx} {...(component.props || {})} />;
-          })}
-        </div>
-      ))}
-    </>
+    <div style={{ width: "100%", height: "100%" }}>
+      <CanvasRenderer tree={appDefinition.tree} />
+    </div>
   );
 }
