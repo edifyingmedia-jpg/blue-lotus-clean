@@ -1,20 +1,17 @@
-// ComponentRegistry.js
-// Maps component type names to actual React components for TWIN to render.
+import Text from "../components/primitives/Text";
+import Button from "../components/primitives/Button";
+import Input from "../components/primitives/Input";
+import Container from "../components/primitives/Container";
 
-import Text from "../components/Text";
-import Button from "../components/Button";
-import Input from "../components/Input";
-import Container from "../components/Container";
-
-const ComponentRegistry = {
+const registry = {
   Text,
   Button,
   Input,
-  Container
+  Container,
 };
 
 export function getComponent(type) {
-  return ComponentRegistry[type] || null;
+  return registry[type] || null;
 }
 
-export default ComponentRegistry;
+export default registry;
