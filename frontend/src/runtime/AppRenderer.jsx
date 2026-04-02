@@ -1,57 +1,33 @@
-import { useEffect, useState } from "react";
-import AppDefinitionValidator from "./AppDefinitionValidator";
+import React from "react";
 import ComponentRenderer from "./ComponentRenderer";
+import AppDefinitionValidator from "./AppDefinitionValidator";
 
-export default function AppRenderer({ appDefinition, navigationEngine }) {
-  const [valid, setValid] = useState(false);
-  const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(null);
-
-  useEffect(() => {
-    const result = AppDefinitionValidator.validate(appDefinition);
-    if (!result.valid) {
-      setError(result.error);
-      setValid(false);
-      return;
-    }
-
-    setValid(true);
-    setError(null);
-
-    if (appDefinition.pages && appDefinition.pages.length > 0) {
-      setCurrentPage(appDefinition.pages[0]);
-    }
-  }, [appDefinition]);
-
-  useEffect(() => {
-    if (!navigationEngine) return;
-
-    navigationEngine.onChange((pageId) => {
-      const next = appDefinition.pages.find((p) => p.id === pageId);
-      if (next) setCurrentPage(next);
-    });
-  }, [navigationEngine, appDefinition]);
-
-  if (!valid) {
+export default function AppRenderer({ appDefinition }) {
+  try {
+    // Validate the entire app definition before rendering anything
+    AppDefinitionValidator.validate(appDefinition);
+  } catch (err) {
     return (
-      <div style={{ padding: 20, color: "red" }}>
-        {error || "Invalid app definition."}
+      <div style={{ color: "red", padding: "1rem" }}>
+        App validation failed: {err.message}
       </div>
     );
   }
 
+  const currentPage = appDefinition.pages?.[0];
+
   if (!currentPage) {
-    return <div style={{ padding: 20 }}>No page selected.</div>;
+    return (
+      <div style={{ color: "red", padding: "1rem" }}>
+        No pages found in app definition.
+      </div>
+    );
   }
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
-      {currentPage.components.map((comp, index) => (
-        <ComponentRenderer
-          key={index}
-          type={comp.type}
-          props={comp.props}
-        />
+    <div style={{ padding: "1rem" }}>
+      {currentPage.components?.map((component, index) => (
+        <ComponentRenderer key={index} component={component} />
       ))}
     </div>
   );
