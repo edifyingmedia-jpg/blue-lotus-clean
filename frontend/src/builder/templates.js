@@ -1,5 +1,19 @@
 // frontend/src/builder/templates.js
 
+/**
+ * Blue Lotus Builder Template Generator (Final Version)
+ * ----------------------------------------------------
+ * This produces a complete, self-contained app-builder
+ * that includes:
+ *  - Vite + React shell
+ *  - PublicTwin runtime
+ *  - Generation engine
+ *  - Template system
+ *
+ * This version is stable, future-proof, and aligned with
+ * the Blue Lotus architecture (RegistryV2, CanvasRenderer, etc.).
+ */
+
 export function builderCoreTemplate(name = "Lotus Builder") {
   return {
     kind: "app-builder",
@@ -8,7 +22,7 @@ export function builderCoreTemplate(name = "Lotus Builder") {
     manifest: {
       twin: "public",
       capabilities: ["generate-app", "preview", "export"],
-      version: "1.0.0",
+      version: "1.1.0",
     },
     files: {
       "index.html": htmlShell(name),
@@ -53,13 +67,26 @@ export default function App() {
   const [artifact, setArtifact] = useState(null);
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", height: "100vh", background: "#020617", color: "#e2e8f0" }}>
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "360px 1fr",
+      height: "100vh",
+      background: "#020617",
+      color: "#e2e8f0"
+    }}>
       <PublicTwin onArtifact={setArtifact} />
       <div style={{ padding: 24 }}>
         {!artifact ? (
-          <div style={{ color: "#64748b" }}>Generated apps will appear here.</div>
+          <div style={{ color: "#64748b" }}>
+            Generated apps will appear here.
+          </div>
         ) : (
-          <pre style={{ background: "#0b1220", padding: 16, borderRadius: 6 }}>
+          <pre style={{
+            background: "#0b1220",
+            padding: 16,
+            borderRadius: 6,
+            whiteSpace: "pre-wrap"
+          }}>
 {artifact}
           </pre>
         )}
@@ -85,7 +112,10 @@ export default function PublicTwin({ onArtifact }) {
   };
 
   return (
-    <div style={{ borderRight: "1px solid #1e293b", padding: 16 }}>
+    <div style={{
+      borderRight: "1px solid #1e293b",
+      padding: 16
+    }}>
       <textarea
         value={input}
         onChange={(e) => setInput(e.target.value)}
