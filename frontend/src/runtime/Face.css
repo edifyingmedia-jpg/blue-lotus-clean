@@ -1,0 +1,43 @@
+@import "./theme.css";
+
+.face-root {
+  background: var(--bg-smoke);
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 48px 20px;
+  color: var(--text-primary);
+}
+
+.face-wrapper {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.face-message {
+  display: flex;
+}
+
+.face-message.user {
+  justify-content: flex-end;
+}
+
+.face-message.ai {
+  justify-content: flex-start;
+}
+
+.face-bubble {
+  background: var(--bg-panel);
+  background-image: var(--gradient-soft);
+  padding: 18px 22px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  font-size: 1.08rem;
+  line-height: 1.55;
+  max-width: 80%;
+  color: var(--text-primary);
+}
