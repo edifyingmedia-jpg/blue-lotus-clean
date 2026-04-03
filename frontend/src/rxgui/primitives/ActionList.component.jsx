@@ -1,5 +1,5 @@
 import React from "react";
-import { ActionEngine } from "../runtime/ActionEngine";
+import ActionEngine from "../runtime/ActionEngine";
 
 export default function ActionList({
   items = [],
@@ -14,7 +14,7 @@ export default function ActionList({
     if (!itemAction) return;
 
     try {
-      const engine = new ActionEngine();
+      const engine = new ActionEngine({});
       engine.run(itemAction, { ...itemParams, item });
     } catch (err) {
       console.error("ActionList error:", err);
