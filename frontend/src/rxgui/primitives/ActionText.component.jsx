@@ -1,14 +1,13 @@
 import React from "react";
-import ActionEngine from "../runtime/ActionEngine";
+import ActionEngine from "../../runtime/ActionEngine";
 
 export default function ActionText({
   text = "",
   action = null,
   params = {},
-  color = "#3366ff",
+  color = "#333",
   fontSize = 16,
-  fontWeight = "normal",
-  margin = "0 0 8px 0",
+  margin = "0 0 12px 0",
 }) {
   const handleClick = () => {
     if (!action) return;
@@ -22,18 +21,16 @@ export default function ActionText({
   };
 
   return (
-    <span
-      onClick={handleClick}
+    <div
+      onClick={action ? handleClick : undefined}
       style={{
-        cursor: action ? "pointer" : "default",
         color,
         fontSize,
-        fontWeight,
         margin,
-        textDecoration: action ? "underline" : "none",
+        cursor: action ? "pointer" : "default",
       }}
     >
       {text}
-    </span>
+    </div>
   );
 }
