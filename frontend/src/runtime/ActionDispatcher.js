@@ -1,60 +1,35 @@
+// frontend/src/runtime/ActionDispatcher.js
+
 /**
- * ActionDispatcher.js
- * ----------------------------------------------------
- * Executes validated actions produced by ActionEngine.
- * This layer does not validate — it only dispatches.
+ * Routes actions to the correct engine inside the runtime layer.
+ * This stays intentionally minimal until full action types are defined.
  */
 
 export default class ActionDispatcher {
-  constructor({ stateEngine, navigationEngine }) {
-    this.stateEngine = stateEngine;
-    this.navigationEngine = navigationEngine;
+  constructor({ runtimeEngine, stateManager }) {
+    this.runtimeEngine = runtimeEngine;
+    this.stateManager = stateManager;
   }
 
-  dispatch(action) {
-    if (!action || typeof action.type !== "string") return;
+  /**
+   * Dispatch an action to the correct handler.
+   */
+  dispatch(appId, action) {
+    if (!action || typeof action !== "object") {
+      throw new Error("ActionDispatcher.dispatch: action must be an object.");
+    }
 
-    switch (action.type) {
-      case "setState":
-        return this.handleSetState(action.params);
+    const { type, payload } = action;
 
-      case "incrementState":
-        return this.handleIncrementState(action.params);
+    switch (type) {
+      case "UPDATE_STATE":
+        return this.stateManager.update(appId, payload);
 
-      case "navigate":
-        return this.handleNavigate(action.params);
-
-      case "batch":
-        return this.handleBatch(action.params);
-
-      case "conditional":
-        return this.handleConditional(action.params);
+      case "RUN_APP":
+        return this.runtimeEngine.run(payload);
 
       default:
-        console.warn("Unknown action type:", action.type);
-        return;
+        throw new Error(`ActionDispatcher: unknown action type '${type}'.`);
     }
   }
-
-  handleSetState(params) {
-    if (!params) return;
-    const { key, value } = params;
-    this.stateEngine.set(key, value);
-  }
-
-  handleIncrementState(params) {
-    if (!params) return;
-    const { key, amount = 1 } = params;
-    const current = this.stateEngine.get(key);
-    const next = (typeof current === "number" ? current : 0) + amount;
-    this.stateEngine.set(key, next);
-  }
-
-  handleNavigate(params) {
-    if (!params) return;
-    const { to } = params;
-    this.navigationEngine.go(to);
-  }
-
-  handleBatch(params) {
-    if (!params || !Array.isArray(params.actions
+}
