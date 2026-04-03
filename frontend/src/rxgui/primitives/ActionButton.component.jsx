@@ -1,5 +1,5 @@
 import React from "react";
-import { ActionEngine } from "../runtime/ActionEngine";
+import ActionEngine from "../runtime/ActionEngine";
 
 export default function ActionButton({
   label = "Button",
@@ -17,7 +17,7 @@ export default function ActionButton({
     if (!action) return;
 
     try {
-      const engine = new ActionEngine();
+      const engine = new ActionEngine({});
       engine.run(action, params);
     } catch (err) {
       console.error("ActionButton error:", err);
