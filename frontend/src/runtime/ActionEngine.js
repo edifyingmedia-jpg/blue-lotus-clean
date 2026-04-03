@@ -8,7 +8,7 @@
  * Responsibilities:
  *  - Execute single or multi-step actions
  *  - Support conditional actions
- *  - Integrate with StateEngine and NavigationEngine
+ *  - Integrate with StateEngine and NavigationEngine (when provided)
  *  - Emit lifecycle events through eventBus
  *  - Deterministic, side-effect controlled
  */
@@ -17,13 +17,9 @@ import { safeGet, deepClone } from "./utils";
 import eventBus from "./utils/eventBus";
 
 export default class ActionEngine {
-  constructor({ stateEngine, navigationEngine }) {
+  constructor({ stateEngine = null, navigationEngine = null } = {}) {
     this.stateEngine = stateEngine;
     this.navigationEngine = navigationEngine;
-
-    if (!stateEngine || !navigationEngine) {
-      throw new Error("ActionEngine requires stateEngine and navigationEngine");
-    }
   }
 
   /**
@@ -80,6 +76,11 @@ export default class ActionEngine {
    * setState action
    */
   async handleSetState(action) {
+    if (!this.stateEngine) {
+      console.warn("setState ignored: no StateEngine provided");
+      return;
+    }
+
     const { path, value } = action;
 
     if (!path || typeof path !== "string") {
@@ -95,6 +96,11 @@ export default class ActionEngine {
    * navigate action
    */
   async handleNavigate(action) {
+    if (!this.navigationEngine) {
+      console.warn("navigate ignored: no NavigationEngine provided");
+      return;
+    }
+
     const { to, params } = action;
 
     if (!to || typeof to !== "string") {
@@ -109,6 +115,11 @@ export default class ActionEngine {
    * conditional action
    */
   async handleConditional(action) {
+    if (!this.stateEngine) {
+      console.warn("conditional ignored: no StateEngine provided");
+      return;
+    }
+
     const condition = action.if;
 
     if (!condition || !condition.path) {
