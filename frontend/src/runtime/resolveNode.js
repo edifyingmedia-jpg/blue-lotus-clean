@@ -1,32 +1,25 @@
-import React from "react";
-import ComponentRenderer from "./ComponentRenderer";
-
 /**
- * resolveNode
- * -----------
- * Takes a node definition and returns a rendered React element.
+ * resolveNode.js
+ * ----------------------------------------------------
+ * Compatibility layer for legacy screen definitions.
+ * Modern runtime uses ComponentRenderer, so this file
+ * simply forwards nodes into that pipeline.
  */
 
+import React from "react";
+import ComponentRenderer from "../rxgui/components/ComponentRenderer";
+
 export default function resolveNode(node) {
-  if (!node || typeof node !== "object") {
-    console.warn("resolveNode: invalid node:", node);
-    return null;
-  }
+  if (!node) return null;
 
-  const { type, props = {}, children = [] } = node;
-
-  // If this is a primitive component, render it directly
-  if (!children || children.length === 0) {
+  try {
     return <ComponentRenderer node={node} />;
+  } catch (err) {
+    console.error("resolveNode error:", err);
+    return (
+      <div style={{ color: "red", padding: 10 }}>
+        Error resolving node: {err.message}
+      </div>
+    );
   }
-
-  // If this component has children, wrap them
-  return (
-    <div>
-      <ComponentRenderer node={node} />
-      {children.map((child, index) => (
-        <div key={index}>{resolveNode(child)}</div>
-      ))}
-    </div>
-  );
 }
