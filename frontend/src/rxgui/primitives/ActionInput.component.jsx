@@ -1,5 +1,5 @@
 import React from "react";
-import { ActionEngine } from "../runtime/ActionEngine";
+import ActionEngine from "../runtime/ActionEngine";
 
 export default function ActionInput({
   value = "",
@@ -19,7 +19,7 @@ export default function ActionInput({
     if (!action) return;
 
     try {
-      const engine = new ActionEngine();
+      const engine = new ActionEngine({});
       engine.run(action, params);
     } catch (err) {
       console.error("ActionInput click error:", err);
@@ -30,7 +30,7 @@ export default function ActionInput({
     if (!onChangeAction) return;
 
     try {
-      const engine = new ActionEngine();
+      const engine = new ActionEngine({});
       engine.run(onChangeAction, { ...onChangeParams, value: e.target.value });
     } catch (err) {
       console.error("ActionInput change error:", err);
