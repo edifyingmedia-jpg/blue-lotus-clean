@@ -1,36 +1,37 @@
 import React from "react";
-import ActionEngine from "../runtime/ActionEngine";
+import ActionEngine from "../../runtime/ActionEngine";
 
 export default function ActionList({
   items = [],
-  itemAction = null,
-  itemParams = {},
+  action = null,
+  params = {},
+  margin = "0 0 12px 0",
+  padding = "0",
   gap = 8,
-  margin = "0 0 16px 0",
   fontSize = 16,
   color = "#333",
 }) {
-  const handleItemClick = (item) => {
-    if (!itemAction) return;
+  const handleClick = (item) => {
+    if (!action) return;
 
     try {
       const engine = new ActionEngine({});
-      engine.run(itemAction, { ...itemParams, item });
+      engine.run(action, { ...params, item });
     } catch (err) {
       console.error("ActionList error:", err);
     }
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap, margin }}>
-      {items.map((item, index) => (
+    <div style={{ margin, padding, display: "flex", flexDirection: "column", gap }}>
+      {items.map((item, i) => (
         <div
-          key={index}
-          onClick={() => handleItemClick(item)}
+          key={i}
+          onClick={action ? () => handleClick(item) : undefined}
           style={{
-            cursor: itemAction ? "pointer" : "default",
             fontSize,
             color,
+            cursor: action ? "pointer" : "default",
           }}
         >
           {item}
