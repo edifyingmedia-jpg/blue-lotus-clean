@@ -1,35 +1,71 @@
 // frontend/src/runtime/ActionDispatcher.js
 
 /**
- * Routes actions to the correct engine inside the runtime layer.
- * This stays intentionally minimal until full action types are defined.
+ * ActionDispatcher
+ * ---------------------------------------------------------
+ * Receives component-level events (onPress, onChange, etc.)
+ * and dispatches them to the ActionEngine in a standardized way.
+ *
+ * Responsibilities:
+ *  - Normalize event payloads
+ *  - Support single or multiple actions
+ *  - Support conditional actions
+ *  - Never mutate state directly
  */
 
 export default class ActionDispatcher {
-  constructor({ runtimeEngine, stateManager }) {
-    this.runtimeEngine = runtimeEngine;
-    this.stateManager = stateManager;
+  constructor({ actionEngine }) {
+    this.actionEngine = actionEngine;
   }
 
   /**
-   * Dispatch an action to the correct handler.
+   * Dispatch a component event.
+   *
+   * Example event:
+   * {
+   *   type: "onPress",
+   *   actions: [
+   *     { type: "navigate", to: "Home" },
+   *     { type: "setState", path: "clicked", value: true }
+   *   ]
+   * }
    */
-  dispatch(appId, action) {
-    if (!action || typeof action !== "object") {
-      throw new Error("ActionDispatcher.dispatch: action must be an object.");
+  async dispatchEvent(event) {
+    if (!event) return;
+
+    const { actions } = event;
+    if (!actions) return;
+
+    // Single action
+    if (!Array.isArray(actions)) {
+      await this.executeAction(actions);
+      return;
     }
 
-    const { type, payload } = action;
-
-    switch (type) {
-      case "UPDATE_STATE":
-        return this.stateManager.update(appId, payload);
-
-      case "RUN_APP":
-        return this.runtimeEngine.run(payload);
-
-      default:
-        throw new Error(`ActionDispatcher: unknown action type '${type}'.`);
+    // Multiple actions
+    for (const action of actions) {
+      await this.executeAction(action);
     }
+  }
+
+  /**
+   * Execute a single action object.
+   */
+  async executeAction(action) {
+    if (!action || typeof action !== "object") return;
+
+    // Inline conditional support
+    if (action.if) {
+      const condition = action.if;
+      return await this.actionEngine.run({
+        type: "conditional",
+        if: condition,
+        then: action.then,
+        else: action.else,
+      });
+    }
+
+    // Delegate to ActionEngine
+    await this.actionEngine.run(action);
   }
 }
