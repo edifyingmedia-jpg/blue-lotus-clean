@@ -1,40 +1,67 @@
+// frontend/src/runtime/ComponentRenderer.jsx
+
 import React from "react";
+import { useRuntime } from "./RuntimeContext";
+import componentRegistry from "./componentRegistry";
 
-export default function ComponentRenderer({ component }) {
+/**
+ * ComponentRenderer
+ * ----------------------------------------------------
+ * Resolves a component definition into a real UI element.
+ * Supports:
+ *  - runtime context injection
+ *  - action dispatching
+ *  - nested children
+ *  - registry-based component lookup
+ */
+
+export default function ComponentRenderer({ component, screen }) {
+  const { dispatcher, stateEngine } = useRuntime();
+
   if (!component || typeof component !== "object") {
-    return <div style={{ color: "red" }}>Invalid component</div>;
+    return (
+      <div style={{ color: "red" }}>
+        Invalid component
+      </div>
+    );
   }
 
-  const { type, props } = component;
+  const { id, type, props = {}, children = [] } = component;
 
-  switch (type) {
-    case "text":
-      return <p {...props}>{props?.text || ""}</p>;
+  // Resolve the actual React component from the registry
+  const Resolved = componentRegistry.get(type);
 
-    case "heading":
-      return <h1 {...props}>{props?.text || ""}</h1>;
-
-    case "button":
-      return (
-        <button
-          {...props}
-          onClick={props?.onClick || (() => console.log("Button clicked"))}
-        >
-          {props?.text || "Button"}
-        </button>
-      );
-
-    case "image":
-      return <img {...props} alt={props?.alt || "image"} />;
-
-    case "input":
-      return <input {...props} />;
-
-    default:
-      return (
-        <div style={{ color: "orange" }}>
-          Unknown component type: {type}
-        </div>
-      );
+  if (!Resolved) {
+    return (
+      <div style={{ color: "orange", padding: 8 }}>
+        Unknown component type: <strong>{type}</strong>
+      </div>
+    );
   }
+
+  // Wrap event handlers so they dispatch actions
+  const wrappedProps = {
+    ...props,
+    onClick: props.onClick
+      ? () => dispatcher.dispatch(props.onClick)
+      : props.onClick,
+    onChange: props.onChange
+      ? (e) => dispatcher.dispatch(props.onChange, e.target.value)
+      : props.onChange,
+    state: stateEngine.get(),
+    screen,
+  };
+
+  return (
+    <Resolved {...wrappedProps}>
+      {Array.isArray(children) &&
+        children.map((child) => (
+          <ComponentRenderer
+            key={child.id}
+            component={child}
+            screen={screen}
+          />
+        ))}
+    </Resolved>
+  );
 }
