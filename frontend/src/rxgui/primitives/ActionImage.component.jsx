@@ -1,5 +1,5 @@
 import React from "react";
-import ActionEngine from "../runtime/ActionEngine";
+import ActionEngine from "../../runtime/ActionEngine";
 
 export default function ActionImage({
   src = "",
@@ -10,7 +10,6 @@ export default function ActionImage({
   height = "auto",
   margin = "0 0 12px 0",
   borderRadius = 6,
-  objectFit = "cover",
 }) {
   const handleClick = () => {
     if (!action) return;
@@ -27,14 +26,14 @@ export default function ActionImage({
     <img
       src={src}
       alt={alt}
-      onClick={handleClick}
+      onClick={action ? handleClick : undefined}
       style={{
         width,
         height,
         margin,
         borderRadius,
-        objectFit,
         cursor: action ? "pointer" : "default",
+        display: "block",
       }}
     />
   );
