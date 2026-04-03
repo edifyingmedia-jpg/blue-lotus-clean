@@ -1,88 +1,31 @@
+// frontend/src/runtime/NavigationEngine.js
+
+/**
+ * Minimal navigation engine for runtime apps.
+ * Handles page switching inside a running app.
+ */
+
 export default class NavigationEngine {
   constructor() {
-    this.stack = [];
-    this.onNavigate = null;
-
-    // Default initial screen
-    this.initialScreen = "Home";
+    this.currentPage = null;
   }
 
   /**
-   * Initialize navigation with project + document context
+   * Navigate to a page by ID or name.
    */
-  init({ project, document, onNavigate }) {
-    this.project = project;
-    this.document = document;
-    this.onNavigate = onNavigate;
-
-    // Reset navigation stack
-    this.stack = [this.initialScreen];
-  }
-
-  /**
-   * Return the first screen to mount
-   */
-  getInitialScreen() {
-    return this.initialScreen;
-  }
-
-  /**
-   * Core navigation dispatcher
-   */
-  navigate = (type, screen, params = {}) => {
-    const action = { type, screen, params };
-
-    switch (type) {
-      case "PUSH":
-        this.stack.push(screen);
-        break;
-
-      case "REPLACE":
-        this.stack.pop();
-        this.stack.push(screen);
-        break;
-
-      case "RESET":
-        this.stack = [screen];
-        break;
-
-      case "MODAL":
-        // Future modal system
-        break;
-
-      default:
-        console.warn("[NavigationEngine] Unknown navigation type:", type);
-        return;
+  go(to) {
+    if (!to || typeof to !== "string") {
+      console.warn("NavigationEngine.go: invalid target:", to);
+      return;
     }
 
-    if (this.onNavigate) {
-      this.onNavigate(action);
-    }
-  };
-
-  /**
-   * Convenience wrappers
-   */
-  push(screen, params = {}) {
-    this.navigate("PUSH", screen, params);
-  }
-
-  replace(screen, params = {}) {
-    this.navigate("REPLACE", screen, params);
-  }
-
-  reset(screen, params = {}) {
-    this.navigate("RESET", screen, params);
-  }
-
-  modal(screen, params = {}) {
-    this.navigate("MODAL", screen, params);
+    this.currentPage = to;
   }
 
   /**
-   * Return the current screen name
+   * Get the current page identifier.
    */
-  getCurrentScreen() {
-    return this.stack[this.stack.length - 1] || null;
+  getCurrentPage() {
+    return this.currentPage;
   }
 }
