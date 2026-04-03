@@ -1,15 +1,5 @@
-// frontend/src/rxgui/primitives/ActionText.component.jsx
-
 import React from "react";
 import { ActionEngine } from "../runtime/ActionEngine";
-
-/**
- * ActionText
- * --------------------------------------------------
- * A text element that triggers an ActionEngine action
- * when clicked. Used for inline triggers like:
- * "Tap here", "Load more", "Refresh", etc.
- */
 
 export default function ActionText({
   text = "",
