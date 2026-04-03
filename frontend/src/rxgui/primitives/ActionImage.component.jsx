@@ -1,5 +1,5 @@
 import React from "react";
-import { ActionEngine } from "../runtime/ActionEngine";
+import ActionEngine from "../runtime/ActionEngine";
 
 export default function ActionImage({
   src = "",
@@ -16,7 +16,7 @@ export default function ActionImage({
     if (!action) return;
 
     try {
-      const engine = new ActionEngine();
+      const engine = new ActionEngine({});
       engine.run(action, params);
     } catch (err) {
       console.error("ActionImage error:", err);
