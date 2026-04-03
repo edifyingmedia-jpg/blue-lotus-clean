@@ -1,24 +1,48 @@
+// frontend/src/runtime/RuntimeContext.js
+
 import React, { createContext, useContext, useMemo } from "react";
-import { initTWINSession } from "./twin/initTWINSession";
+
+import StateEngine from "./StateEngine";
+import NavigationEngine from "./NavigationEngine";
 import ActionEngine from "./ActionEngine";
+import ActionDispatcher from "./ActionDispatcher";
+import RuntimeEngine from "./RuntimeEngine";
 
 const RuntimeContext = createContext(null);
 
+/**
+ * RuntimeProvider
+ * ----------------------------------------------------
+ * Creates and wires all runtime engines, then exposes
+ * them through React context to the entire runtime tree.
+ */
+
 export function RuntimeProvider({ children }) {
-  const twinSession = useMemo(() => {
-    return initTWINSession({ isOwner: true });
-  }, []);
-
-  const action = useMemo(() => {
-    return ActionEngine({ runtime: { twin: twinSession } });
-  }, [twinSession]);
-
   const runtime = useMemo(() => {
+    const stateEngine = new StateEngine();
+    const navigationEngine = new NavigationEngine();
+    const actionEngine = new ActionEngine({
+      stateEngine,
+      navigationEngine,
+    });
+    const dispatcher = new ActionDispatcher({
+      actionEngine,
+    });
+    const runtimeEngine = new RuntimeEngine({
+      stateEngine,
+      navigationEngine,
+      actionEngine,
+      dispatcher,
+    });
+
     return {
-      twin: twinSession,
-      action,
+      stateEngine,
+      navigationEngine,
+      actionEngine,
+      dispatcher,
+      runtimeEngine,
     };
-  }, [twinSession, action]);
+  }, []);
 
   return (
     <RuntimeContext.Provider value={runtime}>
