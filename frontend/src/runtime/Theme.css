@@ -1,0 +1,15 @@
+:root {
+  --bg-smoke: #1e1e1e;
+  --bg-panel: #262626;
+  --bg-panel-light: #2c2c2c;
+
+  --text-primary: #f5f5f5;
+  --text-secondary: #c7c7c7;
+
+  --accent: #7aa8ff;
+
+  --radius: 16px;
+  --shadow-soft: 0 4px 22px rgba(0, 0, 0, 0.28);
+
+  --gradient-soft: linear-gradient(145deg, #2a2a2a, #1b1b1b);
+}
