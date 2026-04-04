@@ -1,11 +1,10 @@
-import React from "react";
-import { BuilderApp } from "./index.js";
-import { ProjectProvider } from "../state";
+import React from 'react';
+import BuilderApp from './BuilderApp.jsx';
 
 export default function Builder() {
   return (
-    <ProjectProvider>
+    <div className="builder-root">
       <BuilderApp />
-    </ProjectProvider>
+    </div>
   );
 }
