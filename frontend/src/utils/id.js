@@ -1,4 +1,3 @@
-export * from './findNodeById.js';
-export * from './format.js';
-export * from './id.js';
-export * from './safeSet.js';
+export function generateId(prefix = 'id') {
+  return `${prefix}-${Math.random().toString(36).slice(2, 11)}`;
+}
