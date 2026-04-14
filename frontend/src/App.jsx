@@ -32,41 +32,53 @@ function App() {
     else alert('Account created! Now click "LOG IN"');
   };
 
+  // --- NEW DASHBOARD VIEW ---
   if (user) {
     return (
-      <div style={{ backgroundColor: '#0f172a', color: '#f8fafc', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
-        <h1 style={{ fontSize: '4rem', color: '#38bdf8' }}>🪷 Blue Lotus</h1>
-        <p style={{ fontSize: '1.5rem' }}>Logged in as: <strong>{user.email}</strong></p>
-        <button onClick={() => supabase.auth.signOut()} style={{ marginTop: '30px', padding: '15px 40px', backgroundColor: '#e11d48', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1.2rem', cursor: 'pointer' }}>
-          Sign Out
-        </button>
+      <div style={{ backgroundColor: '#0f172a', color: '#f8fafc', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', textAlign: 'center', padding: '20px' }}>
+        <h1 style={{ fontSize: '4rem', color: '#38bdf8', marginBottom: '10px' }}>🪷 Blue Lotus</h1>
+        <p style={{ fontSize: '1.2rem', color: '#94a3b8', marginBottom: '30px' }}>Dashboard for: {user.email}</p>
+        
+        <div style={{ display: 'grid', gap: '20px', width: '100%', maxWidth: '500px' }}>
+          
+          <button style={{ padding: '30px', backgroundColor: '#1e293b', color: '#38bdf8', border: '3px solid #38bdf8', borderRadius: '20px', fontSize: '1.8rem', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
+            🍎 Diet Tracker
+          </button>
+
+          <button style={{ padding: '30px', backgroundColor: '#1e293b', color: '#38bdf8', border: '3px solid #38bdf8', borderRadius: '20px', fontSize: '1.8rem', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
+            🤖 AI App Builder
+          </button>
+
+          <button onClick={() => supabase.auth.signOut()} style={{ marginTop: '20px', padding: '15px', color: '#e11d48', background: 'none', border: '2px solid #e11d48', borderRadius: '10px', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer' }}>
+            Sign Out
+          </button>
+          
+        </div>
       </div>
     );
   }
 
+  // --- SIGN IN VIEW ---
   return (
     <div style={{ backgroundColor: '#0f172a', color: '#f8fafc', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
-      <h1 style={{ fontSize: '4rem', color: '#38bdf8', marginBottom: '20px' }}>🪷 Blue Lotus</h1>
-      <div style={{ padding: '40px', backgroundColor: '#1e293b', borderRadius: '20px', border: '2px solid #38bdf8', width: '350px' }}>
+      <h1 style={{ fontSize: '4.5rem', color: '#38bdf8', marginBottom: '20px' }}>🪷 Blue Lotus</h1>
+      <div style={{ padding: '40px', backgroundColor: '#1e293b', borderRadius: '25px', border: '2px solid #38bdf8', width: '350px' }}>
         <input 
           type="email" 
           placeholder="Email Address" 
           value={email} 
           onChange={(e) => setEmail(e.target.value)} 
-          style={{ width: '100%', padding: '15px', marginBottom: '15px', borderRadius: '8px', fontSize: '1.1rem' }} 
+          style={{ width: '100%', padding: '15px', marginBottom: '15px', borderRadius: '8px', fontSize: '1.2rem' }} 
         />
         <input 
           type="password" 
           placeholder="Password" 
           value={password} 
           onChange={(e) => setPassword(e.target.value)} 
-          style={{ width: '100%', padding: '15px', marginBottom: '20px', borderRadius: '8px', fontSize: '1.1rem' }} 
+          style={{ width: '100%', padding: '15px', marginBottom: '25px', borderRadius: '8px', fontSize: '1.2rem' }} 
         />
-        <button onClick={handleLogin} style={{ width: '100%', padding: '15px', backgroundColor: '#38bdf8', color: '#0f172a', border: 'none', borderRadius: '8px', fontSize: '1.3rem', fontWeight: 'bold', cursor: 'pointer', marginBottom: '10px' }}>
+        <button onClick={handleLogin} style={{ width: '100%', padding: '15px', backgroundColor: '#38bdf8', color: '#0f172a', border: 'none', borderRadius: '8px', fontSize: '1.4rem', fontWeight: 'bold', cursor: 'pointer' }}>
           LOG IN
-        </button>
-        <button onClick={handleSignUp} style={{ width: '100%', background: 'none', color: '#38bdf8', border: '1px solid #38bdf8', padding: '10px', borderRadius: '8px', cursor: 'pointer' }}>
-          Create New Account
         </button>
       </div>
     </div>
