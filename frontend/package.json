@@ -5,7 +5,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "mkdir -p build && echo '<h1>Blue Lotus is Online</h1>' > build/index.html",
-    "install": "npm install react-scripts"
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
     "react": "^18.2.0",
