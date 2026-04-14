@@ -1,15 +1,20 @@
-// frontend/src/runtime/ActionDispatcher.js
+import { supabase } from '../lib/supabaseClient';
 
-export default class ActionDispatcher {
-  constructor(engine) {
-    this.engine = engine;
-  }
-
-  dispatch(name, payload) {
-    if (!this.engine) {
-      console.error("ActionDispatcher: no engine available");
-      return;
+export const ActionDispatcher = {
+  dispatch: async (blueprint) => {
+    console.log("🚀 INITIATING_ACTUATION...");
+    
+    if (blueprint.database_migration) {
+      const { error } = await supabase.rpc('exec_sql', { 
+        sql_query: blueprint.database_migration 
+      });
+      
+      if (error) {
+        console.error("!! INFRASTRUCTURE_FAILURE", error);
+        return { success: false, error };
+      }
     }
-    return this.engine.run(name, payload);
+
+    return { success: true };
   }
-}
+};
