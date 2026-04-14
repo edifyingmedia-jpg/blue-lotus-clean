@@ -2,16 +2,13 @@ import React, { useState } from 'react';
 
 const animationKeyframes = `
   @keyframes scanline { 0% { bottom: 100%; } 100% { bottom: 0%; } }
-  @keyframes textFlicker { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+  @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
 `;
 
 function App() {
   const [view, setView] = useState('landing'); 
-  const [activeTab, setActiveTab] = useState('BUILD'); // BUILD, HEAL, STORE
-  const [healingLog, setHealingLog] = useState([
-    "// TWIN HEALING_CORE INITIALIZED...",
-    "// Awaiting broken input for diagnostic analysis."
-  ]);
+  const [activeTab, setActiveTab] = useState('BUILD'); 
+  const [healingStatus, setHealingStatus] = useState('IDLE'); // IDLE, ANALYZING, HEALING
 
   const theme = {
     bg: '#010204',
@@ -35,55 +32,45 @@ function App() {
             <button onClick={() => setActiveTab('STORE')} style={{ background: 'none', border: 'none', color: activeTab === 'STORE' ? '#fbbf24' : '#475569', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold' }}>[ STOREFRONT ]</button>
           </div>
         </div>
-        <div style={{ fontSize: '0.65rem', color: '#475569' }}>PLATFORM_FEE: 10% // STATUS: SECURE</div>
+        <div style={{ fontSize: '0.65rem', color: '#475569' }}>PLATFORM_FEE: 10% // TWIN_HEALER: v2.4</div>
       </div>
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         
-        {/* LEFT COLUMN: TWIN DYNAMIC CONSOLE */}
+        {/* LEFT COLUMN: THE MASTER CONSOLE */}
         <div style={{ width: '450px', borderRight: theme.border, display: 'flex', flexDirection: 'column', backgroundColor: '#010204', padding: '20px' }}>
           
           {activeTab === 'HEAL' ? (
             <>
-              <div style={{ fontSize: '0.7rem', color: theme.purple, marginBottom: '10px' }}>&gt; TWIN_HEALING_DIAGNOSTIC</div>
+              <div style={{ fontSize: '0.7rem', color: theme.purple, marginBottom: '10px', fontWeight: 'bold' }}>&gt; TWIN_HEALING_ENGINE</div>
+              
               <div style={{ flex: 1, backgroundColor: '#000', border: '1px solid #111827', padding: '15px', color: theme.purple, fontSize: '0.8rem', position: 'relative', overflowY: 'auto' }}>
-                {healingLog.map((line, i) => <div key={i} style={{ marginBottom: '5px' }}>{line}</div>)}
+                <div style={{ marginBottom: '10px' }}>[SYSTEM] Initialization successful.</div>
+                {healingStatus === 'IDLE' && <div>// Awaiting broken code for diagnostic...</div>}
+                {healingStatus === 'ANALYZING' && <div style={{ animation: 'pulse 1s infinite' }}>// ANALYZING EXTERNAL ERRORS...</div>}
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '1px', background: theme.purple, opacity: 0.2, animation: 'scanline 4s linear infinite' }} />
               </div>
-              <textarea placeholder="Paste broken code here..." style={{ width: '100%', height: '120px', marginTop: '15px', padding: '15px', backgroundColor: '#0a0f1d', border: theme.border, borderRadius: '4px', color: '#fff' }} />
-              <button style={{ width: '100%', marginTop: '10px', padding: '15px', backgroundColor: theme.purple, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '4px' }}>INITIATE_HEALING</button>
-            </>
-          ) : activeTab === 'STORE' ? (
-            <>
-              <div style={{ fontSize: '0.7rem', color: '#fbbf24', marginBottom: '10px' }}>&gt; MERCHANT_HUB</div>
-              <div style={{ flex: 1, border: '1px dashed #1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '20px' }}>
-                <p style={{ color: '#475569', fontSize: '0.8rem' }}>No active listings.<br/>Build an app to open your storefront.</p>
+
+              {/* UPLOAD AREA */}
+              <div style={{ marginTop: '20px', padding: '20px', border: `2px dashed rgba(167, 139, 250, 0.3)`, borderRadius: '8px', textAlign: 'center', cursor: 'pointer' }}>
+                <span style={{ fontSize: '0.7rem', color: theme.purple }}>[ DROP_BROKEN_FILE_HERE ]</span>
               </div>
-              <button style={{ width: '100%', marginTop: '15px', padding: '15px', border: '1px solid #fbbf24', color: '#fbbf24', background: 'none', fontWeight: 'bold', borderRadius: '4px' }}>LIST_CURRENT_APP</button>
+
+              <textarea placeholder="Or paste raw code..." style={{ width: '100%', height: '100px', marginTop: '15px', padding: '15px', backgroundColor: '#0a0f1d', border: theme.border, borderRadius: '4px', color: '#fff' }} />
+              <button 
+                onClick={() => setHealingStatus('ANALYZING')}
+                style={{ width: '100%', marginTop: '10px', padding: '15px', backgroundColor: theme.purple, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                INITIATE_HEALING_CORE
+              </button>
             </>
           ) : (
-            <>
-              <div style={{ fontSize: '0.7rem', color: theme.blue, marginBottom: '10px' }}>&gt; ARCHITECT_COMMAND</div>
-              <div style={{ flex: 1, backgroundColor: '#000', border: '1px solid #111827', padding: '15px', color: theme.blue }}>
-                <div>[TWIN] Awaiting architecture parameters...</div>
-              </div>
-              <textarea placeholder="Describe your vision..." style={{ width: '100%', height: '120px', marginTop: '15px', padding: '15px', backgroundColor: '#0a0f1d', border: theme.border, borderRadius: '4px', color: '#fff' }} />
-              <button style={{ width: '100%', marginTop: '10px', padding: '15px', backgroundColor: theme.blue, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '4px' }}>EXECUTE_BUILD</button>
-            </>
+             <div style={{ color: '#475569', fontSize: '0.8rem' }}>// BUILDER_CONSOLE_ACTIVE</div>
           )}
         </div>
 
-        {/* RIGHT COLUMN: PREVIEW & MARKET MONITOR */}
+        {/* RIGHT COLUMN: PREVIEW */}
         <div style={{ flex: 1, backgroundColor: '#020408', padding: '30px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ flex: 1, backgroundColor: '#fff', borderRadius: '4px', boxShadow: '0 40px 100px rgba(0,0,0,0.8)', overflow: 'hidden' }}>
-             <div style={{ height: '35px', backgroundColor: '#f1f5f9', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', padding: '0 15px', justifyContent: 'space-between' }}>
-               <div style={{ display: 'flex', gap: '5px' }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
-               </div>
-               {activeTab === 'STORE' && <span style={{ fontSize: '0.6rem', color: '#000', fontWeight: 'bold' }}>MERCHANT_PREVIEW_MODE</span>}
-             </div>
-          </div>
+          <div style={{ flex: 1, backgroundColor: '#fff', borderRadius: '4px', boxShadow: '0 40px 100px rgba(0,0,0,0.8)' }} />
         </div>
       </div>
     </div>
