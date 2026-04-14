@@ -8,14 +8,31 @@ const animationKeyframes = `
 function App() {
   const [view, setView] = useState('landing'); 
   const [activeTab, setActiveTab] = useState('BUILD'); 
-  const [healingStatus, setHealingStatus] = useState('IDLE'); // IDLE, ANALYZING, HEALING
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [consoleLog, setConsoleLog] = useState([
+    "// TWIN_CORE: ONLINE",
+    "// AUTH_LEVEL: MASTER_OWNER",
+    "// Awaiting architecture parameters..."
+  ]);
 
   const theme = {
     bg: '#010204',
     blue: '#38bdf8',
     purple: '#a78bfa',
-    border: '1px solid rgba(56, 189, 248, 0.12)',
+    border: '1px solid rgba(56, 189, 248, 0.15)',
     fontMono: '"JetBrains Mono", monospace'
+  };
+
+  // The "Sovereign Build" Function
+  const handleExecuteBuild = () => {
+    setIsGenerating(true);
+    setConsoleLog(prev => [...prev, "> INITIATING_BUILD_SEQUENCE...", "> ANALYZING_PROFITABILITY...", "> TWIN: 'I am architecting a superior solution now.'"]);
+    
+    // Simulate the AI "thinking" and generating
+    setTimeout(() => {
+      setIsGenerating(false);
+      setConsoleLog(prev => [...prev, "> RENDER_COMPLETE: v1.0 deployed to preview."]);
+    }, 3000);
   };
 
   const Workspace = () => (
@@ -29,48 +46,39 @@ function App() {
           <div style={{ display: 'flex', gap: '15px' }}>
             <button onClick={() => setActiveTab('BUILD')} style={{ background: 'none', border: 'none', color: activeTab === 'BUILD' ? theme.blue : '#475569', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold' }}>[ BUILDER ]</button>
             <button onClick={() => setActiveTab('HEAL')} style={{ background: 'none', border: 'none', color: activeTab === 'HEAL' ? theme.purple : '#475569', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold' }}>[ CODE_HEALER ]</button>
-            <button onClick={() => setActiveTab('STORE')} style={{ background: 'none', border: 'none', color: activeTab === 'STORE' ? '#fbbf24' : '#475569', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold' }}>[ STOREFRONT ]</button>
+            <button onClick={() => setActiveTab('STORE')} style={{ background: 'none', border: 'none', color: '#fbbf24', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold' }}>[ STOREFRONT ]</button>
           </div>
         </div>
-        <div style={{ fontSize: '0.65rem', color: '#475569' }}>PLATFORM_FEE: 10% // TWIN_HEALER: v2.4</div>
+        <div style={{ fontSize: '0.65rem', color: theme.blue }}>STATUS: TWIN_MASTER_ACTIVE // {isGenerating ? "GENERATING..." : "IDLE"}</div>
       </div>
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        
-        {/* LEFT COLUMN: THE MASTER CONSOLE */}
+        {/* LEFT COLUMN: THE CONSOLE */}
         <div style={{ width: '450px', borderRight: theme.border, display: 'flex', flexDirection: 'column', backgroundColor: '#010204', padding: '20px' }}>
-          
-          {activeTab === 'HEAL' ? (
-            <>
-              <div style={{ fontSize: '0.7rem', color: theme.purple, marginBottom: '10px', fontWeight: 'bold' }}>&gt; TWIN_HEALING_ENGINE</div>
-              
-              <div style={{ flex: 1, backgroundColor: '#000', border: '1px solid #111827', padding: '15px', color: theme.purple, fontSize: '0.8rem', position: 'relative', overflowY: 'auto' }}>
-                <div style={{ marginBottom: '10px' }}>[SYSTEM] Initialization successful.</div>
-                {healingStatus === 'IDLE' && <div>// Awaiting broken code for diagnostic...</div>}
-                {healingStatus === 'ANALYZING' && <div style={{ animation: 'pulse 1s infinite' }}>// ANALYZING EXTERNAL ERRORS...</div>}
-                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '1px', background: theme.purple, opacity: 0.2, animation: 'scanline 4s linear infinite' }} />
-              </div>
+          <div style={{ fontSize: '0.7rem', color: theme.blue, marginBottom: '10px' }}>&gt; TWIN_CONSOLE_v4.0</div>
+          <div style={{ flex: 1, backgroundColor: '#000', border: '1px solid #111827', padding: '15px', color: theme.blue, fontSize: '0.85rem', position: 'relative', overflowY: 'auto' }}>
+            {consoleLog.map((line, i) => <div key={i} style={{ marginBottom: '5px' }}>{line}</div>)}
+            {isGenerating && <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '2px', background: theme.blue, animation: 'scanline 2s linear infinite' }} />}
+          </div>
 
-              {/* UPLOAD AREA */}
-              <div style={{ marginTop: '20px', padding: '20px', border: `2px dashed rgba(167, 139, 250, 0.3)`, borderRadius: '8px', textAlign: 'center', cursor: 'pointer' }}>
-                <span style={{ fontSize: '0.7rem', color: theme.purple }}>[ DROP_BROKEN_FILE_HERE ]</span>
-              </div>
-
-              <textarea placeholder="Or paste raw code..." style={{ width: '100%', height: '100px', marginTop: '15px', padding: '15px', backgroundColor: '#0a0f1d', border: theme.border, borderRadius: '4px', color: '#fff' }} />
-              <button 
-                onClick={() => setHealingStatus('ANALYZING')}
-                style={{ width: '100%', marginTop: '10px', padding: '15px', backgroundColor: theme.purple, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                INITIATE_HEALING_CORE
-              </button>
-            </>
-          ) : (
-             <div style={{ color: '#475569', fontSize: '0.8rem' }}>// BUILDER_CONSOLE_ACTIVE</div>
-          )}
+          <div style={{ marginTop: '20px' }}>
+            <textarea 
+              placeholder="Command TWIN to architect..." 
+              style={{ width: '100%', height: '100px', padding: '15px', backgroundColor: '#0a0f1d', border: theme.border, borderRadius: '4px', color: '#fff', fontSize: '1rem', outline: 'none' }} 
+            />
+            <button 
+              onClick={handleExecuteBuild}
+              style={{ width: '100%', marginTop: '10px', padding: '15px', backgroundColor: theme.blue, color: '#000', fontWeight: '900', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+              {isGenerating ? "ARCHITECTING..." : "EXECUTE_BUILD"}
+            </button>
+          </div>
         </div>
 
         {/* RIGHT COLUMN: PREVIEW */}
         <div style={{ flex: 1, backgroundColor: '#020408', padding: '30px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ flex: 1, backgroundColor: '#fff', borderRadius: '4px', boxShadow: '0 40px 100px rgba(0,0,0,0.8)' }} />
+          <div style={{ flex: 1, backgroundColor: isGenerating ? '#000' : '#fff', borderRadius: '4px', transition: 'background 0.5s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+             {isGenerating ? <div style={{ color: theme.blue, fontSize: '1rem', animation: 'pulse 1s infinite' }}>[ PREVIEW_RECONSTRUCTING ]</div> : null}
+          </div>
         </div>
       </div>
     </div>
@@ -79,7 +87,7 @@ function App() {
   return view === 'landing' ? (
     <div style={{ backgroundColor: theme.bg, color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
       <h1 style={{ fontSize: '7rem', fontWeight: '900' }}><span style={{ color: theme.blue }}>Blue</span> Lotus</h1>
-      <button onClick={() => setView('workspace')} style={{ marginTop: '30px', padding: '20px 60px', background: 'none', border: `1px solid ${theme.blue}`, color: theme.blue, fontWeight: 'bold', cursor: 'pointer' }}>ENTER_CORE</button>
+      <button onClick={() => setView('workspace')} style={{ marginTop: '30px', padding: '20px 80px', background: 'none', border: `1px solid ${theme.blue}`, color: theme.blue, fontWeight: 'bold', fontSize: '1.2rem', cursor: 'pointer' }}>ENTER_CORE</button>
     </div>
   ) : <Workspace />;
 }
