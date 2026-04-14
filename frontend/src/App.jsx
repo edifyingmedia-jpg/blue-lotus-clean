@@ -1,101 +1,73 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// --- SUPABASE CONFIGURATION ---
-// These use your existing environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 function App() {
   const [user, setUser] = useState(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  // Check if a user is already logged in when the page loads
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
-  // Function to handle Google Login
   const handleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) alert(error.message);
   };
 
-  // Function to handle Logout
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleSignUp = async () => {
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) alert(error.message);
+    else alert('Account created! Now click "LOG IN"');
   };
+
+  if (user) {
+    return (
+      <div style={{ backgroundColor: '#0f172a', color: '#f8fafc', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
+        <h1 style={{ fontSize: '4rem', color: '#38bdf8' }}>🪷 Blue Lotus</h1>
+        <p style={{ fontSize: '1.5rem' }}>Logged in as: <strong>{user.email}</strong></p>
+        <button onClick={() => supabase.auth.signOut()} style={{ marginTop: '30px', padding: '15px 40px', backgroundColor: '#e11d48', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1.2rem', cursor: 'pointer' }}>
+          Sign Out
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ 
-      backgroundColor: '#1a1a2e', 
-      color: '#fff', 
-      height: '100vh', 
-      display: 'flex', 
-      flexDirection: 'column',
-      alignItems: 'center', 
-      justifyContent: 'center',
-      fontFamily: 'sans-serif',
-      textAlign: 'center'
-    }}>
-      <h1 style={{ fontSize: '3.5rem', color: '#e94560', marginBottom: '10px' }}>🪷 Blue Lotus</h1>
-      
-      <div style={{ 
-        padding: '30px', 
-        border: '1px solid #e94560', 
-        borderRadius: '20px',
-        backgroundColor: '#16213e',
-        boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
-      }}>
-        {!user ? (
-          <>
-            <p style={{ marginBottom: '20px', fontSize: '1.2rem' }}>Welcome to the next generation of Blue Lotus.</p>
-            <button 
-              onClick={handleLogin}
-              style={{
-                padding: '12px 30px',
-                backgroundColor: '#e94560',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                cursor: 'pointer'
-              }}>
-              Login with Google
-            </button>
-          </>
-        ) : (
-          <>
-            <p style={{ marginBottom: '20px' }}>Logged in as: <strong>{user.email}</strong></p>
-            <button 
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#0f3460',
-                color: 'white',
-                border: '1px solid #e94560',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                marginRight: '10px'
-              }}>
-              Enter Dashboard
-            </button>
-            <button 
-              onClick={handleLogout}
-              style={{ color: '#e94560', background: 'none', border: 'none', cursor: 'pointer' }}>
-              Sign Out
-            </button>
-          </>
-        )}
+    <div style={{ backgroundColor: '#0f172a', color: '#f8fafc', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
+      <h1 style={{ fontSize: '4rem', color: '#38bdf8', marginBottom: '20px' }}>🪷 Blue Lotus</h1>
+      <div style={{ padding: '40px', backgroundColor: '#1e293b', borderRadius: '20px', border: '2px solid #38bdf8', width: '350px' }}>
+        <input 
+          type="email" 
+          placeholder="Email Address" 
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
+          style={{ width: '100%', padding: '15px', marginBottom: '15px', borderRadius: '8px', fontSize: '1.1rem' }} 
+        />
+        <input 
+          type="password" 
+          placeholder="Password" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
+          style={{ width: '100%', padding: '15px', marginBottom: '20px', borderRadius: '8px', fontSize: '1.1rem' }} 
+        />
+        <button onClick={handleLogin} style={{ width: '100%', padding: '15px', backgroundColor: '#38bdf8', color: '#0f172a', border: 'none', borderRadius: '8px', fontSize: '1.3rem', fontWeight: 'bold', cursor: 'pointer', marginBottom: '10px' }}>
+          LOG IN
+        </button>
+        <button onClick={handleSignUp} style={{ width: '100%', background: 'none', color: '#38bdf8', border: '1px solid #38bdf8', padding: '10px', borderRadius: '8px', cursor: 'pointer' }}>
+          Create New Account
+        </button>
       </div>
     </div>
   );
