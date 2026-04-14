@@ -3,7 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 
 // --- NEURAL BRIDGE CONFIGURATION ---
 const supabaseUrl = 'https://ehbpmjknjmgroucacsru.supabase.co';
-const supabaseAnonKey = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoYnBtamtuam1ncm91Y2Fjc3J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMzc4NzUsImV4cCI6MjA5MTYxMzg3NX0.13spZuJdIWBVVSIhLvdO9uYmGVEzi70oBsObBwVJiOo'; 
+// Corrected: Added the missing opening quote before eyJhbGci
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoYnBtamtuam1ncm91Y2Fjc3J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMzc4NzUsImV4cCI6MjA5MTYxMzg3NX0.13spZuJdIWBVVSIhLvdO9uYmGVEzi70oBsObBwVJiOo'; 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const animationKeyframes = `
@@ -14,7 +15,6 @@ const animationKeyframes = `
 function App() {
   const [view, setView] = useState('landing');
   const [user, setUser] = useState(null);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [consoleLog, setConsoleLog] = useState(["// TWIN_CORE: ONLINE", "// AUTH_LEVEL: MASTER_OWNER"]);
 
   useEffect(() => {
