@@ -1,5 +1,19 @@
 import React, { useState } from 'react';
 
+// --- ANIMATION STYLES (Paste this before function App) ---
+const animationKeyframes = `
+  @keyframes budToBloom {
+    0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+    50% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  @keyframes petalSpread {
+    0% { d: path('M12 2C12 2 12 6 12 12C12 18 12 22 12 22C12 22 12 18 12 12C12 6 12 2 12 2Z'); }
+    100% { d: path('M12 22C12 22 20 18 20 12C20 6 12 2 12 2C12 2 4 6 4 12C4 18 12 22 12 22Z'); }
+  }
+`;
+
 function App() {
   const [view, setView] = useState('landing'); 
 
@@ -12,13 +26,47 @@ function App() {
     border: '1px solid rgba(56, 189, 248, 0.2)'
   };
 
-  // --- 1. THE LANDING PAGE (The "Face") ---
+  // --- THE LUXE ANIMATED LOTUS LOGO ---
+  const PremiumLotusLogo = () => (
+    <div style={{ animation: 'budToBloom 1.2s ease-out forwards', display: 'inline-block' }}>
+      <svg width="150" height="150" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <style>{animationKeyframes}</style>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        
+        {/* Core Petal (Glows and Spreads) */}
+        <path 
+          style={{ animation: 'petalSpread 1s ease-out 0.2s forwards', filter: 'url(#glow)' }}
+          d="M12 2C12 2 12 6 12 12C12 18 12 22 12 22C12 22 12 18 12 12C12 6 12 2 12 2Z" 
+          fill={theme.accent} 
+          fillOpacity="0.8"
+        />
+        
+        {/* Side Petals (Subtle Glow) */}
+        <path d="M12 22C12 22 16 20 18 17C20 14 20 10 18 7C16 4 12 2 12 2M12 22C12 22 8 20 6 17C4 14 4 10 6 7C8 4 12 2 12 2" stroke={theme.accent} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 22C12 22 14 21 15 20C16 19 16.5 17 16 15C15.5 13 14 11 12 10M12 22C12 22 10 21 9 20C8 19 7.5 17 8 15C8.5 13 10 11 12 10" stroke={theme.accent} strokeWidth="0.75" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    </div>
+  );
+
+  // --- 1. THE LANDING PAGE (With Animated Logo) ---
   const LandingPage = () => (
     <div style={{ backgroundColor: theme.bg, color: theme.text, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', overflow: 'hidden' }}>
       <div style={{ textAlign: 'center', padding: '40px' }}>
+        
+        {/* The Animated Logo (Replaces the text 🪷) */}
+        <PremiumLotusLogo />
+
         <div style={{ fontSize: '1.2rem', color: theme.accent, letterSpacing: '4px', marginBottom: '10px', fontWeight: 'bold' }}>INTRODUCING</div>
         <h1 style={{ fontSize: '6rem', fontWeight: '900', margin: '0', letterSpacing: '-3px', lineHeight: '1' }}>
-          <span style={{ color: theme.accent }}>🪷 Blue</span> Lotus
+          <span style={{ color: theme.accent }}>Blue</span> Lotus
         </h1>
         <p style={{ fontSize: '1.8rem', color: '#94a3b8', marginTop: '20px', fontWeight: '300' }}>
           Build software at the speed of thought.
@@ -29,7 +77,7 @@ function App() {
           style={{ 
             marginTop: '50px', padding: '25px 60px', backgroundColor: theme.accent, color: theme.bg, 
             fontSize: '1.6rem', fontWeight: '900', border: 'none', borderRadius: '12px', 
-            cursor: 'pointer', boxShadow: '0 0 40px rgba(56, 189, 248, 0.4)', transition: 'transform 0.2s'
+            cursor: 'pointer', boxShadow: '0 0 40px rgba(56, 189, 248, 0.4)' 
           }}>
           LAUNCH WORKSPACE
         </button>
@@ -44,7 +92,8 @@ function App() {
       {/* Sleek Top Header */}
       <div style={{ height: '70px', borderBottom: theme.border, display: 'flex', alignItems: 'center', padding: '0 30px', justifyContent: 'space-between', backgroundColor: '#020617' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <span style={{ fontSize: '1.5rem' }}>🪷</span>
+          {/* Smaller, Static Logo for Header */}
+          <span style={{ fontSize: '1.5rem', filter: 'drop-shadow(0 0 5px #38bdf8)' }}>🪷</span>
           <span style={{ fontWeight: 'bold', fontSize: '1.2rem', letterSpacing: '2px' }}>BLUE LOTUS <span style={{color: theme.accent}}>CORE</span></span>
         </div>
         <button onClick={() => setView('landing')} style={{ background: 'none', border: `1px solid ${theme.accent}`, color: theme.accent, padding: '8px 20px', borderRadius: '5px', cursor: 'pointer', fontSize: '0.9rem' }}>
