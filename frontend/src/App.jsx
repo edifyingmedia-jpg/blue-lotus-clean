@@ -13,7 +13,12 @@ function App() {
   const [state, setState] = useState({ isLive: false, appName: '', theme: '#6366f1' });
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => { if (session) { setUser(session.user); setView('workspace'); } });
+    supabase.auth.getSession().then(({ data: { session } }) => { 
+      if (session) { 
+        setUser(session.user); 
+        setView('workspace'); 
+      } 
+    });
   }, []);
 
   const handleNewCommand = (cmd) => {
@@ -22,6 +27,18 @@ function App() {
       setConsoleLog(prev => [...prev, "// SYNCING_MANIFEST...", "// DEPLOYING_HIGH_FIDELITY_LOGIC..."]);
       setState(prev => ({ ...prev, isLive: true, appName: cmd.includes('builder') ? 'Manifest Studio Pro' : 'Sovereign Node' }));
     }, 400);
+  };
+
+  const handleLogin = async () => {
+    // Dynamic redirect detection to avoid "localhost" errors on the live site
+    const redirectTo = window.location.hostname === 'localhost' 
+      ? 'http://localhost:3000' 
+      : window.location.origin;
+
+    await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: { redirectTo }
+    });
   };
 
   const colors = {
@@ -54,13 +71,12 @@ function App() {
     <div style={{ backgroundColor: colors.bg, color: colors.text, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
         <Logo />
         <h1 style={{ fontSize: '7rem', fontWeight: '900', letterSpacing: '-6px', background: `linear-gradient(to bottom, ${colors.text}, ${colors.subtle})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginTop: '20px' }}>Blue Lotus</h1>
-        <button onClick={() => supabase.auth.signInWithOAuth({ provider: 'github' })} style={{ marginTop: '40px', padding: '22px 60px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '100px', fontWeight: '900', cursor: 'pointer', fontSize: '1.1rem' }}>AUTHORIZE_CORE</button>
+        <button onClick={handleLogin} style={{ marginTop: '40px', padding: '22px 60px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '100px', fontWeight: '900', cursor: 'pointer', fontSize: '1.1rem' }}>AUTHORIZE_CORE</button>
     </div>
   );
 
   return (
     <div style={{ backgroundColor: colors.bg, color: colors.text, height: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif', overflow: 'hidden' }}>
-      {/* BILLION-DOLLAR WORKSPACE HEADER */}
       <div style={{ height: '90px', borderBottom: `1px solid ${colors.border}`, display: 'flex', alignItems: 'center', padding: '0 40px', justifyContent: 'space-between', background: colors.glass, backdropFilter: 'blur(30px)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <Logo />
@@ -79,7 +95,6 @@ function App() {
       </div>
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* NEURAL CONSOLE */}
         <div style={{ width: '450px', background: colors.glass, borderRight: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column' }}>
           <div style={{ flex: 1, padding: '40px', overflowY: 'auto', fontSize: '0.8rem', lineHeight: '2.5', color: colors.subtle, fontFamily: '"JetBrains Mono", monospace' }}>
             {consoleLog.map((log, i) => (
@@ -93,7 +108,6 @@ function App() {
           </form>
         </div>
 
-        {/* PRODUCTION STAGE */}
         <div style={{ flex: 1, padding: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDarkMode ? '#010309' : '#f1f5f9' }}>
           {!state.isLive ? (
             <div style={{ textAlign: 'center', opacity: 0.1 }}><div style={{ fontSize: '12rem' }}>💎</div><p style={{ letterSpacing: '20px', fontWeight: '900' }}>NEURAL_IDLE</p></div>
