@@ -8,9 +8,8 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [buildPlan, setBuildPlan] = useState([]);
-  const [consoleLog, setConsoleLog] = useState(["// BLUE_LOTUS: READY"]);
-  const [manifest, setManifest] = useState({ active: false, type: '', stage: 'idle' });
+  const [consoleLog, setConsoleLog] = useState(["// BLUE_LOTUS: ONLINE", "// NEURAL_SYNC: ACTIVE"]);
+  const [manifest, setManifest] = useState({ active: false, type: '', component: null });
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((_event, session) => {
@@ -19,87 +18,77 @@ function App() {
     });
   }, []);
 
-  const runBuildSequence = async (cmd) => {
-    setManifest({ active: true, type: cmd.toUpperCase(), stage: 'planning' });
-    const planSteps = [
-      "Analyzing Intent & Archetype",
-      "Drafting Recursive Backend Schema",
-      "Injecting TWIN Logic & Healing Code",
-      "Applying High-Fidelity Glassmorphism",
-      "Synchronizing Sovereign Auth Gates",
-      "Deploying to Edge Runtime"
-    ];
+  const handleCommand = (cmd) => {
+    const lower = cmd.toLowerCase();
+    setConsoleLog(prev => [...prev, `> ${cmd}`, "// ANALYZING_INTENT...", "// MANIFESTING_SOVEREIGN_NODE..."]);
     
-    setBuildPlan([]);
-    for (let i = 0; i < planSteps.length; i++) {
-      setBuildPlan(prev => [...prev, { step: planSteps[i], status: 'loading' }]);
-      await new Promise(r => setTimeout(r, 800));
-      setBuildPlan(prev => {
-        const newPlan = [...prev];
-        newPlan[i].status = 'complete';
-        return newPlan;
-      });
-      setConsoleLog(prev => [...prev, `// EXEC: ${planSteps[i]}`]);
-    }
-    setManifest(prev => ({ ...prev, stage: 'live' }));
+    setTimeout(() => {
+        setManifest({ 
+            active: true, 
+            type: cmd.toUpperCase(),
+            component: lower.includes('login') ? 'login' : lower.includes('dashboard') ? 'dashboard' : 'form'
+        });
+        setConsoleLog(prev => [...prev, "// SYNC_COMPLETE: 100% FIDELITY"]);
+    }, 1200);
   };
 
-  if (loading) return <div style={{ background: '#020617', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1' }}>🪷</div>;
+  if (loading) return <div style={{ background: '#020617', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1', fontSize: '3rem' }}>🪷</div>;
+
+  const Logo = () => (
+    <div style={{ position: 'relative', width: '60px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'absolute', width: '120%', height: '120%', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: '50%', filter: 'blur(30px)', opacity: 0.4 }} />
+        <div style={{ width: '25px', height: '25px', border: '5px solid #fff', borderRadius: '50%', boxShadow: '0 0 15px #6366f1', zIndex: 2 }} />
+    </div>
+  );
 
   if (!user) return (
-    <div style={{ backgroundColor: '#020617', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
-      <h1 style={{ fontSize: '7rem', fontWeight: '900', letterSpacing: '-6px', background: 'linear-gradient(to bottom, #fff, #475569)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>Blue Lotus</h1>
-      <button onClick={() => supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.origin } })} style={{ marginTop: '50px', padding: '20px 80px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '100px', fontWeight: '900', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 30px 60px rgba(99, 102, 241, 0.4)' }}>AUTHORIZE_MASTER</button>
+    <div style={{ backgroundColor: '#020617', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif', overflow: 'hidden', position: 'relative' }}>
+        <div style={{ position: 'absolute', width: '100vw', height: '100vh', background: 'radial-gradient(circle at 50% 50%, #1e1b4b 0%, #020617 70%)', opacity: 0.6, zIndex: 0 }} />
+        <div style={{ zIndex: 1, textAlign: 'center' }}>
+            <Logo />
+            <h1 style={{ fontSize: '7rem', fontWeight: '900', letterSpacing: '-6px', background: 'linear-gradient(to bottom, #fff, #475569)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>Blue Lotus</h1>
+            <p style={{ letterSpacing: '12px', color: '#475569', fontWeight: 'bold', fontSize: '0.8rem', margin: '30px 0 60px' }}>SOVEREIGN_SYSTEMS_v1.0</p>
+            <button onClick={() => supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.origin } })} style={{ padding: '20px 80px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '100px', fontWeight: '900', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 30px 60px rgba(99, 102, 241, 0.4)' }}>AUTHORIZE_MASTER</button>
+        </div>
     </div>
   );
 
   return (
     <div style={{ backgroundColor: '#010413', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif' }}>
-      {/* SOVEREIGN TOOLBAR */}
-      <div style={{ height: '80px', borderBottom: '1px solid rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', padding: '0 40px', justifyContent: 'space-between', background: 'rgba(2, 6, 23, 0.9)', backdropFilter: 'blur(30px)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}><span style={{ fontSize: '1.5rem' }}>🪷</span><span style={{ fontWeight: '900', letterSpacing: '4px', fontSize: '0.8rem' }}>BLUE_LOTUS_STUDIO</span></div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          {['⟲ UNDO', '☁ GITHUB', '↻ RESET', '🚀 DEPLOY'].map(btn => (
-            <button key={btn} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', color: '#94a3b8', padding: '6px 12px', fontSize: '0.6rem', fontWeight: '900', cursor: 'pointer' }}>{btn}</button>
+      {/* ELITE WORKSPACE HEADER */}
+      <div style={{ height: '90px', borderBottom: '1px solid rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', padding: '0 60px', justifyContent: 'space-between', background: 'rgba(2, 6, 23, 0.8)', backdropFilter: 'blur(50px)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}><Logo /><span style={{ fontWeight: '900', fontSize: '1.2rem', letterSpacing: '10px' }}>BLUE_LOTUS_CORE</span></div>
+        <div style={{ display: 'flex', gap: '15px' }}>
+          {['⟲', '☁', '↻', '🚀'].map((icon, i) => (
+            <button key={i} style={{ width: '45px', height: '45px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', color: '#fff', cursor: 'pointer' }}>{icon}</button>
           ))}
-          <button style={{ padding: '6px 20px', background: '#6366f1', border: 'none', borderRadius: '8px', color: '#fff', fontWeight: '900', fontSize: '0.6rem' }}>PUBLISH</button>
+          <button style={{ padding: '0 30px', background: '#6366f1', border: 'none', borderRadius: '12px', color: '#fff', fontWeight: '900', fontSize: '0.7rem', letterSpacing: '2px' }}>PUBLISH_LIVE</button>
         </div>
       </div>
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* ARCHITECT PANEL (The "Emergent" Clone) */}
-        <div style={{ width: '420px', borderRight: '1px solid rgba(255,255,255,0.03)', display: 'flex', flexDirection: 'column', background: 'rgba(2, 6, 23, 0.5)', backdropFilter: 'blur(50px)' }}>
-          <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
-            <div style={{ fontSize: '0.65rem', fontWeight: '900', color: '#6366f1', letterSpacing: '2px', marginBottom: '30px' }}>BUILD_PLAN</div>
-            {buildPlan.map((step, i) => (
-              <div key={i} style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '15px', color: step.status === 'complete' ? '#fff' : '#475569' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', border: '2px solid', borderColor: step.status === 'complete' ? '#6366f1' : '#1e293b', background: step.status === 'complete' ? '#6366f1' : 'transparent' }} />
-                <span style={{ fontSize: '0.85rem', fontWeight: step.status === 'complete' ? '600' : '400' }}>{step.step}</span>
+        {/* NEURAL COMMAND CONSOLE */}
+        <div style={{ width: '450px', borderRight: '1px solid rgba(255,255,255,0.03)', display: 'flex', flexDirection: 'column', background: 'rgba(2, 6, 23, 0.4)', backdropFilter: 'blur(50px)' }}>
+          <div style={{ flex: 1, padding: '50px', overflowY: 'auto', fontSize: '0.85rem', color: '#475569', fontFamily: 'monospace', lineHeight: '2.5' }}>
+            {consoleLog.map((log, i) => (
+              <div key={i} style={{ marginBottom: '15px', color: log.startsWith('>') ? '#fff' : '#475569' }}>
+                {log.startsWith('>') ? <span style={{ color: '#6366f1', marginRight: '15px' }}>❯</span> : null}{log}
               </div>
             ))}
           </div>
-          <form style={{ padding: '40px' }} onSubmit={(e) => { e.preventDefault(); runBuildSequence(e.target.cmd.value); e.target.cmd.value = ''; }}>
-            <input name="cmd" placeholder="Request Manifestation..." autoFocus style={{ width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', padding: '20px', color: '#fff', borderRadius: '15px', outline: 'none', fontSize: '0.9rem' }} />
+          <form style={{ padding: '50px' }} onSubmit={(e) => { e.preventDefault(); handleCommand(e.target.cmd.value); e.target.cmd.value = ''; }}>
+            <input name="cmd" placeholder="Command Reality..." autoFocus style={{ width: '100%', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '24px', color: '#fff', borderRadius: '24px', outline: 'none', fontSize: '1rem' }} />
           </form>
         </div>
 
-        {/* CINEMATIC PREVIEW STAGE */}
-        <div style={{ flex: 1, padding: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at center, #0a0f29 0%, #010413 100%)' }}>
-          {manifest.stage === 'idle' ? (
-            <div style={{ opacity: 0.1, textAlign: 'center' }}><div style={{ fontSize: '10rem' }}>💎</div><p style={{ letterSpacing: '20px', fontWeight: '900', fontSize: '0.7rem' }}>STUDIO_IDLE</p></div>
-          ) : (
-            <div style={{ width: '100%', height: '100%', background: manifest.stage === 'live' ? '#fff' : 'transparent', borderRadius: '40px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 80px 150px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column', transition: '0.8s ease' }}>
-                {manifest.stage === 'live' ? (
-                    <div style={{ flex: 1, color: '#000', padding: '80px', textAlign: 'center' }}>
-                        <div style={{ width: '50px', height: '50px', background: '#6366f1', borderRadius: '12px', margin: '0 auto 30px' }} />
-                        <h2 style={{ fontSize: '4rem', fontWeight: '900', letterSpacing: '-3px' }}>{manifest.type}</h2>
-                        <p style={{ color: '#64748b' }}>Architecture Manifested with Sovereign Precision.</p>
-                    </div>
-                ) : (
-                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1', fontSize: '1rem', fontWeight: '900', letterSpacing: '10px', animation: 'pulse 2s infinite' }}>MANIFESTING...</div>
-                )}
+        {/* OUTPUT STAGE */}
+        <div style={{ flex: 1, padding: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at center, #0a0f29 0%, #010413 100%)' }}>
+          {!manifest.active ? <div style={{ opacity: 0.1, fontSize: '12rem' }}>💎</div> : 
+            <div style={{ width: '100%', height: '100%', background: '#fff', borderRadius: '50px', color: '#000', padding: '80px', textAlign: 'center', boxShadow: '0 100px 200px rgba(0,0,0,0.5)' }}>
+                <h2 style={{ fontSize: '5rem', fontWeight: '900', letterSpacing: '-4px' }}>{manifest.type}</h2>
+                <p style={{ fontSize: '1.2rem', color: '#64748b' }}>Sovereign-Grade Infrastructure Manifested.</p>
             </div>
-          )}
+          }
         </div>
       </div>
     </div>
