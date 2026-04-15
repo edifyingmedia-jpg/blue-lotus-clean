@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://ehbpmjknjmgroucacsru.supabase.co';
@@ -14,115 +14,68 @@ function App() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => { 
-      if (session) { 
-        setUser(session.user); 
-        setView('workspace'); 
-      } 
+      if (session) { setUser(session.user); setView('workspace'); } 
     });
   }, []);
 
-  const handleNewCommand = (cmd) => {
-    setConsoleLog(prev => [...prev, `> ${cmd}`]);
-    setTimeout(() => {
-      setConsoleLog(prev => [...prev, "// SYNCING_MANIFEST...", "// DEPLOYING_HIGH_FIDELITY_LOGIC..."]);
-      setState(prev => ({ ...prev, isLive: true, appName: cmd.includes('builder') ? 'Manifest Studio Pro' : 'Sovereign Node' }));
-    }, 400);
-  };
-
   const handleLogin = async () => {
-    // Dynamic redirect detection to avoid "localhost" errors on the live site
-    const redirectTo = window.location.hostname === 'localhost' 
-      ? 'http://localhost:3000' 
-      : window.location.origin;
-
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
-      options: { redirectTo }
+      options: { redirectTo: window.location.origin }
     });
+    if (error) console.error("Auth error:", error.message);
   };
 
   const colors = {
     bg: isDarkMode ? '#020617' : '#f8fafc',
     text: isDarkMode ? '#fff' : '#0f172a',
-    glass: isDarkMode ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.8)',
-    border: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(15, 23, 42, 0.05)',
-    subtle: isDarkMode ? '#475569' : '#94a3b8'
+    glass: isDarkMode ? 'rgba(15, 23, 42, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+    border: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.08)',
+    subtle: isDarkMode ? '#64748b' : '#94a3b8'
   };
 
   const Logo = () => (
-    <div style={{ position: 'relative', width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ position: 'absolute', width: '100%', height: '100%', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: '50%', filter: 'blur(12px)', opacity: 0.5 }} />
-        <span style={{ fontSize: '2.2rem', zIndex: 2, filter: 'drop-shadow(0 0 15px rgba(99, 102, 241, 0.8))' }}>🪷</span>
+    <div style={{ position: 'relative', width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'absolute', width: '120%', height: '120%', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: '50%', filter: 'blur(18px)', opacity: 0.4 }} />
+      <span style={{ fontSize: '2.4rem', zIndex: 2, filter: 'drop-shadow(0 0 10px rgba(99, 102, 241, 0.6))' }}>🪷</span>
     </div>
-  );
-
-  const ControlButton = ({ label, icon, primary }) => (
-    <button style={{ 
-      background: primary ? '#6366f1' : colors.glass, 
-      color: primary ? '#fff' : colors.text,
-      border: `1px solid ${colors.border}`,
-      padding: '8px 16px', borderRadius: '8px', fontSize: '0.65rem', fontWeight: '900', letterSpacing: '1px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: primary ? '0 10px 20px rgba(99, 102, 241, 0.2)' : 'none'
-    }}>
-      <span>{icon}</span> {label}
-    </button>
   );
 
   if (view === 'landing') return (
     <div style={{ backgroundColor: colors.bg, color: colors.text, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
         <Logo />
-        <h1 style={{ fontSize: '7rem', fontWeight: '900', letterSpacing: '-6px', background: `linear-gradient(to bottom, ${colors.text}, ${colors.subtle})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginTop: '20px' }}>Blue Lotus</h1>
-        <button onClick={handleLogin} style={{ marginTop: '40px', padding: '22px 60px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '100px', fontWeight: '900', cursor: 'pointer', fontSize: '1.1rem' }}>AUTHORIZE_CORE</button>
+        <h1 style={{ fontSize: '6rem', fontWeight: '900', letterSpacing: '-5px', background: `linear-gradient(to bottom, ${colors.text}, ${colors.subtle})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginTop: '20px' }}>Blue Lotus</h1>
+        <button onClick={handleLogin} style={{ marginTop: '50px', padding: '20px 60px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '100px', fontWeight: '900', cursor: 'pointer', fontSize: '1.1rem', boxShadow: '0 20px 40px rgba(99, 102, 241, 0.3)' }}>AUTHORIZE_CORE</button>
     </div>
   );
 
   return (
     <div style={{ backgroundColor: colors.bg, color: colors.text, height: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif', overflow: 'hidden' }}>
-      <div style={{ height: '90px', borderBottom: `1px solid ${colors.border}`, display: 'flex', alignItems: 'center', padding: '0 40px', justifyContent: 'space-between', background: colors.glass, backdropFilter: 'blur(30px)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <Logo />
-            <span style={{ fontWeight: '900', fontSize: '1rem', letterSpacing: '8px' }}>BLUE_LOTUS</span>
-        </div>
-        
+      <div style={{ height: '90px', borderBottom: `1px solid ${colors.border}`, display: 'flex', alignItems: 'center', padding: '0 40px', justifyContent: 'space-between', background: colors.glass, backdropFilter: 'blur(40px)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}><Logo /><span style={{ fontWeight: '900', fontSize: '1rem', letterSpacing: '8px' }}>BLUE_LOTUS</span></div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <ControlButton icon="⟲" label="UNDO" />
-          <ControlButton icon="☁" label="GITHUB" />
-          <ControlButton icon="↻" label="REFRESH" />
-          <ControlButton icon="🚀" label="DEPLOY" />
-          <ControlButton icon="✦" label="PUBLISH" primary />
-          <div style={{ width: '1px', height: '30px', background: colors.border, margin: '0 10px' }} />
-          <button onClick={() => setIsDarkMode(!isDarkMode)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>{isDarkMode ? '☀️' : '🌙'}</button>
+          {['⟲ UNDO', '☁ GITHUB', '↻ REFRESH', '🚀 DEPLOY'].map(txt => (
+            <button key={txt} style={{ background: colors.glass, color: colors.text, border: `1px solid ${colors.border}`, padding: '8px 16px', borderRadius: '8px', fontSize: '0.65rem', fontWeight: '900', cursor: 'pointer' }}>{txt}</button>
+          ))}
+          <button style={{ background: '#6366f1', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '8px', fontSize: '0.65rem', fontWeight: '900', cursor: 'pointer' }}>✦ PUBLISH</button>
+          <button onClick={() => setIsDarkMode(!isDarkMode)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', marginLeft: '10px' }}>{isDarkMode ? '☀️' : '🌙'}</button>
         </div>
       </div>
-
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        <div style={{ width: '450px', background: colors.glass, borderRight: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ flex: 1, padding: '40px', overflowY: 'auto', fontSize: '0.8rem', lineHeight: '2.5', color: colors.subtle, fontFamily: '"JetBrains Mono", monospace' }}>
-            {consoleLog.map((log, i) => (
-              <div key={i} style={{ marginBottom: '15px', color: log.startsWith('>') ? (isDarkMode ? '#fff' : '#000') : colors.subtle }}>
-                {log.startsWith('>') ? <span style={{ color: '#6366f1', marginRight: '15px' }}>❯</span> : null}{log}
-              </div>
-            ))}
+        <div style={{ width: '450px', borderRight: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column', background: colors.glass }}>
+          <div style={{ flex: 1, padding: '40px', overflowY: 'auto', fontSize: '0.8rem', color: colors.subtle, fontFamily: 'monospace' }}>
+            {consoleLog.map((log, i) => <div key={i} style={{ marginBottom: '10px' }}>{log}</div>)}
           </div>
-          <form onSubmit={(e) => { e.preventDefault(); handleNewCommand(e.target.cmd.value); e.target.cmd.value = ''; }} style={{ padding: '40px' }}>
-            <input name="cmd" placeholder="Manifest Intent..." autoFocus style={{ width: '100%', background: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)', border: `1px solid ${colors.border}`, padding: '20px', color: colors.text, borderRadius: '16px', outline: 'none' }} />
+          <form style={{ padding: '40px' }} onSubmit={(e) => { e.preventDefault(); setConsoleLog([...consoleLog, `> ${e.target.cmd.value}`]); setState({...state, isLive: true, appName: e.target.cmd.value}); e.target.cmd.value = ''; }}>
+            <input name="cmd" placeholder="Command Reality..." style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: `1px solid ${colors.border}`, padding: '20px', color: colors.text, borderRadius: '16px', outline: 'none' }} />
           </form>
         </div>
-
-        <div style={{ flex: 1, padding: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDarkMode ? '#010309' : '#f1f5f9' }}>
-          {!state.isLive ? (
-            <div style={{ textAlign: 'center', opacity: 0.1 }}><div style={{ fontSize: '12rem' }}>💎</div><p style={{ letterSpacing: '20px', fontWeight: '900' }}>NEURAL_IDLE</p></div>
-          ) : (
-            <div style={{ width: '100%', height: '100%', background: colors.bg, borderRadius: '40px', border: `1px solid ${colors.border}`, boxShadow: '0 100px 200px -50px rgba(0,0,0,0.5)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ height: '80px', borderBottom: `1px solid ${colors.border}`, display: 'flex', alignItems: 'center', padding: '0 40px', justifyContent: 'space-between' }}>
-                <span style={{ fontWeight: '900', fontSize: '0.7rem', letterSpacing: '4px' }}>{state.appName.toUpperCase()}</span>
-                <div style={{ width: '35px', height: '35px', borderRadius: '10px', background: 'linear-gradient(135deg, #6366f1, #a855f7)' }} />
-              </div>
-              <div style={{ flex: 1, padding: '80px', textAlign: 'center', background: isDarkMode ? 'radial-gradient(circle at center, #0f172a 0%, #020617 100%)' : '#fff' }}>
-                <h1 style={{ fontSize: '4.5rem', fontWeight: '900', letterSpacing: '-3px' }}>{state.appName}</h1>
-                <p style={{ color: colors.subtle, fontSize: '1.2rem' }}>Production infrastructure successfully manifested.</p>
-              </div>
-            </div>
-          )}
+        <div style={{ flex: 1, padding: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDarkMode ? '#010309' : '#f8fafc' }}>
+          {!state.isLive ? <div style={{ opacity: 0.1, fontSize: '10rem' }}>💎</div> : 
+          <div style={{ width: '100%', height: '100%', background: colors.bg, borderRadius: '40px', border: `1px solid ${colors.border}`, boxShadow: '0 80px 150px rgba(0,0,0,0.5)', overflow: 'hidden', textAlign: 'center', paddingTop: '100px' }}>
+            <h1 style={{ fontSize: '5rem', fontWeight: '900' }}>{state.appName}</h1>
+            <p style={{ color: colors.subtle }}>Manifestation successful.</p>
+          </div>}
         </div>
       </div>
     </div>
