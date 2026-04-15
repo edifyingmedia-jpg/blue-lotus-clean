@@ -12,17 +12,20 @@ function App() {
   const [manifest, setManifest] = useState({ active: false, type: '', data: {} });
 
   useEffect(() => {
-    // 1. Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // 1. Instant Session Check
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setUser(session.user);
         setView('workspace');
       }
-    });
+    };
+    checkUser();
 
-    // 2. Listen for the "SIGNED_IN" event after the GitHub redirect
+    // 2. Real-time Bridge Listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+      console.log("Auth Event:", event);
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
         setUser(session.user);
         setView('workspace');
       }
@@ -30,6 +33,15 @@ function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const handleLogin = async () => {
+    // Force the redirect to stay on the Vercel Origin
+    const targetOrigin = window.location.origin;
+    await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: { redirectTo: targetOrigin }
+    });
+  };
 
   const handleCommand = (cmd) => {
     setConsoleLog(prev => [...prev, `> ${cmd}`, "// DECODING_INTENT...", "// GENERATING_HIGH_FIDELITY_NODES..."]);
@@ -51,7 +63,7 @@ function App() {
       <Logo />
       <h1 style={{ fontSize: '8rem', fontWeight: '900', letterSpacing: '-8px', background: 'linear-gradient(to bottom, #fff, #475569)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginTop: '20px' }}>Blue Lotus</h1>
       <button 
-        onClick={() => supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.origin } })} 
+        onClick={handleLogin} 
         style={{ marginTop: '50px', padding: '24px 80px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '100px', fontWeight: '900', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 30px 60px rgba(99, 102, 241, 0.4)' }}
       >
         AUTHORIZE_CORE
@@ -61,7 +73,6 @@ function App() {
 
   return (
     <div style={{ backgroundColor: '#010413', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif', overflow: 'hidden' }}>
-      {/* ELITE WORKSPACE HEADER */}
       <div style={{ height: '100px', borderBottom: '1px solid rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', padding: '0 60px', justifyContent: 'space-between', background: 'rgba(2, 6, 23, 0.6)', backdropFilter: 'blur(50px)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}><Logo /><span style={{ fontWeight: '900', fontSize: '1.1rem', letterSpacing: '10px' }}>BLUE_LOTUS</span></div>
         <div style={{ display: 'flex', gap: '15px' }}>
@@ -73,7 +84,6 @@ function App() {
       </div>
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* NEURAL COMMAND CONSOLE */}
         <div style={{ width: '480px', borderRight: '1px solid rgba(255,255,255,0.03)', display: 'flex', flexDirection: 'column', background: 'rgba(2, 6, 23, 0.4)', backdropFilter: 'blur(40px)' }}>
           <div style={{ flex: 1, padding: '50px', overflowY: 'auto', fontSize: '0.85rem', color: '#475569', fontFamily: '"JetBrains Mono", monospace', lineHeight: '2.5' }}>
             {consoleLog.map((log, i) => (
@@ -87,7 +97,6 @@ function App() {
           </form>
         </div>
 
-        {/* THE SOVEREIGN STAGE */}
         <div style={{ flex: 1, padding: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at center, #0a0f29 0%, #010413 100%)' }}>
           {!manifest.active ? (
             <div style={{ textAlign: 'center', opacity: 0.05 }}><div style={{ fontSize: '15rem' }}>💎</div><p style={{ letterSpacing: '30px', fontWeight: '900' }}>NEURAL_IDLE</p></div>
