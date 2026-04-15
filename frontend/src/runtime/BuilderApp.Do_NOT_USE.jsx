@@ -1,1 +1,0 @@
-Disable BuilderApp in runtime
