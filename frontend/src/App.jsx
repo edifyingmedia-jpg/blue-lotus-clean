@@ -12,9 +12,23 @@ function App() {
   const [manifest, setManifest] = useState({ active: false, type: '', data: {} });
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => { 
-      if (session) { setUser(session.user); setView('workspace'); } 
+    // 1. Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setUser(session.user);
+        setView('workspace');
+      }
     });
+
+    // 2. Listen for the "SIGNED_IN" event after the GitHub redirect
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        setUser(session.user);
+        setView('workspace');
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleCommand = (cmd) => {
@@ -36,7 +50,12 @@ function App() {
     <div style={{ backgroundColor: '#020617', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
       <Logo />
       <h1 style={{ fontSize: '8rem', fontWeight: '900', letterSpacing: '-8px', background: 'linear-gradient(to bottom, #fff, #475569)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginTop: '20px' }}>Blue Lotus</h1>
-      <button onClick={() => supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.origin } })} style={{ marginTop: '50px', padding: '24px 80px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '100px', fontWeight: '900', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 30px 60px rgba(99, 102, 241, 0.4)' }}>AUTHORIZE_CORE</button>
+      <button 
+        onClick={() => supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.origin } })} 
+        style={{ marginTop: '50px', padding: '24px 80px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '100px', fontWeight: '900', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 30px 60px rgba(99, 102, 241, 0.4)' }}
+      >
+        AUTHORIZE_CORE
+      </button>
     </div>
   );
 
