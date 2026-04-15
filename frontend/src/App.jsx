@@ -5,27 +5,25 @@ const supabaseUrl = 'https://ehbpmjknjmgroucacsru.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoYnBtamtuam1ncm91Y2Fjc3J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMzc4NzUsImV4cCI6MjA5MTYxMzg3NX0.13spZuJdIWBVVSIhLvdO9uYmGVEzi70oBsObBwVJiOo'; 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// --- THE BILLION-DOLLAR PREVIEW ENGINE ---
-const SovereignApp = ({ features, theme, appName }) => (
-  <div style={{ 
-    width: '100%', height: '100%', background: '#fff', borderRadius: '40px', 
-    boxShadow: '0 60px 120px rgba(0,0,0,0.1)', display: 'flex', 
-    flexDirection: 'column', overflow: 'hidden', border: '1px solid #f1f5f9' 
-  }}>
+// --- THE BILLION-DOLLAR DYNAMIC RENDERER ---
+const SovereignCanvas = ({ features, theme }) => (
+  <div style={{ width: '100%', height: '100%', background: '#fff', borderRadius: '40px', boxShadow: '0 60px 120px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '1px solid #f1f5f9' }}>
     <div style={{ height: '80px', padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9' }}>
-      <div style={{ fontWeight: '900', fontSize: '0.75rem', letterSpacing: '4px', color: '#0f172a' }}>{appName || 'SOVEREIGN_OS'}</div>
-      <div style={{ display: 'flex', gap: '15px' }}>
-        <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: theme, opacity: 0.1 }} />
-        <div style={{ width: '35px', height: '35px', borderRadius: '12px', background: theme }} />
-      </div>
+      <div style={{ fontWeight: '900', fontSize: '0.75rem', letterSpacing: '4px', color: '#0f172a' }}>SOVEREIGN_GENERATION_v9.2</div>
+      <div style={{ width: '40px', height: '40px', borderRadius: '14px', background: theme }} />
     </div>
     <div style={{ flex: 1, padding: '40px', background: 'radial-gradient(at top left, #fff, #f8fafc)', overflowY: 'auto' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '25px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '30px' }}>
         {features.map((f, i) => (
-          <div key={i} style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(20px)', padding: '30px', borderRadius: '24px', border: '1px solid #fff', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-            <div style={{ width: '40px', height: '40px', background: `${theme}11`, color: theme, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', fontWeight: 'bold' }}>⚡</div>
-            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.1rem', color: '#0f172a', textTransform: 'capitalize' }}>{f.replace('_', ' ')}</h3>
-            <p style={{ color: '#64748b', fontSize: '0.85rem', lineHeight: '1.6' }}>Sovereign node successfully materialized. Logic is active and synchronized.</p>
+          <div key={i} style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(25px)', padding: '40px', borderRadius: '24px', border: '1px solid #fff', boxShadow: '0 10px 40px rgba(0,0,0,0.02)' }}>
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '1.2rem', color: '#0f172a', textTransform: 'capitalize' }}>{f.replace('_', ' ')}</h3>
+            {f.includes('input') ? (
+              <input placeholder="Type here..." style={{ width: '100%', padding: '15px', borderRadius: '12px', border: '1px solid #e2e8f0', background: '#f8fafc' }} />
+            ) : f.includes('panel') ? (
+              <div style={{ height: '150px', border: '2px dashed #e2e8f0', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>AI_INTERACTION_ZONE</div>
+            ) : (
+              <p style={{ color: '#64748b', lineHeight: '1.6' }}>Sovereign logic manifested. Feature is now functional and synchronized with core.</p>
+            )}
           </div>
         ))}
       </div>
@@ -49,7 +47,7 @@ const CommandCenter = ({ onCommand, consoleLog }) => {
         <div ref={logEndRef} />
       </div>
       <form onSubmit={handleSubmit} style={{ padding: '40px' }}>
-        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Manifest Reality..." autoFocus style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(56, 189, 248, 0.1)', padding: '20px', color: '#fff', borderRadius: '18px', outline: 'none' }} />
+        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Manifest Intent..." autoFocus style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(56, 189, 248, 0.1)', padding: '20px', color: '#fff', borderRadius: '18px', outline: 'none' }} />
       </form>
     </div>
   );
@@ -58,8 +56,8 @@ const CommandCenter = ({ onCommand, consoleLog }) => {
 function App() {
   const [view, setView] = useState('landing');
   const [user, setUser] = useState(null);
-  const [consoleLog, setConsoleLog] = useState(["// BLUE_LOTUS: ONLINE", "// NEURAL_LINK: READY"]);
-  const [appState, setAppState] = useState({ theme: '#0ea5e9', features: [], isLive: false, name: '' });
+  const [consoleLog, setConsoleLog] = useState(["// BLUE_LOTUS: ONLINE", "// NEURAL_MANIFEST: READY"]);
+  const [appState, setAppState] = useState({ theme: '#0ea5e9', features: [], isLive: false });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => { if (session) { setUser(session.user); setView('workspace'); } });
@@ -72,11 +70,10 @@ function App() {
       setConsoleLog(prev => [...prev, "// ANALYZING_VIBE...", "// CONSTRUCTING_SOVEREIGN_ASSETS..."]);
       setAppState(prev => {
         let next = { ...prev, isLive: true };
-        if (lower.includes('builder')) { next.features.push('app_architect'); next.name = 'SOVEREIGN_BUILDER'; }
-        if (lower.includes('chat')) next.features.push('neural_chat');
-        if (lower.includes('video')) next.features.push('media_engine');
+        if (lower.includes('panel')) next.features.push('ai_intelligence_panel');
+        if (lower.includes('input')) next.features.push('secure_input_box');
+        if (lower.includes('builder')) next.features.push('app_architect');
         if (lower.includes('purple')) next.theme = '#8b5cf6';
-        if (lower.includes('gold')) next.theme = '#f59e0b';
         return next;
       });
       setTimeout(() => { setConsoleLog(prev => [...prev, "// SYNC_COMPLETE: MANIFESTED"]); }, 800);
@@ -84,8 +81,8 @@ function App() {
   };
 
   if (view === 'landing') return (
-    <div style={{ backgroundColor: '#020617', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
-        <div style={{ fontSize: '6rem', fontWeight: '900', background: 'linear-gradient(to bottom right, #38bdf8, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Blue Lotus</div>
+    <div style={{ backgroundColor: '#020617', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ fontSize: '6rem', fontWeight: '900', background: 'linear-gradient(to right, #38bdf8, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Blue Lotus</div>
         <button onClick={() => supabase.auth.signInWithOAuth({ provider: 'github' })} style={{ marginTop: '40px', padding: '20px 60px', background: '#38bdf8', color: '#000', border: 'none', borderRadius: '20px', fontWeight: '900', cursor: 'pointer' }}>AUTHORIZE_MASTER</button>
     </div>
   );
@@ -101,7 +98,7 @@ function App() {
         <div style={{ flex: 1, backgroundColor: '#0f172a', padding: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {!appState.isLive ? (
             <div style={{ textAlign: 'center', opacity: 0.1 }}><div style={{ fontSize: '6rem', marginBottom: '20px' }}>💎</div><p style={{ letterSpacing: '8px', fontSize: '0.8rem', fontWeight: '900' }}>NEURAL_IDLE</p></div>
-          ) : <SovereignApp features={appState.features} theme={appState.theme} appName={appState.name} />}
+          ) : <SovereignCanvas features={appState.features} theme={appState.theme} />}
         </div>
       </div>
     </div>
