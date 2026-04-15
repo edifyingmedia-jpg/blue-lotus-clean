@@ -1,126 +1,78 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import OpenAI from 'openai';
 
-// Initialize Supabase (Ensure your env variables are in Vercel)
+// Initialize with your Vercel variables
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
 
-export default function App() {
-  const [user, setUser] = useState(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+// This uses the key currently in your Vercel settings
+const openai = new OpenAI({
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY || import.meta.env.OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true 
+});
+
+function App() {
   const [input, setInput] = useState('');
-  const [isBuilding, setIsBuilding] = useState(false);
-  const [output, setOutput] = useState('');
+  const [response, setResponse] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleSignUp = async () => {
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) alert(error.message);
-    else alert('Check your email for the confirmation link!');
-  };
-
-  const handleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) alert(error.message);
-  };
-
-  const handleCommand = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input) return;
-
-    // RESTORED: This triggers the actual build engine logic
-    setIsBuilding(true);
-    setOutput(input); // Visual feedback
-    
+  const handleHandshake = async () => {
+    setLoading(true);
     try {
-      // Replace this with your actual OpenAI/Vercel edge function call
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        body: JSON.stringify({ prompt: input }),
+      const completion = await openai.chat.completions.create({
+        messages: [{ role: "user", content: input }],
+        model: "gpt-3.5-turbo",
       });
-      const data = await response.json();
-      // Logic to render the "stupid looking apps" or real code goes here
+      setResponse(completion.choices[0].message.content);
     } catch (err) {
-      console.error("Build failed:", err);
+      console.error("Handshake Failed:", err);
+      setResponse("Connection Error: Check Vercel Keys");
     } finally {
-      setIsBuilding(false);
+      setLoading(false);
     }
   };
 
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#050505] text-white p-4">
-        <div className="w-full max-w-md space-y-4 border border-blue-900/30 p-8 rounded-lg bg-[#0a0a0a]">
-          <h2 className="text-2xl font-bold mb-6 text-center tracking-widest">LOTUS_ACCESS</h2>
-          <input 
-            type="email" placeholder="Email" 
-            className="w-full p-3 bg-black border border-gray-800 rounded focus:border-blue-500 outline-none"
-            onChange={(e) => setEmail(e.target.value)} 
-          />
-          <input 
-            type="password" placeholder="Password" 
-            className="w-full p-3 bg-black border border-gray-800 rounded focus:border-blue-500 outline-none"
-            onChange={(e) => setPassword(e.target.value)} 
-          />
-          <div className="flex gap-4 pt-4">
-            <button onClick={handleSignIn} className="flex-1 bg-white text-black py-2 rounded font-bold hover:bg-gray-200">SIGN IN</button>
-            <button onClick={handleSignUp} className="flex-1 border border-white py-2 rounded font-bold hover:bg-white/10">REGISTER</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-black text-white flex">
-      {/* Sidebar: Neural Plan */}
-      <div className="w-64 border-r border-gray-900 p-6 space-y-8">
-        <h3 className="text-blue-500 font-mono text-sm tracking-tighter">NEURAL_PLAN</h3>
-        <ul className="space-y-4 text-sm text-gray-400">
-          <li className={isBuilding ? "text-blue-400 animate-pulse" : ""}>● Analyzing Intent</li>
-          <li>● Mapping Sovereign Schema</li>
-          <li>● Injecting TWIN Logic</li>
-          <li>● Materializing Luxury UI</li>
-        </ul>
-        <button onClick={() => supabase.auth.signOut()} className="text-xs text-gray-600 hover:text-white mt-20">SIGN_OUT</button>
-      </div>
+    <div className="min-h-screen bg-[#050505] text-white p-8 font-mono">
+      <nav className="flex justify-between border-b border-blue-900/30 pb-4 mb-20">
+        <div className="tracking-[0.4em] text-blue-500">LOTUS_STUDIO // ACTIVE</div>
+        <div className="text-[10px] opacity-40 uppercase">Neural_Link_Established</div>
+      </nav>
 
-      {/* Main Builder Stage */}
-      <div className="flex-1 flex flex-col p-10">
-        <div className="flex-1 flex items-center justify-center border border-gray-900 rounded-xl relative overflow-hidden">
-          {isBuilding ? (
-            <div className="text-center animate-pulse">BUILDING REALITY...</div>
-          ) : (
-            <h1 className="text-4xl font-black uppercase tracking-tighter text-center max-w-2xl">
-              {output || "Awaiting Command"}
-            </h1>
-          )}
-        </div>
+      <div className="max-w-3xl mx-auto space-y-12">
+        <section>
+          <h1 className="text-6xl font-extralight tracking-tighter mb-2">BLUE_LOTUS</h1>
+          <p className="text-blue-400/50 text-xs tracking-widest uppercase">AI-Integrated Diet Architecture</p>
+        </section>
 
-        <form onSubmit={handleCommand} className="mt-8">
-          <input
+        <div className="bg-white/[0.02] border border-white/10 p-8 rounded-sm">
+          <textarea 
+            className="w-full bg-transparent border-none outline-none text-lg text-gray-300 resize-none"
+            placeholder="Initialize command..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Command Reality..."
-            className="w-full bg-[#0a0a0a] border border-gray-800 p-6 rounded-xl text-xl outline-none focus:border-blue-900 transition-colors"
+            rows={3}
           />
-        </form>
+          <button 
+            onClick={handleHandshake}
+            disabled={loading}
+            className="mt-6 px-8 py-3 border border-blue-500 text-blue-500 text-xs tracking-widest hover:bg-blue-500 hover:text-white transition-all disabled:opacity-20"
+          >
+            {loading ? 'PROCESSING...' : 'EXECUTE_HANDSHAKE'}
+          </button>
+        </div>
+
+        {response && (
+          <div className="p-6 border-l-2 border-blue-500 bg-blue-500/5 animate-in fade-in duration-500">
+            <p className="text-sm leading-relaxed text-gray-400">{response}</p>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+export default App;
