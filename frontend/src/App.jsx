@@ -1,53 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 
-// Initialize with your Vercel variables
+// Initialize Supabase
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
 
-// This uses the key currently in your Vercel settings
+// INITIALIZE OPENAI SAFELY
+// We use a fallback to an empty string so the app doesn't crash on load
 const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY || import.meta.env.OPENAI_API_KEY,
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY || "", 
   dangerouslyAllowBrowser: true 
 });
 
 function App() {
   const [input, setInput] = useState('');
   const [response, setResponse] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState('SYSTEM_READY');
 
   const handleHandshake = async () => {
-    setLoading(true);
+    if (!import.meta.env.VITE_OPENAI_API_KEY) {
+      setResponse("ERROR: Key 'VITE_OPENAI_API_KEY' not found in Environment Variables.");
+      return;
+    }
+
+    setStatus('PROCESSING...');
     try {
       const completion = await openai.chat.completions.create({
         messages: [{ role: "user", content: input }],
         model: "gpt-3.5-turbo",
       });
       setResponse(completion.choices[0].message.content);
+      setStatus('SUCCESS');
     } catch (err) {
-      console.error("Handshake Failed:", err);
-      setResponse("Connection Error: Check Vercel Keys");
-    } finally {
-      setLoading(false);
+      console.error(err);
+      setResponse("Handshake failed. Check console for details.");
+      setStatus('ERROR');
     }
   };
 
   return (
     <div className="min-h-screen bg-[#050505] text-white p-8 font-mono">
       <nav className="flex justify-between border-b border-blue-900/30 pb-4 mb-20">
-        <div className="tracking-[0.4em] text-blue-500">LOTUS_STUDIO // ACTIVE</div>
-        <div className="text-[10px] opacity-40 uppercase">Neural_Link_Established</div>
+        <div className="tracking-[0.4em] text-blue-500">LOTUS_STUDIO // {status}</div>
       </nav>
 
       <div className="max-w-3xl mx-auto space-y-12">
-        <section>
-          <h1 className="text-6xl font-extralight tracking-tighter mb-2">BLUE_LOTUS</h1>
-          <p className="text-blue-400/50 text-xs tracking-widest uppercase">AI-Integrated Diet Architecture</p>
-        </section>
-
+        <h1 className="text-6xl font-extralight tracking-tighter">BLUE_LOTUS</h1>
+        
         <div className="bg-white/[0.02] border border-white/10 p-8 rounded-sm">
           <textarea 
             className="w-full bg-transparent border-none outline-none text-lg text-gray-300 resize-none"
@@ -58,15 +60,14 @@ function App() {
           />
           <button 
             onClick={handleHandshake}
-            disabled={loading}
-            className="mt-6 px-8 py-3 border border-blue-500 text-blue-500 text-xs tracking-widest hover:bg-blue-500 hover:text-white transition-all disabled:opacity-20"
+            className="mt-6 px-8 py-3 border border-blue-500 text-blue-500 text-xs tracking-widest hover:bg-blue-500 hover:text-white transition-all"
           >
-            {loading ? 'PROCESSING...' : 'EXECUTE_HANDSHAKE'}
+            EXECUTE_HANDSHAKE
           </button>
         </div>
 
         {response && (
-          <div className="p-6 border-l-2 border-blue-500 bg-blue-500/5 animate-in fade-in duration-500">
+          <div className="p-6 border-l-2 border-blue-500 bg-blue-500/5">
             <p className="text-sm leading-relaxed text-gray-400">{response}</p>
           </div>
         )}
