@@ -5,58 +5,41 @@ const supabaseUrl = 'https://ehbpmjknjmgroucacsru.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoYnBtamtuam1ncm91Y2Fjc3J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMzc4NzUsImV4cCI6MjA5MTYxMzg3NX0.13spZuJdIWBVVSIhLvdO9uYmGVEzi70oBsObBwVJiOo'; 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// --- THE ELITE PREVIEW ENGINE (MEMORIZED STATE) ---
-const AppManifestation = ({ config }) => {
-  const { themeColor, hasFace, appType } = config;
-  
+// --- THE ENTERPRISE PREVIEW ENGINE ---
+const ManifestedApp = ({ features, theme }) => {
   return (
     <div style={{ 
-      width: '100%', height: '100%', background: '#fff', borderRadius: '32px', 
-      boxShadow: '0 40px 100px -20px rgba(0,0,0,0.2)', display: 'flex', 
-      flexDirection: 'column', overflow: 'hidden', border: '1px solid #e2e8f0' 
+      width: '100%', height: '100%', background: '#fff', borderRadius: '40px', 
+      boxShadow: '0 60px 120px -20px rgba(0,0,0,0.12)', display: 'flex', 
+      flexDirection: 'column', overflow: 'hidden', border: '1px solid #f1f5f9' 
     }}>
-      {/* Sleek Header */}
-      <div style={{ height: '80px', padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9' }}>
-        <div style={{ fontSize: '0.7rem', fontWeight: '900', letterSpacing: '4px', color: '#0f172a' }}>
-          {appType.toUpperCase()}_v8.4
+      <div style={{ height: '90px', padding: '0 50px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9' }}>
+        <div style={{ fontWeight: '900', fontSize: '0.8rem', letterSpacing: '5px', color: '#0f172a' }}>ENTERPRISE_OS_v9.0</div>
+        <div style={{ display: 'flex', gap: '20px' }}>
+          {features.includes('profile') && <div style={{ width: '45px', height: '45px', borderRadius: '14px', background: theme, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>JD</div>}
         </div>
-        {hasFace && (
-          <div style={{ 
-            width: '40px', height: '40px', borderRadius: '12px', 
-            background: themeColor, display: 'flex', alignItems: 'center', 
-            justifyContent: 'center', color: '#fff', fontSize: '1.2rem',
-            boxShadow: `0 10px 20px ${themeColor}44`
-          }}>👤</div>
-        )}
       </div>
 
-      {/* Main Content Area */}
-      <div style={{ flex: 1, padding: '60px', background: '#fcfcfd', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: '100%', maxWidth: '500px', textAlign: 'center' }}>
-          <div style={{ 
-            display: 'inline-block', padding: '12px 24px', borderRadius: '100px', 
-            background: `${themeColor}11`, color: themeColor, fontSize: '0.65rem', 
-            fontWeight: 'bold', letterSpacing: '2px', marginBottom: '30px' 
-          }}>SYSTEM_FUNCTIONAL</div>
-          
-          <h1 style={{ color: '#0f172a', fontSize: '2.5rem', fontWeight: '800', letterSpacing: '-1px', marginBottom: '15px' }}>
-            Executive Dashboard
-          </h1>
-          <p style={{ color: '#64748b', fontSize: '1rem', lineHeight: '1.8', fontWeight: '400' }}>
-            Your enterprise-grade architecture has been manifested. All neural nodes are synchronized with the {themeColor} core.
-          </p>
-          
-          <div style={{ marginTop: '40px', display: 'flex', gap: '15px', justifyContent: 'center' }}>
-            <button style={{ 
-              padding: '16px 32px', background: themeColor, color: '#fff', 
-              border: 'none', borderRadius: '14px', fontWeight: '600', 
-              boxShadow: `0 20px 40px ${themeColor}33`, cursor: 'pointer' 
-            }}>Launch Platform</button>
-            <button style={{ 
-              padding: '16px 32px', background: '#fff', color: '#0f172a', 
-              border: '1px solid #e2e8f0', borderRadius: '14px', fontWeight: '600', cursor: 'pointer' 
-            }}>View Analytics</button>
-          </div>
+      <div style={{ flex: 1, padding: '60px', background: 'radial-gradient(circle at top left, #fff 0%, #f8fafc 100%)', overflowY: 'auto' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          {features.length === 0 ? (
+            <div style={{ textAlign: 'center', marginTop: '100px', opacity: 0.2 }}>// INITIALIZING_REALITY...</div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
+              {features.map((f, i) => (
+                <div key={i} style={{ 
+                  background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(20px)', 
+                  padding: '40px', borderRadius: '24px', border: '1px solid #f1f5f9',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.02)'
+                }}>
+                  <div style={{ color: theme, fontWeight: '900', fontSize: '0.6rem', letterSpacing: '2px', marginBottom: '15px' }}>MODULE_STABLE</div>
+                  <h3 style={{ margin: '0 0 10px 0', color: '#0f172a', textTransform: 'capitalize' }}>{f.replace('_', ' ')}</h3>
+                  <div style={{ height: '4px', width: '40px', background: theme, borderRadius: '10px', marginBottom: '20px' }} />
+                  <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.6' }}>Functional enterprise node successfully deployed and synced with global state.</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -76,24 +59,24 @@ const CommandCenter = ({ onCommand, consoleLog }) => {
   };
 
   return (
-    <div style={{ width: '450px', display: 'flex', flexDirection: 'column', backgroundColor: '#020617', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
-      <div style={{ flex: 1, padding: '40px', overflowY: 'auto', fontSize: '0.8rem', lineHeight: '1.8', color: '#64748b', fontFamily: '"JetBrains Mono", monospace' }}>
+    <div style={{ width: '480px', display: 'flex', flexDirection: 'column', backgroundColor: '#020617', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+      <div style={{ flex: 1, padding: '50px', overflowY: 'auto', fontSize: '0.8rem', lineHeight: '2', color: '#475569', fontFamily: '"JetBrains Mono", monospace' }}>
         {consoleLog.map((log, i) => (
-          <div key={i} style={{ marginBottom: '15px', color: log.startsWith('>') ? '#38bdf8' : log.includes('//') ? '#4ade80' : '#64748b' }}>
-            {log.startsWith('>') ? <span style={{ color: '#38bdf8', marginRight: '10px' }}>⚡</span> : null}
+          <div key={i} style={{ marginBottom: '20px', color: log.startsWith('>') ? '#38bdf8' : log.includes('//') ? '#4ade80' : '#475569' }}>
+            {log.startsWith('>') ? <span style={{ color: '#38bdf8', marginRight: '15px' }}>❯</span> : null}
             {log}
           </div>
         ))}
         <div ref={logEndRef} />
       </div>
-      <form onSubmit={handleSubmit} style={{ padding: '40px', background: '#020617' }}>
+      <form onSubmit={handleSubmit} style={{ padding: '50px', background: '#020617' }}>
         <input 
           value={input} onChange={(e) => setInput(e.target.value)} 
-          placeholder="Command the Vibe..." autoFocus 
+          placeholder="Manifest Intent..." autoFocus 
           style={{ 
-            width: '100%', backgroundColor: 'rgba(255,255,255,0.02)', 
-            border: '1px solid rgba(56, 189, 248, 0.1)', padding: '20px', 
-            color: '#fff', borderRadius: '16px', outline: 'none', fontSize: '0.9rem' 
+            width: '100%', backgroundColor: 'rgba(255,255,255,0.01)', 
+            border: '1px solid rgba(56, 189, 248, 0.1)', padding: '24px', 
+            color: '#fff', borderRadius: '20px', outline: 'none', fontSize: '0.95rem' 
           }} 
         />
       </form>
@@ -104,14 +87,13 @@ const CommandCenter = ({ onCommand, consoleLog }) => {
 function App() {
   const [view, setView] = useState('landing');
   const [user, setUser] = useState(null);
-  const [consoleLog, setConsoleLog] = useState(["// BLUE_LOTUS: ONLINE", "// MEMORY_ENGINE: ENABLED"]);
+  const [consoleLog, setConsoleLog] = useState(["// BLUE_LOTUS: ONLINE", "// AUTONOMOUS_LOGIC: ENABLED"]);
   
-  // RECURSIVE MEMORY STATE
-  const [appConfig, setAppConfig] = useState({
-    themeColor: '#0ea5e9',
-    hasFace: false,
-    appType: 'Sovereign',
-    isManifested: false
+  // DEEP STATE PERSISTENCE
+  const [appState, setAppState] = useState({
+    theme: '#0ea5e9',
+    features: [],
+    isLive: false
   });
 
   useEffect(() => {
@@ -125,46 +107,58 @@ function App() {
     const lower = cmd.toLowerCase();
     
     setTimeout(() => {
-      setConsoleLog(prev => [...prev, "// ANALYZING_VIBE: " + cmd.toUpperCase(), "// UPDATING_PERSISTENT_STATE..."]);
+      setConsoleLog(prev => [
+        ...prev, 
+        "// DECODING_INTENT...", 
+        "// MAPPING_NEURAL_INFRASTRUCTURE...",
+        "// GENERATING_PRODUCTION_CODE..."
+      ]);
       
-      // Memory Logic: Update existing config instead of resetting
-      setAppConfig(prev => {
-        let newConfig = { ...prev, isManifested: true };
-        if (lower.includes('purple')) newConfig.themeColor = '#8b5cf6';
-        if (lower.includes('blue')) newConfig.themeColor = '#0ea5e9';
-        if (lower.includes('face')) newConfig.hasFace = true;
-        if (lower.includes('builder')) newConfig.appType = 'Builder';
-        return newConfig;
+      setAppState(prev => {
+        let next = { ...prev, isLive: true };
+        if (lower.includes('blue')) next.theme = '#0ea5e9';
+        if (lower.includes('purple')) next.theme = '#8b5cf6';
+        if (lower.includes('gold')) next.theme = '#f59e0b';
+        
+        // Dynamic Feature Addition
+        const words = lower.split(' ');
+        words.forEach(word => {
+            if (['profile', 'chat', 'feed', 'stats', 'map', 'crypto', 'health'].includes(word)) {
+                if (!next.features.includes(word)) next.features.push(word);
+            }
+        });
+        
+        return next;
       });
 
       setTimeout(() => {
-        setConsoleLog(prev => [...prev, "// STATE_SYNCHRONIZED: RENDERED_IN_STAGE"]);
-      }, 800);
+        setConsoleLog(prev => [...prev, "// SYNC_COMPLETE: MANIFESTED_ON_STAGE"]);
+      }, 1000);
     }, 400);
   };
 
   if (view === 'landing') return (
     <div style={{ backgroundColor: '#020617', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
-        <div style={{ fontSize: '5rem', fontWeight: '900', letterSpacing: '-3px', background: 'linear-gradient(to right, #38bdf8, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Blue Lotus</div>
-        <button onClick={() => supabase.auth.signInWithOAuth({ provider: 'github' })} style={{ marginTop: '30px', padding: '16px 48px', background: '#38bdf8', color: '#000', border: 'none', borderRadius: '16px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 20px 40px rgba(56, 189, 248, 0.2)' }}>AUTHORIZE_MASTER</button>
+        <div style={{ fontSize: '6rem', fontWeight: '900', letterSpacing: '-4px', background: 'linear-gradient(to bottom right, #38bdf8, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Blue Lotus</div>
+        <button onClick={() => supabase.auth.signInWithOAuth({ provider: 'github' })} style={{ marginTop: '40px', padding: '20px 60px', background: '#38bdf8', color: '#000', border: 'none', borderRadius: '20px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 30px 60px rgba(56, 189, 248, 0.2)' }}>AUTHORIZE_MASTER</button>
     </div>
   );
 
   return (
     <div style={{ backgroundColor: '#020617', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif', overflow: 'hidden' }}>
-      <div style={{ height: '80px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', padding: '0 50px', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}><span style={{ color: '#38bdf8', fontSize: '1.6rem' }}>🪷</span><span style={{ fontWeight: '900', fontSize: '1rem', letterSpacing: '4px' }}>BLUE_LOTUS_CORE</span></div>
-        <div style={{ fontSize: '0.75rem', color: '#475569' }}>MASTER: <span style={{ color: '#38bdf8' }}>{user?.email}</span></div>
+      <div style={{ height: '90px', borderBottom: '1px solid rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', padding: '0 60px', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}><span style={{ color: '#38bdf8', fontSize: '2rem' }}>🪷</span><span style={{ fontWeight: '900', fontSize: '1.1rem', letterSpacing: '6px' }}>BLUE_LOTUS_CORE</span></div>
+        <div style={{ fontSize: '0.8rem', color: '#475569', letterSpacing: '1px' }}>MASTER: <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>{user?.email}</span></div>
       </div>
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <CommandCenter onCommand={handleNewCommand} consoleLog={consoleLog} />
-        <div style={{ flex: 1, backgroundColor: '#0f172a', padding: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {!appConfig.isManifested ? (
-            <div style={{ textAlign: 'center', opacity: 0.15 }}>
-              <div style={{ fontSize: '5rem', marginBottom: '20px' }}>✨</div>
-              <p style={{ letterSpacing: '6px', fontSize: '0.8rem', fontWeight: 'bold' }}>AWAITING_MASTER_VIBE</p>
+        <div style={{ flex: 1, backgroundColor: '#0f172a', padding: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {!appState.isLive ? (
+            <div style={{ textAlign: 'center', opacity: 0.1 }}>
+              <div style={{ fontSize: '6rem', marginBottom: '30px' }}>⚡</div>
+              <p style={{ letterSpacing: '10px', fontSize: '0.9rem', fontWeight: '900' }}>NEURAL_IDLE</p>
             </div>
-          ) : <AppManifestation config={appConfig} />}
+          ) : <ManifestedApp features={appState.features} theme={appState.theme} />}
         </div>
       </div>
     </div>
