@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
 export const config = {
-  runtime: 'edge',
+  runtime: "edge",
 };
 
 export default async function handler(req: Request) {
@@ -9,39 +9,54 @@ export default async function handler(req: Request) {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
   };
 
-  if (req.method === "OPTIONS") return new Response(null, { status: 200, headers });
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 200, headers });
+  }
 
   try {
-    const { prompt, systemContext } = await req.json();
+    const { messages } = await req.json();
+
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(
+        JSON.stringify({
+          error: "INVALID_PAYLOAD",
+          details: "Expected { messages: [...] }",
+        }),
+        { status: 400, headers }
+      );
+    }
 
     const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
+      apiKey: process.env.OPENAI_API_KEY,
     });
 
-    // The Actuator follows the System Contract you defined
+    // Convert messages into OpenAI format
     const completion = await client.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: systemContext },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.2,
-      response_format: { type: "json_object" }
+      model: "gpt-4o-mini",
+      messages: messages.map((m) => ({
+        role: m.role,
+        content: m.content,
+      })),
+      temperature: 0.4,
     });
 
-    const aiResponse = completion.choices[0].message.content || "{}";
+    const reply =
+      completion.choices?.[0]?.message?.content ||
+      "I’m online, but I didn’t receive a valid response.";
 
-    return new Response(
-      JSON.stringify({ blueprint: JSON.parse(aiResponse) }),
-      { status: 200, headers }
-    );
-
+    return new Response(JSON.stringify({ reply }), {
+      status: 200,
+      headers,
+    });
   } catch (error: any) {
     return new Response(
-      JSON.stringify({ error: "BRAIN_OFFLINE", details: error.message }),
+      JSON.stringify({
+        error: "TWIN_BACKEND_FAILURE",
+        details: error.message,
+      }),
       { status: 500, headers }
     );
   }
