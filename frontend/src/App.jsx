@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// CORRECTED URL: Added the missing 'n'
+// TYPO FIXED: Added the missing 'n' to ehbpmjknjmgroucacsru
 const supabaseUrl = 'https://ehbpmjknjmgroucacsru.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoYnBtamtuam1ncm91Y2Fjc3J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMzc4NzUsImV4cCI6MjA9MTYxMzg3NX0.13spZuJdIWBVVSIhLvdO9uYmGVEzi70oBsObBwVJiOo'; 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -47,7 +47,7 @@ function App() {
 
   const handleCommand = async (cmd) => {
     setManifest({ active: true, type: cmd.toUpperCase(), stage: 'planning' });
-    const steps = ["Analyzing Sovereign Intent", "Mapping Data Schema", "Injecting TWIN Logic", "Materializing Luxury UI"];
+    const steps = ["Analyzing Intent", "Mapping Sovereign Schema", "Injecting TWIN Logic", "Materializing Luxury UI"];
     setBuildPlan([]);
     for (const step of steps) {
       setBuildPlan(prev => [...prev, { name: step, done: false }]);
