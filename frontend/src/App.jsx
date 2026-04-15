@@ -6,30 +6,18 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // BYPASS ENABLED: Initializing with a mock user to skip login
+  const [user, setUser] = useState({ email: 'developer@bluelotus.io' });
+  const [loading, setLoading] = useState(false); 
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('');
   const [buildPlan, setBuildPlan] = useState([]);
   const [manifest, setManifest] = useState({ active: false, type: '', stage: 'idle' });
 
   useEffect(() => {
-    // 1. Check for an existing session immediately
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) setUser(session.user);
-      setLoading(false);
-    };
-    checkSession();
-
-    // 2. Listen for the "Magic Link" arrival
+    // Session listener kept for future use, but won't block access
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        setUser(session.user);
-        // Clean the URL of the token so the UI stays sharp
-        window.history.replaceState({}, document.title, window.location.origin);
-      }
-      setLoading(false);
+      if (session) setUser(session.user);
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -59,11 +47,11 @@ function App() {
 
   if (loading) return <div style={{ background: '#020617', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1' }}>💎</div>;
 
+  // The login screen is now only shown if you manually log out
   if (!user) return (
     <div style={{ backgroundColor: '#020617', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
       <div style={{ width: '70px', height: '70px', border: '2px solid #6366f1', borderRadius: '15px', marginBottom: '30px', boxShadow: '0 0 40px rgba(99, 102, 241, 0.3)' }} />
       <h1 style={{ fontSize: '6rem', fontWeight: '900', letterSpacing: '-6px', background: 'linear-gradient(to bottom, #fff, #475569)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>Blue Lotus</h1>
-      <p style={{ letterSpacing: '12px', color: '#475569', fontSize: '0.7rem', fontWeight: '900', marginBottom: '40px' }}>SOVEREIGN_STUDIO_v1.0</p>
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '340px' }}>
         <input type="email" placeholder="Enter email..." required value={email} onChange={(e) => setEmail(e.target.value)} style={{ padding: '22px', borderRadius: '18px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', textAlign: 'center' }} />
         <button style={{ padding: '22px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '18px', fontWeight: '900', cursor: 'pointer' }}>REQUEST_ACCESS</button>
@@ -76,7 +64,7 @@ function App() {
     <div style={{ backgroundColor: '#010413', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif' }}>
       <div style={{ height: '80px', borderBottom: '1px solid rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', padding: '0 40px', justifyContent: 'space-between', background: 'rgba(2, 6, 23, 0.9)', backdropFilter: 'blur(30px)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}><div style={{ width: '22px', height: '22px', border: '2px solid #6366f1', borderRadius: '5px' }} /><span style={{ fontWeight: '900', letterSpacing: '6px', fontSize: '0.8rem' }}>LOTUS_STUDIO</span></div>
-        <button onClick={() => supabase.auth.signOut()} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '8px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '0.7rem' }}>LOGOUT</button>
+        <button onClick={() => setUser(null)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '8px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '0.7rem' }}>BYPASS_OUT</button>
       </div>
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <div style={{ width: '400px', borderRight: '1px solid rgba(255,255,255,0.03)', display: 'flex', flexDirection: 'column', background: 'rgba(2, 6, 23, 0.5)' }}>
