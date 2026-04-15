@@ -5,38 +5,25 @@ const supabaseUrl = 'https://ehbpmjknjmgroucacsru.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoYnBtamtuam1ncm91Y2Fjc3J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMzc4NzUsImV4cCI6MjA5MTYxMzg3NX0.13spZuJdIWBVVSIhLvdO9uYmGVEzi70oBsObBwVJiOo'; 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// --- COMPONENT: THE ACTUAL APP BUILDER INTERFACE ---
-const SovereignAppBuilder = () => (
-  <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #1e293b', paddingBottom: '15px' }}>
-      <h2 style={{ color: '#38bdf8', margin: 0 }}>SOVEREIGN_ENGINE_v1.0</h2>
-      <div style={{ display: 'flex', gap: '10px' }}>
-        <button style={{ background: '#1e293b', color: '#fff', border: 'none', padding: '5px 15px', fontSize: '0.7rem' }}>SAVE_DRAFT</button>
-        <button style={{ background: '#38bdf8', color: '#000', border: 'none', padding: '5px 15px', fontSize: '0.7rem', fontWeight: 'bold' }}>PUBLISH_LIVE</button>
-      </div>
+// --- THE VIBE-CODING ENGINE ---
+const VibeBuilder = () => (
+  <div style={{ width: '100%', height: '100%', background: '#000', border: '1px solid #38bdf8', borderRadius: '12px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 0 40px rgba(56, 189, 248, 0.1)' }}>
+    <div style={{ padding: '15px 25px', borderBottom: '1px solid #1e293b', background: '#050505', display: 'flex', justifyContent: 'space-between' }}>
+      <span style={{ color: '#38bdf8', fontSize: '0.8rem', letterSpacing: '2px' }}>VIBE_GENERATOR_v1.0</span>
+      <div style={{ display: 'flex', gap: '8px' }}><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444' }} /><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b' }} /><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} /></div>
     </div>
-    
-    <div style={{ display: 'flex', flex: 1, gap: '20px' }}>
-      {/* Component Library */}
-      <div style={{ width: '180px', background: '#0a0a0a', border: '1px solid #1e293b', padding: '15px' }}>
-        <p style={{ fontSize: '0.6rem', color: '#475569', marginBottom: '15px' }}>LIBRARY</p>
-        {['NAVBAR', 'HERO', 'GRID', 'FORM', 'FOOTER'].map(item => (
-          <div key={item} style={{ padding: '10px', border: '1px dotted #334155', marginBottom: '10px', fontSize: '0.7rem', color: '#38bdf8', textAlign: 'center' }}>{item}</div>
-        ))}
+    <div style={{ flex: 1, display: 'flex' }}>
+      <div style={{ width: '200px', borderRight: '1px solid #1e293b', padding: '20px', fontSize: '0.7rem' }}>
+        <p style={{ color: '#475569' }}>STRUCTURE</p>
+        <ul style={{ listStyle: 'none', padding: 0, color: '#38bdf8' }}>
+          <li style={{ marginBottom: '10px' }}>📦 Layout</li><li style={{ marginBottom: '10px' }}>🔐 Auth_Node</li><li style={{ marginBottom: '10px' }}>🗄️ Database</li>
+        </ul>
       </div>
-
-      {/* Main Canvas */}
-      <div style={{ flex: 1, border: '2px dashed #1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e293b' }}>
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: '0.8rem' }}>// CANVAS_ACTIVE</p>
-          <p style={{ fontSize: '0.6rem' }}>DRAG COMPONENTS HERE TO CONSTRUCT APP</p>
-        </div>
-      </div>
-
-      {/* Code Inspector */}
-      <div style={{ width: '220px', background: '#000', border: '1px solid #1e293b', padding: '15px', fontFamily: 'monospace', fontSize: '0.6rem', color: '#475569' }}>
-        <p style={{ color: '#38bdf8' }}>// LIVE_JSX_INSPECTOR</p>
-        <pre>{`<div className="app">\n  <Header />\n  <Main />\n</div>`}</pre>
+      <div style={{ flex: 1, padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+        <div style={{ width: '60px', height: '60px', border: '2px solid #38bdf8', borderRadius: '50%', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'pulse 2s infinite' }}>🪷</div>
+        <h2 style={{ color: '#fff', margin: '0 0 10px 0' }}>Sovereign App Manifested</h2>
+        <p style={{ color: '#475569', fontSize: '0.8rem' }}>The AI has constructed the backend and frontend logic.<br/>Ready for Master deployment.</p>
+        <button style={{ marginTop: '30px', padding: '12px 30px', background: '#38bdf8', color: '#000', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>LAUNCH_REALITY</button>
       </div>
     </div>
   </div>
@@ -54,7 +41,7 @@ const CommandCenter = ({ onCommand, consoleLog }) => {
         <div ref={logEndRef} />
       </div>
       <form onSubmit={handleSubmit} style={{ padding: '20px', borderTop: '1px solid rgba(56, 189, 248, 0.1)' }}>
-        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a command (e.g. 'build an app builder')..." autoFocus style={{ width: '100%', backgroundColor: '#0a0a0a', border: '1px solid #1e293b', padding: '12px', color: '#fff', outline: 'none', fontFamily: 'monospace' }} />
+        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Describe the vibe of your app..." autoFocus style={{ width: '100%', backgroundColor: '#0a0a0a', border: '1px solid #1e293b', padding: '12px', color: '#fff', outline: 'none', fontFamily: 'monospace' }} />
       </form>
     </div>
   );
@@ -63,8 +50,8 @@ const CommandCenter = ({ onCommand, consoleLog }) => {
 function App() {
   const [view, setView] = useState('landing');
   const [user, setUser] = useState(null);
-  const [isBuilderActive, setIsBuilderActive] = useState(false);
-  const [consoleLog, setConsoleLog] = useState(["// TWIN_CORE: ONLINE", "// WAITING_FOR_SOVEREIGN_COMMAND..."]);
+  const [isVibeActive, setIsVibeActive] = useState(false);
+  const [consoleLog, setConsoleLog] = useState(["// TWIN_CORE: ONLINE", "// VIBE_MODE: LISTENING"]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => { if (session) { setUser(session.user); setView('workspace'); } });
@@ -72,24 +59,19 @@ function App() {
 
   const handleNewCommand = (cmd) => {
     setConsoleLog(prev => [...prev, `> ${cmd}`]);
-    const lowerCmd = cmd.toLowerCase();
-    
+    const lower = cmd.toLowerCase();
     setTimeout(() => {
-      if (lowerCmd.includes('app builder')) {
-        setConsoleLog(prev => [...prev, "// TWIN: Command acknowledged.", "// TWIN: Fetching architecture for 'Sovereign App Builder'...", "// TWIN: Manifesting Interface..."]);
-        setIsBuilderActive(true);
-      } else if (lowerCmd.includes('clear')) {
-        setIsBuilderActive(false);
-        setConsoleLog(prev => [...prev, "// TWIN: Workspace cleared."]);
+      // Fuzzy matching for 'vibe coding' style
+      if (lower.includes('builder') || lower.includes('create') || lower.includes('app')) {
+        setConsoleLog(prev => [...prev, "// TWIN: Detecting intent...", "// TWIN: Initiating Vibe-Coding sequence...", "// TWIN: Constructing Sovereign Architecture..."]);
+        setIsVibeActive(true);
       } else {
-        setConsoleLog(prev => [...prev, "// TWIN: Processing... Command logged to neural history."]);
+        setConsoleLog(prev => [...prev, "// TWIN: Analyzing request... Vibe logged."]);
       }
     }, 600);
   };
 
-  const handleLogin = async () => {
-    await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.origin } });
-  };
+  const handleLogin = async () => { await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.origin } }); };
 
   if (view === 'landing') return (
     <div style={{ backgroundColor: '#010204', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'monospace' }}>
@@ -100,24 +82,14 @@ function App() {
 
   return (
     <div style={{ backgroundColor: '#010204', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'monospace', overflow: 'hidden' }}>
-      {/* Top Header */}
       <div style={{ height: '60px', borderBottom: '1px solid rgba(56, 189, 248, 0.2)', display: 'flex', alignItems: 'center', padding: '0 25px', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}><span style={{ color: '#38bdf8' }}>🪷</span><span style={{ fontWeight: 'bold', fontSize: '0.75rem', letterSpacing: '3px' }}>BLUE_LOTUS_CORE</span></div>
         <div style={{ fontSize: '0.7rem', color: '#38bdf8' }}>MASTER: {user?.email}</div>
       </div>
-
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <CommandCenter onCommand={handleNewCommand} consoleLog={consoleLog} />
-        
-        {/* PREVIEW STAGE */}
-        <div style={{ flex: 1, backgroundColor: '#020408', padding: '30px', overflow: 'hidden' }}>
-          {!isBuilderActive ? (
-            <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e293b' }}>
-              // TYPE 'BUILD AN APP BUILDER' TO INITIATE
-            </div>
-          ) : (
-            <SovereignAppBuilder />
-          )}
+        <div style={{ flex: 1, backgroundColor: '#020408', padding: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {!isVibeActive ? <p style={{ color: '#1e293b' }}>// DESCRIBE YOUR VISION TO COMMENCE</p> : <VibeBuilder />}
         </div>
       </div>
     </div>
