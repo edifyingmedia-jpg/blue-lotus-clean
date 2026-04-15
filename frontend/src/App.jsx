@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// TYPO FIXED: Added the missing 'n' to ehbpmjknjmgroucacsru
 const supabaseUrl = 'https://ehbpmjknjmgroucacsru.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoYnBtamtuam1ncm91Y2Fjc3J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMzc4NzUsImV4cCI6MjA9MTYxMzg3NX0.13spZuJdIWBVVSIhLvdO9uYmGVEzi70oBsObBwVJiOo'; 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -15,19 +14,20 @@ function App() {
   const [manifest, setManifest] = useState({ active: false, type: '', stage: 'idle' });
 
   useEffect(() => {
-    const initAuth = async () => {
+    // 1. Check for an existing session immediately
+    const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) setUser(session.user);
       setLoading(false);
     };
-    initAuth();
+    checkSession();
 
+    // 2. Listen for the "Magic Link" arrival
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         setUser(session.user);
+        // Clean the URL of the token so the UI stays sharp
         window.history.replaceState({}, document.title, window.location.origin);
-      } else {
-        setUser(null);
       }
       setLoading(false);
     });
@@ -64,19 +64,9 @@ function App() {
       <div style={{ width: '70px', height: '70px', border: '2px solid #6366f1', borderRadius: '15px', marginBottom: '30px', boxShadow: '0 0 40px rgba(99, 102, 241, 0.3)' }} />
       <h1 style={{ fontSize: '6rem', fontWeight: '900', letterSpacing: '-6px', background: 'linear-gradient(to bottom, #fff, #475569)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>Blue Lotus</h1>
       <p style={{ letterSpacing: '12px', color: '#475569', fontSize: '0.7rem', fontWeight: '900', marginBottom: '40px' }}>SOVEREIGN_STUDIO_v1.0</p>
-      
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '340px' }}>
-        <input 
-          type="email" 
-          placeholder="Enter email for access..." 
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: '22px', borderRadius: '18px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', outline: 'none', textAlign: 'center' }}
-        />
-        <button style={{ padding: '22px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '18px', fontWeight: '900', cursor: 'pointer', fontSize: '0.9rem', letterSpacing: '2px' }}>
-          REQUEST_ACCESS
-        </button>
+        <input type="email" placeholder="Enter email..." required value={email} onChange={(e) => setEmail(e.target.value)} style={{ padding: '22px', borderRadius: '18px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', textAlign: 'center' }} />
+        <button style={{ padding: '22px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '18px', fontWeight: '900', cursor: 'pointer' }}>REQUEST_ACCESS</button>
         {status && <p style={{ color: '#94a3b8', fontSize: '0.8rem', textAlign: 'center', marginTop: '10px' }}>{status}</p>}
       </form>
     </div>
@@ -88,7 +78,6 @@ function App() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}><div style={{ width: '22px', height: '22px', border: '2px solid #6366f1', borderRadius: '5px' }} /><span style={{ fontWeight: '900', letterSpacing: '6px', fontSize: '0.8rem' }}>LOTUS_STUDIO</span></div>
         <button onClick={() => supabase.auth.signOut()} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '8px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '0.7rem' }}>LOGOUT</button>
       </div>
-
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <div style={{ width: '400px', borderRight: '1px solid rgba(255,255,255,0.03)', display: 'flex', flexDirection: 'column', background: 'rgba(2, 6, 23, 0.5)' }}>
           <div style={{ flex: 1, padding: '40px' }}>
@@ -104,10 +93,9 @@ function App() {
             <input name="cmd" placeholder="Command Reality..." autoFocus style={{ width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', padding: '22px', color: '#fff', borderRadius: '15px', outline: 'none' }} />
           </form>
         </div>
-
         <div style={{ flex: 1, padding: '60px', background: 'radial-gradient(circle at center, #0a112c 0%, #010413 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {manifest.stage === 'idle' ? <div style={{ opacity: 0.05, fontSize: '18rem' }}>💎</div> : 
-            <div style={{ width: '100%', height: '100%', background: manifest.stage === 'live' ? '#fff' : 'transparent', borderRadius: '40px', color: '#000', padding: '100px', textAlign: 'center', boxShadow: '0 80px 160px rgba(0,0,0,0.5)' }}>
+            <div style={{ width: '100%', height: '100%', background: manifest.stage === 'live' ? '#fff' : 'transparent', borderRadius: '40px', color: '#000', padding: '100px', textAlign: 'center' }}>
                 {manifest.stage === 'live' ? <h2>{manifest.type}</h2> : <div style={{ color: '#6366f1', letterSpacing: '10px', fontWeight: '900' }}>MANIFESTING...</div>}
             </div>
           }
