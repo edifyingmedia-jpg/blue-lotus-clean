@@ -5,6 +5,43 @@ const supabaseUrl = 'https://ehbpmjknjmgroucacsru.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoYnBtamtuam1ncm91Y2Fjc3J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMzc4NzUsImV4cCI6MjA5MTYxMzg3NX0.13spZuJdIWBVVSIhLvdO9uYmGVEzi70oBsObBwVJiOo'; 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// --- COMPONENT: THE ACTUAL APP BUILDER INTERFACE ---
+const SovereignAppBuilder = () => (
+  <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #1e293b', paddingBottom: '15px' }}>
+      <h2 style={{ color: '#38bdf8', margin: 0 }}>SOVEREIGN_ENGINE_v1.0</h2>
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <button style={{ background: '#1e293b', color: '#fff', border: 'none', padding: '5px 15px', fontSize: '0.7rem' }}>SAVE_DRAFT</button>
+        <button style={{ background: '#38bdf8', color: '#000', border: 'none', padding: '5px 15px', fontSize: '0.7rem', fontWeight: 'bold' }}>PUBLISH_LIVE</button>
+      </div>
+    </div>
+    
+    <div style={{ display: 'flex', flex: 1, gap: '20px' }}>
+      {/* Component Library */}
+      <div style={{ width: '180px', background: '#0a0a0a', border: '1px solid #1e293b', padding: '15px' }}>
+        <p style={{ fontSize: '0.6rem', color: '#475569', marginBottom: '15px' }}>LIBRARY</p>
+        {['NAVBAR', 'HERO', 'GRID', 'FORM', 'FOOTER'].map(item => (
+          <div key={item} style={{ padding: '10px', border: '1px dotted #334155', marginBottom: '10px', fontSize: '0.7rem', color: '#38bdf8', textAlign: 'center' }}>{item}</div>
+        ))}
+      </div>
+
+      {/* Main Canvas */}
+      <div style={{ flex: 1, border: '2px dashed #1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e293b' }}>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: '0.8rem' }}>// CANVAS_ACTIVE</p>
+          <p style={{ fontSize: '0.6rem' }}>DRAG COMPONENTS HERE TO CONSTRUCT APP</p>
+        </div>
+      </div>
+
+      {/* Code Inspector */}
+      <div style={{ width: '220px', background: '#000', border: '1px solid #1e293b', padding: '15px', fontFamily: 'monospace', fontSize: '0.6rem', color: '#475569' }}>
+        <p style={{ color: '#38bdf8' }}>// LIVE_JSX_INSPECTOR</p>
+        <pre>{`<div className="app">\n  <Header />\n  <Main />\n</div>`}</pre>
+      </div>
+    </div>
+  </div>
+);
+
 const CommandCenter = ({ onCommand, consoleLog }) => {
   const [input, setInput] = useState("");
   const logEndRef = useRef(null);
@@ -17,7 +54,7 @@ const CommandCenter = ({ onCommand, consoleLog }) => {
         <div ref={logEndRef} />
       </div>
       <form onSubmit={handleSubmit} style={{ padding: '20px', borderTop: '1px solid rgba(56, 189, 248, 0.1)' }}>
-        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a component name (e.g. 'header', 'form', 'stats')..." autoFocus style={{ width: '100%', backgroundColor: '#0a0a0a', border: '1px solid #1e293b', padding: '12px', color: '#fff', outline: 'none', fontFamily: 'monospace' }} />
+        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a command (e.g. 'build an app builder')..." autoFocus style={{ width: '100%', backgroundColor: '#0a0a0a', border: '1px solid #1e293b', padding: '12px', color: '#fff', outline: 'none', fontFamily: 'monospace' }} />
       </form>
     </div>
   );
@@ -26,8 +63,8 @@ const CommandCenter = ({ onCommand, consoleLog }) => {
 function App() {
   const [view, setView] = useState('landing');
   const [user, setUser] = useState(null);
-  const [components, setComponents] = useState([]);
-  const [consoleLog, setConsoleLog] = useState(["// TWIN_CORE: ONLINE", "// SOVEREIGN_BUILDER: ACTIVE"]);
+  const [isBuilderActive, setIsBuilderActive] = useState(false);
+  const [consoleLog, setConsoleLog] = useState(["// TWIN_CORE: ONLINE", "// WAITING_FOR_SOVEREIGN_COMMAND..."]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => { if (session) { setUser(session.user); setView('workspace'); } });
@@ -38,22 +75,16 @@ function App() {
     const lowerCmd = cmd.toLowerCase();
     
     setTimeout(() => {
-      if (lowerCmd.includes('header')) {
-        setComponents(prev => [...prev, { id: 'h', type: 'header', content: 'Sovereign Interface v1.0' }]);
-        setConsoleLog(prev => [...prev, "// TWIN: Compiling Header Component..."]);
-      } else if (lowerCmd.includes('form') || lowerCmd.includes('login')) {
-        setComponents(prev => [...prev, { id: 'f', type: 'form' }]);
-        setConsoleLog(prev => [...prev, "// TWIN: Generating Auth Module..."]);
-      } else if (lowerCmd.includes('stats') || lowerCmd.includes('dashboard')) {
-        setComponents(prev => [...prev, { id: 's', type: 'stats' }]);
-        setConsoleLog(prev => [...prev, "// TWIN: Deploying Data Visualization..."]);
+      if (lowerCmd.includes('app builder')) {
+        setConsoleLog(prev => [...prev, "// TWIN: Command acknowledged.", "// TWIN: Fetching architecture for 'Sovereign App Builder'...", "// TWIN: Manifesting Interface..."]);
+        setIsBuilderActive(true);
       } else if (lowerCmd.includes('clear')) {
-        setComponents([]);
-        setConsoleLog(prev => [...prev, "// TWIN: Preview Stage Cleared."]);
+        setIsBuilderActive(false);
+        setConsoleLog(prev => [...prev, "// TWIN: Workspace cleared."]);
       } else {
-        setConsoleLog(prev => [...prev, "// TWIN: Searching library for '" + cmd + "'..."]);
+        setConsoleLog(prev => [...prev, "// TWIN: Processing... Command logged to neural history."]);
       }
-    }, 500);
+    }, 600);
   };
 
   const handleLogin = async () => {
@@ -69,7 +100,7 @@ function App() {
 
   return (
     <div style={{ backgroundColor: '#010204', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'monospace', overflow: 'hidden' }}>
-      {/* Header */}
+      {/* Top Header */}
       <div style={{ height: '60px', borderBottom: '1px solid rgba(56, 189, 248, 0.2)', display: 'flex', alignItems: 'center', padding: '0 25px', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}><span style={{ color: '#38bdf8' }}>🪷</span><span style={{ fontWeight: 'bold', fontSize: '0.75rem', letterSpacing: '3px' }}>BLUE_LOTUS_CORE</span></div>
         <div style={{ fontSize: '0.7rem', color: '#38bdf8' }}>MASTER: {user?.email}</div>
@@ -78,32 +109,14 @@ function App() {
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <CommandCenter onCommand={handleNewCommand} consoleLog={consoleLog} />
         
-        {/* THE LIVE PREVIEW STAGE */}
-        <div style={{ flex: 1, backgroundColor: '#020408', padding: '40px', overflowY: 'auto' }}>
-          {components.length === 0 ? (
+        {/* PREVIEW STAGE */}
+        <div style={{ flex: 1, backgroundColor: '#020408', padding: '30px', overflow: 'hidden' }}>
+          {!isBuilderActive ? (
             <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e293b' }}>
-              // TYPE 'HEADER', 'FORM', OR 'STATS' TO BUILD
+              // TYPE 'BUILD AN APP BUILDER' TO INITIATE
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
-              {components.map((comp, idx) => (
-                <div key={idx} style={{ border: '1px solid #1e293b', background: '#000', padding: '20px', borderRadius: '4px' }}>
-                  {comp.type === 'header' && <h1 style={{ color: '#38bdf8', margin: 0 }}>{comp.content}</h1>}
-                  {comp.type === 'form' && (
-                    <div style={{ display: 'grid', gap: '10px' }}>
-                      <input placeholder="Email" style={{ background: '#111', border: '1px solid #334155', padding: '10px', color: '#fff' }} />
-                      <button style={{ background: '#38bdf8', color: '#000', border: 'none', padding: '10px' }}>ACCESS_SECURE_NODE</button>
-                    </div>
-                  )}
-                  {comp.type === 'stats' && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <div style={{ color: '#38bdf8' }}>Active Users: 1,024</div>
-                      <div style={{ color: '#f472b6' }}>System Load: 12%</div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <SovereignAppBuilder />
           )}
         </div>
       </div>
