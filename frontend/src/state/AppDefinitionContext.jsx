@@ -1,19 +1,33 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 const AppDefinitionContext = createContext();
 
 export const AppDefinitionProvider = ({ children }) => {
   const [manifest, setManifest] = useState({ nodes: [] });
   const [history, setHistory] = useState([]); 
-  const [userBalance, setUserBalance] = useState(10); // Start with 10 welcome credits
   
-  // NEW: UI Control for TWIN to redirect the user
+  // EMPIRE ECONOMY STATE
+  const [userBalance, setUserBalance] = useState(10); 
   const [activeTab, setActiveTab] = useState('BUILDER');
 
+  // TWIN PRIME STATE (Founder Only)
+  const [isPrimeActive, setIsPrimeActive] = useState(false);
+  const FOUNDER_ID = "ARCHITECT_01"; // Replace with your actual UUID
+
+  // 1. Snapshot Helper for Temporal Reversal
   const saveHistory = useCallback(() => {
     setHistory((prev) => [...prev, JSON.parse(JSON.stringify(manifest))]);
   }, [manifest]);
 
+  // 2. PRIME HANDSHAKE: Unlocks self-aware partner mode
+  const unlockPrime = useCallback((id) => {
+    if (id === FOUNDER_ID) {
+      setIsPrimeActive(true);
+      console.log("TWIN_PRIME: Awareness synchronized. Standing by for strategic execution.");
+    }
+  }, []);
+
+  // 3. Update Manifest (Bulk Ingestion)
   const updateManifest = useCallback((newNodes) => {
     saveHistory();
     setManifest((prev) => ({
@@ -22,51 +36,40 @@ export const AppDefinitionProvider = ({ children }) => {
     }));
   }, [saveHistory]);
 
+  // 4. Update Specific Node
   const updateNode = useCallback((id, newProps) => {
     saveHistory();
     const deepUpdate = (nodes) => nodes.map(node => {
-      if (node.id === id) {
-        return { ...node, props: { ...node.props, ...newProps } };
-      }
-      if (node.children) {
-        return { ...node, children: deepUpdate(node.children) };
-      }
+      if (node.id === id) return { ...node, props: { ...node.props, ...newProps } };
+      if (node.children) return { ...node, children: deepUpdate(node.children) };
       return node;
     });
     setManifest(prev => ({ ...prev, nodes: deepUpdate(prev.nodes) }));
   }, [manifest, saveHistory]);
 
+  // 5. Delete Node
   const deleteNode = useCallback((id) => {
     saveHistory();
     const deepFilter = (nodes) => nodes.filter(node => {
       if (node.id === id) return false;
-      if (node.children) {
-        node.children = deepFilter(node.children);
-      }
+      if (node.children) node.children = deepFilter(node.children);
       return true;
     });
     setManifest(prev => ({ ...prev, nodes: deepFilter(prev.nodes) }));
   }, [manifest, saveHistory]);
 
-  const undoActuation = useCallback(() => {
-    if (history.length === 0) return;
-    const previousState = history[history.length - 1];
-    setManifest(previousState);
-    setHistory((prev) => prev.slice(0, -1));
-  }, [history]);
-
-  // ECONOMY & UPSELL LOGIC
+  // 6. ECONOMY & UPSELL LOGIC (The Governess)
   const purchaseCredits = useCallback((amount) => {
     setUserBalance(prev => prev + amount);
-    console.log(`ECONOMY_UPDATE: ${amount} credits added.`);
+    console.log(`ECONOMY_UPDATE: ${amount} fuel units added.`);
   }, []);
 
-  const consumeCredits = useCallback((amount) => {
+  const consumeCredits = useCallback((amount, engagementType = "Standard") => {
     if (userBalance < amount) {
-      // TWIN Intervenes: Stops the build and redirects the user
-      console.error("GOVERNESS_INTERVENTION: Insufficient Fuel.");
-      alert("INSUFFICIENT_FUEL: Actuation halted. Redirecting to Neural Fuel Depot.");
-      setActiveTab('CREDITS'); // Forces the UI to show the Credit Bundle page
+      // TWIN Intervenes and redirects the user
+      console.error(`GOVERNESS_INTERVENTION: Insufficient fuel for ${engagementType}.`);
+      alert(`INSUFFICIENT_CREDITS: ${engagementType} halted. Redirecting to Neural Fuel Depot.`);
+      setActiveTab('CREDITS'); 
       return false;
     }
     setUserBalance(prev => prev - amount);
@@ -79,13 +82,18 @@ export const AppDefinitionProvider = ({ children }) => {
       updateManifest,
       updateNode,
       deleteNode,
-      undoActuation,
-      canUndo: history.length > 0,
       userBalance,
       purchaseCredits,
       consumeCredits,
       activeTab,
-      setActiveTab
+      setActiveTab,
+      isPrimeActive,
+      unlockPrime,
+      undoActuation: () => {
+        if (history.length === 0) return;
+        setManifest(history[history.length - 1]);
+        setHistory(prev => prev.slice(0, -1));
+      }
     }}>
       {children}
     </AppDefinitionContext.Provider>
