@@ -1,62 +1,44 @@
 import OpenAI from "openai";
+import { generateProjectPreview } from "../backend/twin/actions/generateProjectPreview";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
-  const { action, prompt } = req.body;
-
-  if (!action) {
-    return res.status(400).json({ error: "Missing action" });
-  }
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   try {
-    const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
-    });
+    const { messages, mode = "architect" } = req.body; 
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    // -----------------------------
-    // CHAT MODE
-    // -----------------------------
-    if (action === "chat") {
-      const completion = await client.chat.completions.create({
+    // Mode 1: The Architect (JSON for Blue Lotus Builder)
+    if (mode === "architect") {
+      const completion = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
-          { role: "system", content: "You are TWIN, the builder AI for Blue Lotus." },
-          { role: "user", content: prompt }
+          { role: "system", content: "You are TWIN Architect. Respond ONLY with a JSON object representing a website structure." },
+          ...messages
+        ],
+        response_format: { type: "json_object" }
+      });
+
+      const aiOutput = JSON.parse(completion.choices[0].message.content);
+      const { preview } = await generateProjectPreview({ project: aiOutput });
+
+      return res.status(200).json({ type: "blueprint", reply: aiOutput, preview });
+    }
+
+    // Mode 2: The Emergent (Raw HTML fallback from twin.js)
+    if (mode === "html") {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          { role: "system", content: "You generate complete, working single-file HTML apps with inline CSS/JS." },
+          ...messages
         ]
       });
 
-      return res.status(200).json({
-        reply: completion.choices[0].message.content
-      });
+      return res.status(200).json({ type: "html", html: completion.choices[0].message.content });
     }
 
-    // -----------------------------
-    // BUILD MODE (Emergent-style)
-    // -----------------------------
-    if (action === "build") {
-      const completion = await client.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You generate complete, working single-file HTML apps. Include inline CSS and JS. No external dependencies unless via CDN. The output must be a full HTML document."
-          },
-          { role: "user", content: prompt }
-        ]
-      });
-
-      return res.status(200).json({
-        html: completion.choices[0].message.content
-      });
-    }
-
-    return res.status(400).json({ error: "Unknown action" });
-  } catch (err) {
-    console.error("TWIN Backend Error:", err);
-    return res.status(500).json({ error: "TWIN internal error" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 }
