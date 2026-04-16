@@ -2,14 +2,21 @@
 
 /**
  * generateProjectPreview
- * Formats raw AI output into a structured snapshot for the LivePreview engine.
+ * ----------------------
+ * Formats raw AI output into a structured, safe snapshot for the LivePreview engine.
+ * It adds missing IDs and normalizes props so the frontend doesn't crash.
  */
 export async function generateProjectPreview({ project }) {
   if (!project || typeof project !== "object") {
     throw new Error("Invalid project payload: expected an object.");
   }
 
-  const { id = "temp-id", name = "New Project", pages = [] } = project;
+  // Set top-level defaults
+  const { 
+    id = `proj-${Math.random().toString(36).substr(2, 5)}`, 
+    name = "New Blue Lotus Project", 
+    pages = [] 
+  } = project;
 
   const preview = {
     id,
@@ -23,11 +30,19 @@ export async function generateProjectPreview({ project }) {
         ? page.components.map((c) => ({
             id: c.id || `comp-${Math.random().toString(36).substr(2, 5)}`,
             type: c.type || "div",
-            props: c.props || {},
+            // Normalize props for Tailwind and React rendering
+            props: {
+              ...c.props,
+              className: c.props?.className || "", // Pre-fill for style editing
+              children: c.props?.children || c.props?.text || "" // Ensure content exists
+            },
           }))
         : [],
     })),
   };
 
-  return { ok: true, preview };
+  return {
+    ok: true,
+    preview,
+  };
 }
