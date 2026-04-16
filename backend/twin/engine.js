@@ -1,5 +1,4 @@
 // backend/twin/engine.js
-
 /**
  * TWIN Engine (Backend Core)
  * This is the secure, server-side executor for all TWIN actions.
@@ -12,15 +11,22 @@ import { updateProject } from "./actions/updateProject.js";
 import { deleteProject } from "./actions/deleteProject.js";
 import { listProjects } from "./actions/listProjects.js";
 import { getAllUserData } from "./actions/getAllUserData.js";
-import { saveProject } from "./actions/saveProject.js";
 import { generateProjectPreview } from "./actions/generateProjectPreview.js";
 import { validateProjectDefinition } from "./actions/validateProjectDefinition.js";
 
+/**
+ * runTWIN
+ * @param {string} action - The name of the action to perform
+ * @param {Object} payload - The data required for the action
+ */
 export async function runTWIN(action, payload = {}) {
   try {
+    // Standardize logging for Vercel
+    console.log(`[TWIN Engine] Executing action: ${action}`);
+
     switch (action) {
       case "ping":
-        return { ok: true, message: "TWIN engine online" };
+        return { ok: true, message: "TWIN engine online", timestamp: new Date() };
 
       case "getProject":
         return await getProject(payload);
@@ -40,9 +46,6 @@ export async function runTWIN(action, payload = {}) {
       case "getAllUserData":
         return await getAllUserData(payload);
 
-      case "saveProject":
-        return await saveProject(payload);
-
       case "generateProjectPreview":
         return await generateProjectPreview(payload);
 
@@ -53,7 +56,8 @@ export async function runTWIN(action, payload = {}) {
         throw new Error(`Unknown TWIN action: ${action}`);
     }
   } catch (err) {
-    console.error("TWIN Engine Error:", err);
+    // This log is vital for debugging in the Vercel Dashboard
+    console.error(`[TWIN Engine Error] Action "${action}" failed:`, err.message);
     throw err;
   }
 }
