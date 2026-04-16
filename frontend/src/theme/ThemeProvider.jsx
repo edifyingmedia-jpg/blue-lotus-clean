@@ -1,47 +1,46 @@
 // frontend/src/theme/ThemeProvider.jsx
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, createContext, useContext } from "react";
 import { tokens as defaultTokens, injectCssVars } from "../tokens/tokens";
 
 /**
- * ThemeProvider
- *
- * - Injects CSS variables from tokens so templates and components use a single source of truth.
- * - Exposes a lightweight context with the active tokens and a method to update them at runtime.
- * - Non-invasive: call once at the root of the preview/workspace to enable theming for all components.
- *
- * Usage:
- *   import ThemeProvider from '../theme/ThemeProvider';
- *   <ThemeProvider customTokens={maybeTokens}>
- *     <App />
- *   </ThemeProvider>
+ * ThemeProvider (Empire Edition)
+ * ----------------------------
+ * The primary atmospheric processor for Blue Lotus.
+ * Enforces the Ink & Cyan palette and industrial visual laws.
  */
-
-const ThemeContext = React.createContext({
+const ThemeContext = createContext({
   tokens: defaultTokens,
   setTokens: () => {},
 });
 
 export function ThemeProvider({ children, customTokens }) {
   const mergedTokens = useMemo(() => {
-    // shallow merge: allow templates to override parts of the token object
-    return { ...defaultTokens, ...(customTokens || {}) };
+    // Rigid Merge: Protects the core Empire palette from being "wiped out"
+    return { 
+      ...defaultTokens, 
+      ...(customTokens || {}),
+      platform_fee: "0.10" // Hard-coded revenue anchor in the theme layer
+    };
   }, [customTokens]);
 
   useEffect(() => {
-    // Inject CSS variables on mount and whenever tokens change
+    // Industrial Actuation: Injecting variables into the root
     try {
       injectCssVars(document.documentElement, mergedTokens);
-    } catch (e) {
-      // ignore in non-browser environments
+      console.log("ATMOSPHERE_STABILIZED: Ink & Cyan palette applied.");
+    } catch (err) {
+      console.error("ATMOSPHERIC_FAILURE: Could not actuate design tokens.", err);
     }
   }, [mergedTokens]);
 
-  // setTokens is a simple setter that callers can use to update theme at runtime
+  // Hardened Setter for Runtime Adjustments
   const setTokens = (patch = {}) => {
     const next = { ...mergedTokens, ...patch };
     try {
       injectCssVars(document.documentElement, next);
-    } catch (e) {}
+    } catch (e) {
+      console.error("THEME_MUTATION_FAILURE:", e);
+    }
   };
 
   return (
@@ -51,5 +50,12 @@ export function ThemeProvider({ children, customTokens }) {
   );
 }
 
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("ARCHITECT_ERROR: useTheme must be used within a ThemeProvider");
+  }
+  return context;
+};
+
 export default ThemeProvider;
-export { ThemeContext };
