@@ -1,50 +1,40 @@
-// frontend/src/state/AppDefinitionContext.jsx
-import React, { createContext, useContext, useState, useCallback } from "react";
-import initialAppDefinition from "./appDefinition";
-import { safeSet } from "../utils/safeSet";
+import React, { createContext, useContext, useState, useCallback } from 'react';
 
-const AppDefinitionContext = createContext(null);
+const AppDefinitionContext = createContext();
 
-/**
- * AppDefinitionProvider (Empire Edition)
- * -------------------------------------
- * The master state vessel for Blue Lotus applications.
- * Features hardened mutation logic to prevent project corruption.
- */
-export function AppDefinitionProvider({ children }) {
-  const [appDefinition, setAppDefinition] = useState(initialAppDefinition);
+export const AppDefinitionProvider = ({ children }) => {
+  const [manifest, setManifest] = useState({ nodes: [] });
+  const [history, setHistory] = useState([]); 
 
-  // Hardened Update Logic: Prevents "Wiping Out" the manifest
-  const updateManifest = useCallback((path, value) => {
-    setAppDefinition((prev) => {
-      const updated = safeSet(prev, path, value);
-      // Industrial Logging for manifest mutations
-      console.log(`MANIFEST_MUTATION_SUCCESS: Path [${path}] updated.`);
-      return { ...updated };
-    });
-  }, []);
+  const updateManifest = useCallback((newNodes) => {
+    // SAVE_TEMPORAL_POINT: Deep clone current state into history before update
+    setHistory((prev) => [...prev, JSON.parse(JSON.stringify(manifest))]);
+    
+    setManifest((prev) => ({
+      ...prev,
+      nodes: [...prev.nodes, ...newNodes],
+    }));
+  }, [manifest]);
 
-  // Global Revenue Anchor (10% Architect Fee)
-  const architectFee = 0.10;
+  const undoActuation = useCallback(() => {
+    if (history.length === 0) return;
+    
+    const previousState = history[history.length - 1];
+    setManifest(previousState);
+    setHistory((prev) => prev.slice(0, -1));
+    console.log("TEMPORAL_REVERSAL: Successfully restored prior manifest.");
+  }, [history]);
 
   return (
-    <AppDefinitionContext.Provider 
-      value={{ 
-        appDefinition, 
-        setAppDefinition, 
-        updateManifest,
-        architectFee 
-      }}
-    >
+    <AppDefinitionContext.Provider value={{ 
+      manifest, 
+      updateManifest, 
+      undoActuation, 
+      canUndo: history.length > 0 
+    }}>
       {children}
     </AppDefinitionContext.Provider>
   );
-}
+};
 
-export function useAppDefinition() {
-  const context = useContext(AppDefinitionContext);
-  if (!context) {
-    throw new Error("ARCHITECT_ERROR: useAppDefinition must be used within an AppDefinitionProvider");
-  }
-  return context;
-}
+export const useAppDefinition = () => useContext(AppDefinitionContext);
