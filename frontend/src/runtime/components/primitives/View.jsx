@@ -1,33 +1,31 @@
+// frontend/src/runtime/components/primitives/View.jsx
 import React from "react";
 
-export default function View({
-  children,
-  direction = "column",
-  padding = 0,
-  margin = 0,
-  gap = 0,
-  width = "100%",
-  height = "auto",
-  background,
-  radius,
-  style = {}
+/**
+ * View Primitive (Modernized)
+ * --------------------------
+ * The foundational layout engine for all Blue Lotus apps.
+ * Uses Tailwind Flexbox by default.
+ */
+export default function View({ 
+  children, 
+  className = "", 
+  direction = "flex-col", // flex-col or flex-row
+  center = false,
+  glass = false
 }) {
+  const baseStyles = "flex transition-all duration-300";
+  const alignment = center ? "items-center justify-center" : "";
+  const glassEffect = glass ? "bg-slate-900/40 backdrop-blur-md border border-slate-800" : "";
+
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: direction,
-        padding,
-        margin,
-        gap,
-        width,
-        height,
-        background,
-        borderRadius: radius,
-        boxSizing: "border-box",
-        ...style
-      }}
-    >
+    <div className={`
+      ${baseStyles} 
+      ${direction} 
+      ${alignment} 
+      ${glassEffect} 
+      ${className}
+    `}>
       {children}
     </div>
   );
