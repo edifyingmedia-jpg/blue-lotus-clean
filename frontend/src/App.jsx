@@ -19,11 +19,12 @@ function App() {
   const [twinText, setTwinText] = useState("Hello, I am TWIN.");
   const [twinThinking, setTwinThinking] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(false);
+  const [previewHTML, setPreviewHTML] = useState("");
 
   const fileInputRef = useRef(null);
 
   // --------------------------------------------------
-  // THE WORKING SEND FUNCTION (OpenAI backend)
+  // CHAT MODE
   // --------------------------------------------------
   const handleTwinSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +36,10 @@ function App() {
       const response = await fetch("/api/twin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: twinInput })
+        body: JSON.stringify({
+          action: "chat",
+          prompt: twinInput
+        })
       });
 
       const data = await response.json();
@@ -50,7 +54,35 @@ function App() {
   };
 
   // --------------------------------------------------
-  // HYBRID THEME (Loveable softness + Blue Lotus neon)
+  // BUILD MODE (Emergent-style)
+  // --------------------------------------------------
+  const handleBuild = async () => {
+    if (!twinInput.trim()) return;
+
+    setTwinThinking(true);
+
+    try {
+      const response = await fetch("/api/twin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "build",
+          prompt: twinInput
+        })
+      });
+
+      const data = await response.json();
+      setPreviewHTML(data.html || "<h1>No HTML returned</h1>");
+    } catch (err) {
+      console.error("TWIN build error:", err);
+      setPreviewHTML("<h1>Error building app</h1>");
+    }
+
+    setTwinThinking(false);
+  };
+
+  // --------------------------------------------------
+  // HYBRID THEME
   // --------------------------------------------------
   const theme = {
     background: darkMode ? "#0F0F14" : "#F8F9FF",
@@ -59,14 +91,11 @@ function App() {
     text: darkMode ? "#F5F5F7" : "#3E3E3E",
     textSoft: darkMode ? "#CFCFD4" : "#6E6E6E",
     border: darkMode ? "#2A2A33" : "#E6E1FF",
-
-    // Hybrid accent
-    accent:
-      "linear-gradient(135deg, #FF8CCF, #C7A4FF, #9EE7FF)" // pink → lavender → sky blue
+    accent: "linear-gradient(135deg, #FF8CCF, #C7A4FF, #9EE7FF)"
   };
 
   // --------------------------------------------------
-  // ACTION HANDLERS (placeholders)
+  // ACTION HANDLERS
   // --------------------------------------------------
   const handleRefresh = () => {};
   const handleUndo = () => {};
@@ -88,9 +117,7 @@ function App() {
         flexDirection: "column"
       }}
     >
-      {/* -------------------------------------------------- */}
       {/* TOP BAR */}
-      {/* -------------------------------------------------- */}
       <header
         style={{
           padding: "0.75rem 1.25rem",
@@ -171,9 +198,7 @@ function App() {
         </div>
       </header>
 
-      {/* -------------------------------------------------- */}
       {/* MAIN LAYOUT */}
-      {/* -------------------------------------------------- */}
       <main
         style={{
           flex: 1,
@@ -244,7 +269,6 @@ function App() {
               }}
             />
 
-            {/* FIXED BUTTON — NO MORE FACEBOOK BLUE */}
             <button
               type="submit"
               disabled={twinThinking}
@@ -258,13 +282,31 @@ function App() {
                 color: "#fff",
                 fontWeight: 600,
                 cursor: "pointer",
-                opacity: twinThinking ? 0.7 : 1,
-                transition: "transform 0.15s ease"
+                opacity: twinThinking ? 0.7 : 1
               }}
             >
               {twinThinking ? "Thinking..." : "Ask TWIN"}
             </button>
           </form>
+
+          {/* BUILD BUTTON */}
+          <button
+            onClick={handleBuild}
+            disabled={twinThinking}
+            style={{
+              marginTop: "10px",
+              borderRadius: "999px",
+              padding: "0.65rem 1.4rem",
+              border: "none",
+              background: "linear-gradient(135deg, #9EE7FF, #C7A4FF, #FF8CCF)",
+              color: "#fff",
+              fontWeight: 700,
+              cursor: "pointer",
+              opacity: twinThinking ? 0.7 : 1
+            }}
+          >
+            {twinThinking ? "Building..." : "Build App"}
+          </button>
 
           <input
             type="file"
@@ -292,27 +334,25 @@ function App() {
             Workspace Preview
           </div>
 
-          <div
+          {/* IFRAME PREVIEW */}
+          <iframe
+            title="preview"
             style={{
+              width: "100%",
+              height: "100%",
+              border: "1px solid " + theme.border,
               borderRadius: "1rem",
-              border: `1px dashed ${theme.border}`,
-              padding: "1rem",
-              background: darkMode ? "#0f172a" : "#f9fafb",
-              color: theme.textSoft,
-              fontSize: "0.85rem"
+              background: "#fff"
             }}
-          >
-            Your generated UI will appear here as TWIN builds or heals your app.
-          </div>
+            srcDoc={previewHTML}
+          />
         </section>
       </main>
     </div>
   );
 }
 
-// --------------------------------------------------
 // COMPONENTS
-// --------------------------------------------------
 function IconButton({ icon, onClick }) {
   return (
     <button
