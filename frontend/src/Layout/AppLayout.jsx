@@ -2,58 +2,19 @@ import React from "react";
 
 export default function AppLayout({ left, right }) {
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        background: "#f7f7f8"
-      }}
-    >
-      {/* App Header */}
-      <header
-        style={{
-          height: 56,
-          background: "#111",
-          color: "#fff",
-          display: "flex",
-          alignItems: "center",
-          padding: "0 16px",
-          fontWeight: 600,
-          letterSpacing: 0.5
-        }}
-      >
-        Blue Lotus Builder
-      </header>
-
-      {/* Builder Body */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          overflow: "hidden"
-        }}
-      >
-        {/* Left Panel */}
-        <aside
-          style={{
-            width: 260,
-            borderRight: "1px solid #ddd",
-            background: "#fafafa",
-            overflowY: "auto"
-          }}
-        >
+    <div className="flex h-screen w-full bg-[#09090B] overflow-hidden">
+      {/* We are removing the hardcoded <header> because our new App.jsx 
+          already has a premium integrated header. 
+      */}
+      
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Panel: The Architect */}
+        <aside className="w-[400px] border-r border-white/5 bg-[#0F0F14] overflow-y-auto custom-scrollbar shadow-2xl z-10">
           {left}
         </aside>
 
-        {/* Right / Main Area */}
-        <main
-          style={{
-            flex: 1,
-            overflow: "hidden"
-          }}
-        >
+        {/* Right Area: The Preview Canvas */}
+        <main className="flex-1 bg-[#09090B] overflow-hidden relative">
           {right}
         </main>
       </div>
