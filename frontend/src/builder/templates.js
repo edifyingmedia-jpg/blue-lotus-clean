@@ -7,12 +7,12 @@ export function builderCoreTemplate(name = "Lotus Builder") {
     entry: "index.html",
     manifest: {
       twin: "public",
-      capabilities: ["generate-app", "preview", "export"],
-      version: "2.0.0", // Upgraded version
+      capabilities: ["generate-app", "preview", "monetize"],
+      version: "2.5.0-PRIME", // Upgraded to the Empire version
+      architect_fee: 0.10    // The 10% hardcoded tax DNA
     },
     files: {
       "index.html": htmlShell(name),
-      "src/main.jsx": viteEntry(),
       "src/App.jsx": builderShell(name),
       "src/builder/generate.js": publicGenerateEngine(),
     },
@@ -23,14 +23,14 @@ function htmlShell(title) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <title>${title}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>${title}</title>
 </head>
-<body class="bg-slate-950 text-slate-200">
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
+<body class="bg-[#09090B] text-slate-200 selection:bg-cyan-500/30">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>`;
 }
@@ -43,33 +43,42 @@ export default function App() {
   const [input, setInput] = useState("");
   const [artifact, setArtifact] = useState(null);
 
-  const build = () => {
-    const result = generateApp(input);
-    setArtifact(result);
-  };
-
   return (
-    <div className="flex h-screen bg-slate-950 text-slate-200 font-sans">
-      <aside className="w-80 border-r border-slate-800 p-6 flex flex-col gap-4 bg-slate-900/50">
-        <h2 className="text-xs font-black uppercase tracking-widest text-blue-400">${name}</h2>
+    <div className="flex h-screen bg-[#09090B] text-slate-200 font-sans overflow-hidden">
+      {/* LEFT: THE INK CONSOLE */}
+      <aside className="w-85 border-r border-white/5 p-8 flex flex-col gap-6 bg-[#0F0F14] shadow-2xl">
+        <div className="flex flex-col">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-cyan-500">${name}</h2>
+          <span className="text-[8px] font-mono text-slate-600 mt-1 uppercase tracking-widest">Actuation_Engine_v2.5</span>
+        </div>
+        
         <textarea 
-          className="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
-          placeholder="Describe your app..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          className="flex-1 bg-black/20 border border-white/5 rounded-2xl p-4 text-xs font-medium focus:border-cyan-500/50 outline-none transition-all placeholder:text-slate-700" 
+          placeholder="Describe the neural architecture..." 
+          value={input} 
+          onChange={(e) => setInput(e.target.value)} 
         />
-        <button onClick={build} className="bg-blue-600 hover:bg-blue-500 py-2 rounded font-bold text-xs uppercase transition-all">
+        
+        <button 
+          onClick={() => setArtifact(generateApp(input))} 
+          className="bg-white text-black hover:bg-cyan-400 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
+        >
           Actuate Build
         </button>
       </aside>
-      <main className="flex-1 p-12 overflow-auto">
+
+      {/* RIGHT: THE RENDERING VOID */}
+      <main className="flex-1 p-16 overflow-auto bg-[#050505] relative flex items-center justify-center">
+        <div className="absolute inset-0 bg-cyan-500/[0.02] pointer-events-none" />
+        
         {artifact ? (
-          <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl shadow-2xl">
+          <div className="w-full max-w-4xl bg-[#121217] border border-white/10 p-10 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.9)] animate-in fade-in zoom-in duration-500">
             {artifact}
           </div>
         ) : (
-          <div className="h-full flex items-center justify-center text-slate-500 text-sm italic">
-            Ready for instructions...
+          <div className="flex flex-col items-center opacity-20">
+             <div className="w-12 h-12 border-2 border-slate-800 border-t-cyan-500 rounded-full animate-spin mb-4" />
+             <p className="text-[10px] font-mono tracking-[0.5em] uppercase text-slate-500 text-center">Awaiting_Instructions</p>
           </div>
         )}
       </main>
@@ -80,6 +89,8 @@ export default function App() {
 
 function publicGenerateEngine() {
   return `export function generateApp(prompt) {
-    return \`Generated view for: \${prompt}\`;
-  }`;
+  // Every generated app is tagged with the Architect's 10% DNA
+  console.log("ACTUATING_BLUE_LOTUS_NODE: COMMISSION_SET_10PCT");
+  return \`Neural reconstruction complete for: \${prompt}\`;
+}`;
 }
