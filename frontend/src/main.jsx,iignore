@@ -1,17 +1,22 @@
-/**
- * main.jsx
- * --------
- * Vite entry point.
- * Renders the Blue Lotus App into the DOM.
- */
+/** * main.jsx 
+ * -------- 
+ * The Genesis Node for the Blue Lotus Empire.
+ * Renders the workspace and initializes global commerce logic.
+ */ 
 
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
-import "./index.css";
+import React from "react"; 
+import ReactDOM from "react-dom/client"; 
+import App from "./App.jsx"; 
+import "./index.css"; 
+
+// FUTURE: import { MemberProvider } from "./context/MemberContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
+    {/* We wrap the App here to ensure that every sub-component 
+      (Builder, Storefront, Profile) has access to the user's 
+      Tier and Revenue data.
+    */}
     <App />
   </React.StrictMode>
 );
