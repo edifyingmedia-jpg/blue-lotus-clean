@@ -1,20 +1,28 @@
 // frontend/src/twin/intentClassifier.js
 
-export function classifyIntent(rawMessage) {
+export function classifyIntent(rawMessage, isPrime = false) {
   const text = (rawMessage || '').trim().toLowerCase();
-
   if (!text) return { type: 'empty' };
 
-  // Basic greeting detection
-  if (['hi', 'hey', 'hello'].includes(text)) {
-    return { type: 'greeting' };
+  // 1. PRIME COMMAND OVERRIDES (Architect Only)
+  if (isPrime) {
+    if (text.includes("market") || text.includes("trend")) return { type: 'PRIME_MARKET_ANALYSIS' };
+    if (text.includes("patent") || text.includes("legal")) return { type: 'PRIME_IP_STRATEGY' };
+    if (text.includes("tax") || text.includes("revenue")) return { type: 'PRIME_REV_ENFORCEMENT' };
   }
 
+  // 2. Standard Member Intent
+  if (['hi', 'hey', 'hello'].includes(text)) return { type: 'greeting' };
+
   // Natural-language "build an app" detection
-  if (text.startsWith("build") || text.includes("create an app")) {
+  if (text.startsWith("build") || text.includes("create an app") || text.includes("new project")) {
     return { type: 'build_app', query: rawMessage };
   }
 
-  // Fallback
+  // 3. Monetized Invocation (Charged Engagement)
+  if (text.includes("help me scale") || text.includes("how do i make money")) {
+    return { type: 'STRATEGIC_INVOCATION' };
+  }
+
   return { type: 'unknown' };
 }
