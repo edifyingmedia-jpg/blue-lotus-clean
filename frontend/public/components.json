@@ -1,19 +1,41 @@
 [
   {
     "name": "Card",
-    "label": "Card",
-    "description": "A simple container with a title and content area.",
+    "label": "Premium Card",
+    "description": "An elevated container with modern depth and shadow.",
     "props": {
-      "title": "Card Title",
-      "children": "Card content goes here."
+      "title": "New Container",
+      "children": "Content area...",
+      "variant": "glass"
     }
   },
   {
     "name": "Button",
-    "label": "Button",
-    "description": "A clickable button with text.",
+    "label": "Action Button",
+    "description": "High-contrast interactive trigger with hover states.",
     "props": {
-      "children": "Click me"
+      "children": "Execute Action",
+      "type": "primary",
+      "size": "md"
+    }
+  },
+  {
+    "name": "HeroSection",
+    "label": "Hero Section",
+    "description": "A high-impact landing page header with a call to action.",
+    "props": {
+      "title": "Welcome to your App",
+      "subtitle": "Built with Blue Lotus 2026",
+      "alignment": "center"
+    }
+  },
+  {
+    "name": "Grid",
+    "label": "Smart Grid",
+    "description": "A responsive layout container for organizing child elements.",
+    "props": {
+      "columns": 3,
+      "gap": "16px"
     }
   }
 ]
