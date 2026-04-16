@@ -1,31 +1,38 @@
 // backend/api/twin.js
-
-/**
- * TWIN Backend API Route
- * This is the secure server-side entry point for all TWIN actions.
- * All privileged logic stays here — never in the frontend.
- */
+import OpenAI from "openai";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { action, payload } = req.body || {};
-
-  if (!action) {
-    return res.status(400).json({ error: "Missing TWIN action" });
-  }
-
   try {
-    // Dynamically load the TWIN engine (server-side only)
-    const { runTWIN } = await import("../twin/engine.js");
+    const { message } = req.body;
 
-    const result = await runTWIN(action, payload);
+    if (!message) {
+      return res.status(400).json({ error: "Missing message" });
+    }
 
-    return res.status(200).json(result);
-  } catch (err) {
-    console.error("TWIN Backend Error:", err);
-    return res.status(500).json({ error: err.message || "TWIN internal error" });
+    const client = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
+    const completion = await client.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: "You are TWIN, the builder AI for Blue Lotus." },
+        { role: "user", content: message }
+      ],
+      temperature: 0.7,
+    });
+
+    const reply = completion.choices[0].message.content;
+
+    return res.status(200).json({ reply });
+  } catch (error) {
+    console.error("TWIN backend error:", error);
+    return res.status(500).json({
+      error: "TWIN had an issue. Try again.",
+    });
   }
 }
