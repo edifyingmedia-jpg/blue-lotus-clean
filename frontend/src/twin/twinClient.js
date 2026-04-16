@@ -1,65 +1,56 @@
-// frontend/src/twin/twinClient.js
+/**
+ * twinClient.js
+ * -------------
+ * The primary API interface for TWIN's neural engine.
+ * Synchronizes identity, intent, and strategic context.
+ */
 
-class TwinClient {
-  constructor() {}
+const TWIN_ENDPOINT = '/api/twin-brain';
 
+export const twinClient = {
   /**
-   * Send a command to the backend TWIN Brain.
-   * This replaces the old local TWIN class.
+   * Sends a message to the TWIN brain with full context.
+   * @param {string} content - The user's input.
+   * @param {Object} context - Optional metadata (isPrime, userBalance, etc).
    */
-  async send(command) {
+  async sendMessage(content, context = {}) {
+    const { isPrime = false, intent = 'unknown' } = context;
+
     try {
-      const response = await fetch("/api/twin-brain", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch(TWIN_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Twin-Access-Level': isPrime ? 'PRIME' : 'GOVERNESS'
+        },
         body: JSON.stringify({
-          messages: [
-            {
-              role: "user",
-              content: JSON.stringify(command)
-            }
-          ]
+          messages: [{ role: "user", content }],
+          metadata: {
+            isPrime,
+            intent,
+            timestamp: new Date().toISOString()
+          }
         })
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || "Backend error");
+        throw new Error(`Neural Bridge Error: ${response.status}`);
       }
 
-      return data.reply;
-    } catch (err) {
-      console.error("TwinClient error:", err);
-      throw err;
+      const data = await response.json();
+
+      // Ensure we return a structured object for the UI to consume
+      return {
+        reply: data.reply,
+        usage: data.usage || null,
+        isStrategic: isPrime || intent === 'STRATEGIC_INVOCATION'
+      };
+
+    } catch (error) {
+      console.error("twinClient Failed:", error);
+      throw error;
     }
   }
+};
 
-  /**
-   * Build an app directly.
-   */
-  async buildApp(spec) {
-    return this.send({ type: "build_app", spec });
-  }
-
-  /**
-   * Run an app by ID.
-   */
-  async runApp(appId) {
-    return this.send({ type: "run_app", appId });
-  }
-
-  /**
-   * Execute an action inside a running app.
-   */
-  async runAction(appId, actionName, payload) {
-    return this.send({
-      type: "action",
-      appId,
-      actionName,
-      payload
-    });
-  }
-}
-
-export default new TwinClient();
+export default twinClient;
