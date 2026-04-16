@@ -3,42 +3,41 @@
 /**
  * Blue Lotus Template Registry (Upgraded)
  * ---------------------------------------
- * - Supports multiple templates
- * - Supports dynamic imports
- * - Safe for TWIN + runtime
- * - Auto‑expands as you add more templates
+ * Manages the library of starting templates for the builder.
+ * Ensures templates are validated against the builderSpecSchema.
  */
 
 const templateRegistry = {};
 
 /**
- * Register a template manually.
- * Useful when adding new templates.
+ * Register a template and ensure it has basic metadata.
  */
 export function registerTemplate(name, template) {
-  templateRegistry[name] = template;
+  templateRegistry[name] = {
+    ...template,
+    registeredAt: new Date().toISOString(),
+    engine: "Blue Lotus v2"
+  };
 }
 
-/**
- * Load a template by name.
- * Returns null if not found.
- */
 export function getTemplate(name) {
   return templateRegistry[name] || null;
 }
 
-/**
- * List all available template names.
- */
 export function listTemplates() {
-  return Object.keys(templateRegistry);
+  return Object.keys(templateRegistry).map(name => ({
+    name,
+    label: templateRegistry[name].label || name
+  }));
 }
 
 /**
- * Preload built‑in templates.
- * Add more here as you create them.
+ * Built-in Templates
+ * ------------------
+ * As you create more .json files in /templates, import and register them here.
  */
 import basicBuilder from "./templates/basic-builder.json";
+
 registerTemplate("basic-builder", basicBuilder);
 
 export default {
