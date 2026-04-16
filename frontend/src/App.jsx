@@ -30,17 +30,25 @@ function App() {
   // -----------------------------
   // THEME
   // -----------------------------
- const theme = {
-  background: darkMode ? "#0E0E12" : "#FAFAFF",        // clean pastel white
+const theme = {
+  // LIGHT MODE — clean, magical, not faded
+  background: darkMode ? "#0F0F14" : "#FDFDFF",        // clean pastel white
   surface: darkMode ? "#1A1A22" : "#FFFFFF",          // crisp white
-  surfaceSoft: darkMode ? "#14141A" : "#F5F3FF",      // lavender mist
-  text: darkMode ? "#F5F5F7" : "#4A4A4A",             // soft gray
+  surfaceSoft: darkMode ? "#15151C" : "#F7F4FF",      // soft lavender mist
+  text: darkMode ? "#F5F5F7" : "#3E3E3E",             // warm soft gray
   textSoft: darkMode ? "#CFCFD4" : "#6E6E6E",         // muted gray
-  border: darkMode ? "#2A2A33" : "#E8E4FF",           // lavender border
-  primary: "#FF8CCF",                                 // Loveable pink
-  primarySoft: "rgba(255, 140, 207, 0.22)",           // soft pink glow
-  accentBlue: "#AEE4FF",                              // sky blue accent
-  accentPurple: "#C7A4FF"                             // neon lavender
+  border: darkMode ? "#2A2A33" : "#E6E1FF",           // lavender border
+
+  // ACCENTS — NOT navy, NOT Facebook blue
+  primary: "#FF7ACB",                                 // Loveable pink
+  primarySoft: "rgba(255, 122, 203, 0.22)",           // soft pink glow
+  accentBlue: "#9EE7FF",                              // sky blue
+  accentPurple: "#C8A8FF",                            // neon lavender
+
+  // GLOW — the magic
+  glowPink: "0 0 22px rgba(255, 122, 203, 0.45)",
+  glowPurple: "0 0 22px rgba(200, 168, 255, 0.45)",
+  glowBlue: "0 0 22px rgba(158, 231, 255, 0.45)"
 };
 
 
