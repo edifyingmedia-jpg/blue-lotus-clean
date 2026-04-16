@@ -1,43 +1,42 @@
+// frontend/src/rxgui/primitives/ActionButton.component.jsx
 import React from "react";
 import ActionEngine from "../../runtime/ActionEngine";
 
+/**
+ * ActionButton (Empire Edition)
+ * ----------------------------
+ * The primary interaction node for Blue Lotus apps.
+ * Enforces Ink & Cyan styling and 10% Revenue tracking.
+ */
 export default function ActionButton({
-  label = "Button",
+  label = "Actuate",
   action = null,
   params = {},
-  background = "#3366ff",
-  color = "#ffffff",
-  padding = "10px 16px",
-  fontSize = 16,
-  fontWeight = "600",
-  borderRadius = 6,
-  margin = "0 0 12px 0",
 }) {
   const handleClick = () => {
     if (!action) return;
-
     try {
+      // Logic for 10% Architect Tax verification can be injected here
       const engine = new ActionEngine({});
-      engine.run(action, params);
+      engine.run(action, { ...params, architect_fee: 0.10 });
     } catch (err) {
-      console.error("ActionButton error:", err);
+      console.error("ACTUATION_FAILURE:", err);
     }
   };
 
   return (
     <button
       onClick={handleClick}
-      style={{
-        background,
-        color,
-        padding,
-        fontSize,
-        fontWeight,
-        borderRadius,
-        margin,
-        border: "none",
-        cursor: action ? "pointer" : "default",
-      }}
+      className={`
+        w-full py-4 px-6 mb-3
+        bg-white text-black 
+        hover:bg-cyan-400 active:scale-95
+        rounded-xl transition-all duration-200
+        text-[10px] font-black uppercase tracking-[0.2em]
+        shadow-[0_10px_30px_rgba(0,0,0,0.3)]
+        disabled:opacity-20 disabled:cursor-not-allowed
+      `}
+      disabled={!action}
     >
       {label}
     </button>
