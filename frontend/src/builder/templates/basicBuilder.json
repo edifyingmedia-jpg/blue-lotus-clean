@@ -1,59 +1,43 @@
 {
   "name": "basic-builder",
-  "label": "Basic Builder",
-  "description": "A minimal starter builder template for Blue Lotus.",
+  "label": "Blue Lotus Starter",
+  "description": "A high-performance Tailwind starter template.",
   "manifest": [
-    {
-      "name": "Button",
-      "label": "Button",
-      "description": "A clickable button component.",
-      "props": {
-        "text": {
-          "type": "string",
-          "default": "Click me"
-        },
-        "variant": {
-          "type": "string",
-          "default": "primary"
-        }
-      }
-    },
-    {
-      "name": "Card",
-      "label": "Card",
-      "description": "A simple container card.",
-      "props": {
-        "title": {
-          "type": "string",
-          "default": "Card Title"
-        },
-        "body": {
-          "type": "string",
-          "default": "Card content goes here."
-        }
-      }
-    }
+    { "name": "View", "label": "Layout Box", "description": "Flexbox container for layout." },
+    { "name": "Container", "label": "Page Wrapper", "description": "Centered content container." },
+    { "name": "Text", "label": "Typography", "description": "Heading or paragraph text." },
+    { "name": "Button", "label": "Action Button", "description": "Interactive click element." },
+    { "name": "Input", "label": "Data Input", "description": "Text input field." },
+    { "name": "Spacer", "label": "Spacing", "description": "Vertical or horizontal gap." }
   ],
   "tokens": {
-    "color": {
-      "background": "#071018",
-      "surface": "#0b1220",
-      "text": "#e6eef2",
-      "primary": "#06b6d4"
-    },
-    "spacing": {
-      "sm": 8,
-      "md": 16,
-      "lg": 24
+    "theme": "dark",
+    "colors": {
+      "background": "bg-slate-950",
+      "surface": "bg-slate-900",
+      "primary": "blue-600",
+      "text": "text-slate-200"
     }
   },
   "nodes": [
     {
-      "type": "Card",
-      "props": {
-        "title": "Welcome",
-        "body": "This is your starter builder template."
-      }
+      "id": "root-1",
+      "type": "Container",
+      "props": { "className": "py-10" },
+      "children": [
+        {
+          "type": "Text",
+          "props": { "as": "h1", "className": "text-4xl font-bold mb-4", "children": "New Project" }
+        },
+        {
+          "type": "View",
+          "props": { "direction": "row", "gap": "4" },
+          "children": [
+            { "type": "Button", "props": { "label": "Get Started", "className": "bg-blue-600 text-white" } },
+            { "type": "Button", "props": { "label": "Documentation", "className": "border border-slate-700" } }
+          ]
+        }
+      ]
     }
   ]
 }
