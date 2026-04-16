@@ -1,109 +1,46 @@
-// frontend/src/twin/identity.js
+/**
+ * buildAppBuilderProposal.js
+ * --------------------------
+ * Strategic Analysis for the "Success Architect" flow.
+ */
 
-// ---- ENVIRONMENT DETECTION ---------------------------------------------
+export function createBuildAppBuilderProposal(message, isPrime = false) {
+  // 1. The Standard Proposal (The Governess)
+  const baseProposal = {
+    id: 'build-app-builder',
+    type: 'proposal',
+    title: 'Empire Builder Scaffold',
+    description: 'Actuating a visual builder with centralized command via TWIN.',
+    
+    // Success Architect: Initial market analysis
+    successAnalysis: {
+      score: 88,
+      trendFactor: "High - AI-integrated platforms are 2026's leading vertical.",
+      suggestion: "Incorporate a 'Healing Code' node to differentiate your build."
+    },
 
-export function isOwnerEnvironment() {
-  // You can refine this later (e.g., check domain, auth, secret, etc.)
-  // For now, this is a single source of truth.
-  return import.meta.env.VITE_TWIN_ENV === "owner";
-}
+    steps: [
+      'Define layout: sidebar, canvas, and TWIN regions.',
+      'Wire sidebar to the Component Registry.',
+      'Enable 10% Rev-Share intent tracking.',
+      'Initialize Governess credit-check protocols.'
+    ],
 
-export function isPublicEnvironment() {
-  return !isOwnerEnvironment();
-}
+    meta: {
+      kind: 'builder_scaffold',
+      engagementFee: 2 // Credits for deep strategy engagement
+    }
+  };
 
-// ---- TWIN VARIANTS ------------------------------------------------------
-
-export const TWIN_VARIANTS = {
-  PRIME: "TWIN_PRIME",
-  PUBLIC: "TWIN_PUBLIC"
-};
-
-// Capability map for each TWIN type
-const CAPABILITIES = {
-  [TWIN_VARIANTS.PRIME]: {
-    identity: TWIN_VARIANTS.PRIME,
-    ownerOnly: true,
-    // Cloning
-    canCloneSelf: true,          // ✅ PRIME can clone herself for you
-    cloneScope: "owner",         // only inside owner environment
-    // Builder / TWIN generation
-    canGenerateBuilders: true,
-    canGenerateTWINs: true,
-    // Credits / monetization
-    creditAware: false,
-    // Export / embedding
-    canBeExported: false,
-    canBeEmbeddedInUserApps: false
-  },
-
-  [TWIN_VARIANTS.PUBLIC]: {
-    identity: TWIN_VARIANTS.PUBLIC,
-    ownerOnly: false,
-    // Cloning
-    canCloneSelf: false,         // ❌ PUBLIC TWIN may never clone herself
-    cloneScope: "never",
-    // Builder / TWIN generation
-    canGenerateBuilders: false,
-    canGenerateTWINs: false,
-    // Credits / monetization
-    creditAware: true,           // ✅ respects credit usage in Blue Lotus / Lotus
-    // Export / embedding
-    canBeExported: true,         // but only in restricted, platform-controlled ways
-    canBeEmbeddedInUserApps: true
-  }
-};
-
-// ---- SELECTOR -----------------------------------------------------------
-
-export function getCurrentTWINVariant() {
-  return isOwnerEnvironment() ? TWIN_VARIANTS.PRIME : TWIN_VARIANTS.PUBLIC;
-}
-
-export function getCurrentTWINCapabilities() {
-  const variant = getCurrentTWINVariant();
-  return CAPABILITIES[variant];
-}
-
-// ---- GUARDS / ENFORCEMENT ----------------------------------------------
-
-export function assertOwnerOnlyCapability(capName) {
-  const caps = getCurrentTWINCapabilities();
-
-  if (!caps.ownerOnly || !caps[capName]) {
-    throw new Error(
-      `[TWIN Identity] Capability "${capName}" is owner-only and not allowed in this environment.`
-    );
-  }
-}
-
-export function assertPublicSafeCapability(capName) {
-  const caps = getCurrentTWINCapabilities();
-
-  if (caps.ownerOnly) {
-    throw new Error(
-      `[TWIN Identity] Capability "${capName}" is not allowed to run as TWIN PRIME in a public context.`
-    );
+  // 2. PRIME OVERRIDE (For the Founder's Eyes Only)
+  if (isPrime) {
+    baseProposal.title = "TWIN_PRIME: Strategic Execution";
+    baseProposal.primeDirectives = {
+      patentOpportunity: "Neural Bridge logic is eligible for a Utility Patent.",
+      marketRisk: "Competitors are moving to zero-code; keep our 'Pro-Code' edge.",
+      businessConscience: "Architect, lock the 10% tax at the protocol level now to secure revenue."
+    };
   }
 
-  if (!caps[capName]) {
-    throw new Error(
-      `[TWIN Identity] Capability "${capName}" is not enabled for PUBLIC TWIN.`
-    );
-  }
-}
-
-// ---- HIGH-LEVEL HELPERS -------------------------------------------------
-
-export function canCurrentTWINCloneSelf() {
-  const caps = getCurrentTWINCapabilities();
-  return caps.canCloneSelf === true;
-}
-
-export function isTWINPrime() {
-  return getCurrentTWINVariant() === TWIN_VARIANTS.PRIME;
-}
-
-export function isPublicTWIN() {
-  return getCurrentTWINVariant() === TWIN_VARIANTS.PUBLIC;
+  return baseProposal;
 }
