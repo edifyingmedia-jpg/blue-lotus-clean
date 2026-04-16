@@ -2,9 +2,8 @@
 
 /**
  * Safely access nested object properties without throwing errors.
- * Example: safeGet(obj, "a.b.c", defaultValue)
+ * Improved to handle null-checks and provide reliable fallbacks.
  */
-
 export default function safeGet(obj, path, defaultValue = undefined) {
   if (!obj || typeof path !== "string") return defaultValue;
 
@@ -12,12 +11,13 @@ export default function safeGet(obj, path, defaultValue = undefined) {
   let current = obj;
 
   for (const part of parts) {
-    if (current && Object.prototype.hasOwnProperty.call(current, part)) {
+    if (current !== null && typeof current === "object" && Object.prototype.hasOwnProperty.call(current, part)) {
       current = current[part];
     } else {
       return defaultValue;
     }
   }
 
-  return current;
+  // Final check: if the result is null/undefined, return the defaultValue
+  return current !== undefined && current !== null ? current : defaultValue;
 }
