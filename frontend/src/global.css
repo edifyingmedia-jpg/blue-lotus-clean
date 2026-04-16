@@ -1,66 +1,29 @@
-/* GLOBAL RESET & PREMIUM THEME */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 :root {
-  --bg-main: #09090B;      /* Deepest Zinc */
-  --panel-bg: #0F0F14;    /* Slate Black */
-  --accent: #06B6D4;      /* Cyan-500 */
-  --border: rgba(255, 255, 255, 0.06);
-  --glass: rgba(255, 255, 255, 0.02);
+  --bg-main: #050505;
+  --panel-bg: rgba(13, 13, 13, 0.8);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  
+  /* Governess Colors */
+  --glow-cyan: rgba(6, 182, 212, 0.5);
+  --accent-cyan: #06b6d4;
+
+  /* Prime Colors */
+  --glow-purple: rgba(168, 85, 247, 0.5);
+  --accent-purple: #a855f7;
 }
 
-html, body, #root {
-  height: 100%;
-  width: 100%;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+body {
   background-color: var(--bg-main);
-  color: #F8FAFC;
-  -webkit-font-smoothing: antialiased;
-  overflow: hidden;
+  color: #e5e7eb;
+  font-family: 'Inter', 'JetBrains Mono', monospace;
 }
 
-/* APP FRAME: Removing the fixed 420px for a more fluid feel */
-.app-frame {
-  display: flex; /* Switched from Grid to Flex for better control */
-  height: 100vh;
-  width: 100vw;
-  background-color: var(--bg-main);
+/* The subtle "Prime" background pulse */
+.prime-aura {
+  box-shadow: inset 0 0 100px rgba(168, 85, 247, 0.03);
+  border-left: 1px solid var(--glow-purple) !important;
 }
 
-/* LEFT PANEL: The Architect Side */
-.left-panel {
-  width: 400px;
-  background-color: var(--panel-bg);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  padding: 24px;
-  box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-  z-index: 10;
-}
-
-/* RIGHT PANEL: The Rendering Side */
-.right-panel {
-  flex: 1;
-  background-color: var(--bg-main);
-  padding: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Scrollbar refinement (The "Invisible" Pro look) */
-::-webkit-scrollbar {
-  width: 5px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+.governess-aura {
+  border-left: 1px solid var(--glow-cyan) !important;
 }
