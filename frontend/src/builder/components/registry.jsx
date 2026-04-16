@@ -1,20 +1,11 @@
 // frontend/src/builder/components/registry.jsx
 import React from "react";
-// Import your modernized primitives
-import { 
-  Button, Input, Text, Image, 
-  View, Container, Spacer 
-} from "../../components/primitives";
+import { Button, Input, Text, Image, View, Container, Spacer } from "../../components/primitives";
 
-/**
- * Component Registry v2
- * ---------------------
- * Now utilizing the centralized, Tailwind-powered primitives.
- */
 export const RegistryV2 = {
   text: (props) => <Text {...props} />,
   heading: ({ value, level = 2, className = "" }) => (
-    <Text as={`h${level}`} className={`font-bold ${className}`}>
+    <Text as={`h${level}`} className={`font-bold tracking-tighter ${className}`}>
       {value}
     </Text>
   ),
@@ -27,14 +18,14 @@ export const RegistryV2 = {
   // Layout components
   row: (props) => <View direction="row" {...props} />,
   column: (props) => <View direction="col" {...props} />,
-  
-  // Specific UI patterns
+
+  // PREMIUM UI PATTERNS (Fixed the "Bubble" look)
   card: ({ children, className = "" }) => (
-    <div className={`p-4 rounded-lg bg-white shadow-md border border-gray-200 ${className}`}>
+    <div className={`p-6 rounded-2xl bg-[#0F0F14] border border-white/5 shadow-2xl ${className}`}>
       {children}
     </div>
   ),
   divider: ({ className = "" }) => (
-    <hr className={`border-none border-t border-gray-200 my-4 ${className}`} />
+    <hr className={`border-none border-t border-white/5 my-6 ${className}`} />
   )
 };
