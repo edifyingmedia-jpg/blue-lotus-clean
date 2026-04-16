@@ -1,15 +1,36 @@
+/* frontend/src/runtime/Theme.css */
+
 :root {
-  --bg-smoke: #1e1e1e;
-  --bg-panel: #262626;
-  --bg-panel-light: #2c2c2c;
+  /* --- Color Palette (Modern Slate & Cobalt) --- */
+  --bg-deep: #0f172a;       /* Deepest background */
+  --bg-surface-0: #1e293b;  /* Main background */
+  --bg-surface-1: #334155;  /* Panels/Cards */
+  --bg-surface-2: #475569;  /* Elevated elements/Hovers */
+  
+  --text-vibrant: #f8fafc;  /* High contrast headers */
+  --text-base: #cbd5e1;     /* Standard body text */
+  --text-dim: #94a3b8;      /* Captions and labels */
 
-  --text-primary: #f5f5f5;
-  --text-secondary: #c7c7c7;
+  --brand-primary: #38bdf8; /* Electric Blue */
+  --brand-secondary: #818cf8; /* Indigo */
+  --accent-glow: rgba(56, 189, 248, 0.15);
 
-  --accent: #7aa8ff;
+  /* --- Glassmorphism & Depth --- */
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: blur(12px);
 
-  --radius: 16px;
-  --shadow-soft: 0 4px 22px rgba(0, 0, 0, 0.28);
+  /* --- Geometry --- */
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
 
-  --gradient-soft: linear-gradient(145deg, #2a2a2a, #1b1b1b);
+  /* --- Shadow Hierarchy (Standard 2026 Depth) --- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+
+  /* --- Interaction --- */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-base: 200ms ease-in-out;
 }
