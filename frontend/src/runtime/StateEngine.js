@@ -1,114 +1,73 @@
 // frontend/src/runtime/StateEngine.js
-
-/**
- * StateEngine
- * ----------------------------------------------------
- * Central reactive state container for runtime apps.
- * Supports:
- *  - path-based updates
- *  - deep merging
- *  - subscriptions
- *  - immutable snapshots
- */
-
 import { safeGet, safeSet, deepClone } from "./utils";
 
 export default class StateEngine {
   constructor() {
     this.state = {};
     this.listeners = new Set();
+    this.middleware = []; // Added for v2.0 flexibility
   }
 
   /**
-   * Initialize state from an app definition.
+   * Hardened Initialization
    */
   initialize(appDefinition) {
     const initial = {};
-
-    if (Array.isArray(appDefinition.pages)) {
-      for (const page of appDefinition.pages) {
-        if (Array.isArray(page.components)) {
-          for (const component of page.components) {
-            if (component.stateKey) {
-              initial[component.stateKey] =
-                component.defaultValue ?? null;
-            }
-          }
+    appDefinition.pages?.forEach(page => {
+      page.components?.forEach(component => {
+        if (component.stateKey) {
+          initial[component.stateKey] = component.defaultValue ?? null;
         }
-      }
-    }
-
+      });
+    });
     this.state = initial;
     this.emit();
     return this.get();
   }
 
   /**
-   * Set a value at a path (e.g. "form.name").
+   * Set value at path with Middleware support
    */
   set(path, value) {
-    if (!path || typeof path !== "string") {
-      console.warn("StateEngine.set: invalid path:", path);
-      return;
-    }
+    if (!path || typeof path !== "string") return;
+
+    let newValue = deepClone(value);
+    
+    // Run middlewares (e.g., validation or logging)
+    this.middleware.forEach(mw => {
+      newValue = mw(path, newValue, this.state);
+    });
 
     const cloned = deepClone(this.state);
-    safeSet(cloned, path, deepClone(value));
-
+    safeSet(cloned, path, newValue);
     this.state = cloned;
     this.emit();
   }
 
   /**
-   * Merge multiple updates shallowly.
+   * Get value at path with safe fallback
    */
-  update(updates) {
-    if (!updates || typeof updates !== "object") {
-      throw new Error("StateEngine.update: updates must be an object.");
-    }
-
-    this.state = {
-      ...this.state,
-      ...deepClone(updates),
-    };
-
-    this.emit();
-    return this.get();
+  getAt(path, fallback = null) {
+    return safeGet(this.state, path) ?? fallback;
   }
 
-  /**
-   * Subscribe to state changes.
-   */
   subscribe(fn) {
-    if (typeof fn !== "function") return;
     this.listeners.add(fn);
     return () => this.listeners.delete(fn);
   }
 
-  /**
-   * Notify listeners.
-   */
   emit() {
-    for (const fn of this.listeners) {
-      try {
-        fn(this.get());
-      } catch (err) {
-        console.error("StateEngine listener error:", err);
-      }
-    }
+    const snapshot = this.get();
+    this.listeners.forEach(fn => {
+      try { fn(snapshot); } catch (e) { console.error("[StateEngine] Listener Error:", e); }
+    });
   }
 
-  /**
-   * Get a deep-cloned snapshot.
-   */
   get() {
     return deepClone(this.state);
   }
 
-  /**
-   * Get a value at a path.
-   */
-  getAt(path) {
-    return safeGet(this.state, path);
+  use(mw) {
+    this.middleware.push(mw);
   }
 }
