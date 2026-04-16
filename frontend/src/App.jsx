@@ -14,98 +14,70 @@ import {
 } from "lucide-react";
 
 function App() {
-  // -----------------------------
-  // STATE
-  // -----------------------------
   const [darkMode, setDarkMode] = useState(false);
-  const [audioEnabled, setAudioEnabled] = useState(false);
   const [twinInput, setTwinInput] = useState("");
+  const [twinText, setTwinText] = useState("Hello, I am TWIN.");
   const [twinThinking, setTwinThinking] = useState(false);
-  const [twinText, setTwinText] = useState(
-    "Welcome to Blue Lotus. Describe what you want to build, refine, or heal."
-  );
-  const [uploadedCode, setUploadedCode] = useState(null);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+
   const fileInputRef = useRef(null);
 
-  // -----------------------------
-  // THEME
-  // -----------------------------
-const theme = {
-  background: darkMode ? "#0F0F14" : "#F8F9FF",     // clean pastel white
-  surface: darkMode ? "#1A1A22" : "#FFFFFF",        // crisp white
-  surfaceSoft: darkMode ? "#15151C" : "#F4F2FF",    // soft lavender mist
-  text: darkMode ? "#F5F5F7" : "#3E3E3E",           // warm gray
-  textSoft: darkMode ? "#CFCFD4" : "#6E6E6E",       // muted gray
-  border: darkMode ? "#2A2A33" : "#E6E1FF",         // lavender border
-
-  primary: "#FF7ACB",                               // Loveable pink
-  primarySoft: "rgba(255, 122, 203, 0.22)",         // soft pink glow
-};
-
-  // -----------------------------
-  // HEALING UPLOAD
-  // -----------------------------
-  const handleHealingUpload = () => {
-    if (fileInputRef.current) fileInputRef.current.click();
-  };
-
-  const handleFileSelected = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setUploadedCode(file);
-
-    setTwinText(
-      `I’ve received your code. I’ll examine it now. When you're ready, just say “Fix it” or “Heal this code.”`
-    );
-  };
-
-  // -----------------------------
-  // TWIN SUBMISSION
-  // -----------------------------
-  const handleTwinSubmit = (e) => {
+  // --------------------------------------------------
+  // THE WORKING SEND FUNCTION (OpenAI backend)
+  // --------------------------------------------------
+  const handleTwinSubmit = async (e) => {
     e.preventDefault();
     if (!twinInput.trim()) return;
 
-    const message = twinInput.trim().toLowerCase();
     setTwinThinking(true);
 
-    // Healing trigger
-    if (uploadedCode && (message.includes("fix") || message.includes("heal"))) {
-      setTimeout(() => {
-        setTwinText(
-          "I’ve examined your code. Several issues were detected and have now been healed. Your project is stable and ready."
-        );
-        setTwinThinking(false);
-        setTwinInput("");
-      }, 900);
-      return;
+    try {
+      const response = await fetch("/api/twin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: twinInput })
+      });
+
+      const data = await response.json();
+      setTwinText(data.reply || "TWIN responded, but no message was returned.");
+    } catch (err) {
+      console.error("TWIN frontend error:", err);
+      setTwinText("TWIN had an issue. Try again.");
     }
 
-    // Normal build request
-    setTimeout(() => {
-      setTwinText(
-        "I’m designing your next steps. I’ll break your request into small, safe, testable actions."
-      );
-      setTwinThinking(false);
-      setTwinInput("");
-    }, 900);
+    setTwinThinking(false);
+    setTwinInput("");
   };
 
-  // -----------------------------
-  // TOP BAR ACTIONS (STUBS)
-  // -----------------------------
+  // --------------------------------------------------
+  // HYBRID THEME (Loveable softness + Blue Lotus neon)
+  // --------------------------------------------------
+  const theme = {
+    background: darkMode ? "#0F0F14" : "#F8F9FF",
+    surface: darkMode ? "#1A1A22" : "#FFFFFF",
+    surfaceSoft: darkMode ? "#15151C" : "#F4F2FF",
+    text: darkMode ? "#F5F5F7" : "#3E3E3E",
+    textSoft: darkMode ? "#CFCFD4" : "#6E6E6E",
+    border: darkMode ? "#2A2A33" : "#E6E1FF",
+
+    // Hybrid accent
+    accent:
+      "linear-gradient(135deg, #FF8CCF, #C7A4FF, #9EE7FF)" // pink → lavender → sky blue
+  };
+
+  // --------------------------------------------------
+  // ACTION HANDLERS (placeholders)
+  // --------------------------------------------------
   const handleRefresh = () => {};
   const handleUndo = () => {};
   const handleRedo = () => {};
   const handleSave = () => {};
+  const handleHealingUpload = () => fileInputRef.current?.click();
   const handleDeploy = () => {};
   const handlePublish = () => {};
   const handleSettings = () => {};
+  const handleFileSelected = () => {};
 
-  // -----------------------------
-  // RENDER
-  // -----------------------------
   return (
     <div
       style={{
@@ -113,9 +85,7 @@ const theme = {
         background: theme.background,
         color: theme.text,
         display: "flex",
-        flexDirection: "column",
-        fontFamily:
-          "system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif"
+        flexDirection: "column"
       }}
     >
       {/* -------------------------------------------------- */}
@@ -142,8 +112,8 @@ const theme = {
               height: 36,
               borderRadius: "999px",
               background:
-                "radial-gradient(circle at 30% 20%, #bfdbfe, #3b82f6 40%, #1d4ed8 70%, #0f172a 100%)",
-              boxShadow: "0 10px 30px rgba(37, 99, 235, 0.45)"
+                "radial-gradient(circle at 30% 20%, #9EE7FF, #C7A4FF 40%, #FF8CCF 70%)",
+              boxShadow: "0 10px 30px rgba(255, 140, 207, 0.45)"
             }}
           />
           <div>
@@ -217,10 +187,11 @@ const theme = {
         <section
           style={{
             background: theme.surface,
-            padding: "1.25rem",
+            padding: "1.75rem",
             display: "flex",
             flexDirection: "column",
-            gap: "1rem"
+            gap: "1.25rem",
+            borderRight: `1px solid ${theme.border}`
           }}
         >
           <div>
@@ -257,7 +228,7 @@ const theme = {
           {/* INPUT */}
           <form
             onSubmit={handleTwinSubmit}
-            style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+            style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
           >
             <textarea
               value={twinInput}
@@ -272,26 +243,29 @@ const theme = {
                 color: theme.text
               }}
             />
+
+            {/* FIXED BUTTON — NO MORE FACEBOOK BLUE */}
             <button
               type="submit"
               disabled={twinThinking}
               style={{
+                marginTop: "6px",
                 borderRadius: "999px",
-                padding: "0.5rem 1.25rem",
+                padding: "0.65rem 1.4rem",
                 border: "none",
-                background:
-                  "linear-gradient(135deg, #3b82f6, #4f46e5, #0ea5e9)",
+                background: theme.accent,
+                boxShadow: "0 0 18px rgba(255, 140, 207, 0.45)",
                 color: "#fff",
                 fontWeight: 600,
                 cursor: "pointer",
-                opacity: twinThinking ? 0.7 : 1
+                opacity: twinThinking ? 0.7 : 1,
+                transition: "transform 0.15s ease"
               }}
             >
               {twinThinking ? "Thinking..." : "Ask TWIN"}
             </button>
           </form>
 
-          {/* HIDDEN FILE INPUT */}
           <input
             type="file"
             ref={fileInputRef}
@@ -365,10 +339,10 @@ function TogglePill({ label, active, onToggle }) {
       onClick={onToggle}
       style={{
         borderRadius: "999px",
-        border: `1px solid ${active ? "#3b82f6" : "#cbd5e1"}`,
+        border: `1px solid ${active ? "#FF8CCF" : "#cbd5e1"}`,
         padding: "0.25rem 0.75rem",
-        background: active ? "rgba(59,130,246,0.15)" : "transparent",
-        color: active ? "#1d4ed8" : "#64748b",
+        background: active ? "rgba(255,140,207,0.15)" : "transparent",
+        color: active ? "#C7A4FF" : "#64748b",
         cursor: "pointer",
         fontSize: "0.75rem"
       }}
