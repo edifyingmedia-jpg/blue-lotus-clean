@@ -2,10 +2,19 @@ import React, { useState } from 'react';
 import { useAppDefinition } from '../state';
 import { ActionButton, ActionCard } from '../rxgui/primitives';
 import { ingestHtml } from './utils/htmlParser';
+import { analyzeIntent } from './utils/intentAnalyzer';
 
+/**
+ * Neural Ingestion Node (Empire Edition)
+ * -------------------------------------
+ * The primary engine for site-cloning and semantic mapping.
+ * Integrates: CORS Proxy, HTML Parser, Intent Analysis, and Temporal Undo.
+ */
 export const NeuralIngestion = () => {
   const [targetUrl, setTargetUrl] = useState('');
   const [isIngesting, setIsIngesting] = useState(false);
+  
+  // Pulling from our hardened AppDefinitionContext
   const { updateManifest, undoActuation, canUndo } = useAppDefinition();
 
   const handleIngest = async () => {
@@ -15,16 +24,22 @@ export const NeuralIngestion = () => {
     console.log(`INGESTION_ACTUATED: Suction active on ${targetUrl}`);
     
     try {
-      // THE BRIDGE: Using a public proxy to bypass CORS restrictions
+      // 1. THE BRIDGE: Using a public proxy to bypass CORS restrictions
       const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
       const response = await fetch(proxyUrl);
       const data = await response.json();
       
-      if (data.contents) {
-        // THE ACTUATION: Parsing raw HTML into the Blue Lotus Monolith format
-        const clonedManifest = ingestHtml(data.contents);
-        updateManifest(clonedManifest);
-        console.log("ACTUATION_SUCCESS: Neural nodes injected into workspace.");
+      if (data && data.contents) {
+        // 2. THE ACTUATION: Parse raw HTML into base nodes
+        const rawNodes = ingestHtml(data.contents);
+        
+        // 3. THE BRAIN: Analyze intent (Revenue, Leads, Layout)
+        const intelligentManifest = analyzeIntent(rawNodes);
+        
+        // 4. THE INJECTION: Commit to global state
+        updateManifest(intelligentManifest);
+        
+        console.log("ACTUATION_SUCCESS: Neural nodes manifested with intelligent intent.");
       }
     } catch (err) {
       console.error("INGESTION_CRITICAL_FAILURE:", err);
@@ -36,13 +51,14 @@ export const NeuralIngestion = () => {
   return (
     <ActionCard title="Neural Ingestion Deck" icon="Zap">
       <div className="space-y-4">
-        {/* INDUSTRIAL INPUT */}
+        {/* Industrial Command Input */}
         <input 
           type="url" 
-          placeholder="PASTE_TARGET_DOMAIN_HERE..."
+          placeholder="ENTER_TARGET_DOMAIN_FOR_CLONING..."
           className="w-full bg-[#09090B] border border-white/10 p-4 font-mono text-[10px] text-cyan-500 uppercase tracking-[0.3em] focus:outline-none focus:border-cyan-500/40 rounded-[1rem] transition-all"
           value={targetUrl}
           onChange={(e) => setTargetUrl(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleIngest()}
         />
         
         <div className="flex gap-3">
@@ -53,7 +69,7 @@ export const NeuralIngestion = () => {
             disabled={isIngesting || !targetUrl}
           />
           
-          {/* THE LOVABLE SAFETY NET */}
+          {/* The Lovable Safety Net: Reverting a bad clone */}
           {canUndo && (
             <ActionButton 
               label="REVERT" 
@@ -63,7 +79,7 @@ export const NeuralIngestion = () => {
           )}
         </div>
 
-        {/* THE GHOSTING ANIMATION (Visual Feedback) */}
+        {/* The Ghosting Animation (Visual Feedback) */}
         {isIngesting && (
           <div className="mt-4 p-4 border border-cyan-500/20 bg-cyan-500/5 rounded-[1rem] animate-pulse">
             <div className="flex justify-between items-center mb-2">
