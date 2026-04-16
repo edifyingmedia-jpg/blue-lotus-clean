@@ -1,7 +1,5 @@
 // frontend/src/runtime/RuntimeContext.js
-
-import React, { createContext, useContext, useMemo } from "react";
-
+import React, { createContext, useContext, useRef } from "react";
 import StateEngine from "./StateEngine";
 import NavigationEngine from "./NavigationEngine";
 import ActionEngine from "./ActionEngine";
@@ -13,39 +11,36 @@ const RuntimeContext = createContext(null);
 /**
  * RuntimeProvider
  * ----------------------------------------------------
- * Creates and wires all runtime engines, then exposes
- * them through React context to the entire runtime tree.
+ * Hardened orchestrator for the Blue Lotus engines.
  */
-
 export function RuntimeProvider({ children }) {
-  const runtime = useMemo(() => {
+  // We use useRef instead of useMemo to guarantee 
+  // that engines are never garbage collected during the session.
+  const runtimeRef = useRef(null);
+
+  if (!runtimeRef.current) {
     const stateEngine = new StateEngine();
     const navigationEngine = new NavigationEngine();
+    
     const actionEngine = new ActionEngine({
       stateEngine,
       navigationEngine,
     });
+
     const dispatcher = new ActionDispatcher({
       actionEngine,
     });
-    const runtimeEngine = new RuntimeEngine({
+
+    runtimeRef.current = new RuntimeEngine({
       stateEngine,
       navigationEngine,
       actionEngine,
       dispatcher,
     });
-
-    return {
-      stateEngine,
-      navigationEngine,
-      actionEngine,
-      dispatcher,
-      runtimeEngine,
-    };
-  }, []);
+  }
 
   return (
-    <RuntimeContext.Provider value={runtime}>
+    <RuntimeContext.Provider value={runtimeRef.current}>
       {children}
     </RuntimeContext.Provider>
   );
@@ -54,7 +49,7 @@ export function RuntimeProvider({ children }) {
 export function useRuntime() {
   const ctx = useContext(RuntimeContext);
   if (!ctx) {
-    throw new Error("useRuntime must be used within RuntimeProvider");
+    throw new Error("[Blue Lotus] useRuntime must be used within a RuntimeProvider.");
   }
   return ctx;
 }
