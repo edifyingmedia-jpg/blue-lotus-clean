@@ -1,131 +1,68 @@
+// frontend/src/builder/BuilderApp.jsx
 import React, { useState } from "react";
-import { CanvasRenderer } from "./CanvasRenderer";
-import { interpretCommand } from "./ai/interpretCommand";
-import { RegistryV2 } from "./components/registry.jsx";
+import { 
+  LivePreview, 
+  Inspector, 
+  ComponentPanel, 
+  AppStatusPanel 
+} from "../components";
+import AICommandPanel from "./AICommandPanel";
 
 /**
- * BuilderApp (Final Version)
- * --------------------------
- * - Single source of truth: `tree`
- * - AI commands produce a unified node tree
- * - CanvasRenderer renders the full app structure
- * - History panel shows all AI interactions
+ * BuilderApp (Modernized Version)
+ * ------------------------------
+ * - Centralized state management for the component tree.
+ * - Professional 3-column IDE layout.
+ * - Integrated AI Command and Property Inspection.
  */
-
 export default function BuilderApp() {
-  const [tree, setTree] = useState(null);        // unified node tree
-  const [history, setHistory] = useState([]);    // AI + user messages
-
-  async function handleAICommand(command) {
-    setHistory((prev) => [...prev, { role: "user", text: command }]);
-
-    const result = await interpretCommand(command);
-
-    setHistory((prev) => [
-      ...prev,
-      {
-        role: "ai",
-        text: `Interpreted as: ${result.intent} → ${result.structureType}`
-      }
-    ]);
-
-    // The interpreter now returns a unified node tree
-    if (result.structureType === "tree" && result.tree) {
-      setTree(result.tree);
-    }
-  }
+  const [tree, setTree] = useState(null); // The unified node tree
+  const [history, setHistory] = useState([]); // Interaction logs
 
   return (
-    <div style={{ display: "flex", height: "100vh", width: "100%" }}>
-      {/* LEFT PANEL */}
-      <aside
-        style={{
-          width: 320,
-          borderRight: "1px solid #ddd",
-          background: "#fafafa",
-          overflowY: "auto",
-          padding: 16
-        }}
-      >
-        <h3>AI Builder</h3>
-
-        <AIInput onSubmit={handleAICommand} />
-
-        <h4 style={{ marginTop: 24 }}>History</h4>
-        {history.map((entry, i) => (
-          <div
-            key={i}
-            style={{
-              marginBottom: 8,
-              padding: 8,
-              background: entry.role === "user" ? "#eef" : "#efe",
-              borderRadius: 4
-            }}
-          >
-            <strong>{entry.role === "user" ? "You" : "AI"}:</strong>{" "}
-            {entry.text}
+    <div className="h-screen w-full flex bg-[#050505] text-slate-300 overflow-hidden font-sans">
+      
+      {/* LEFT PANEL: Library & AI Command */}
+      <aside className="w-80 flex flex-col border-r border-slate-800 bg-slate-900/50">
+        <div className="p-4 border-b border-slate-800">
+          <h2 className="text-[10px] font-black tracking-widest text-blue-500 uppercase">
+            Blue Lotus Builder
+          </h2>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          <AICommandPanel setTree={setTree} setHistory={setHistory} />
+          <div className="px-4 pb-6">
+            <ComponentPanel />
           </div>
-        ))}
+        </div>
       </aside>
 
-      {/* CANVAS */}
-      <main
-        style={{
-          flex: 1,
-          background: "#fff",
-          padding: 24,
-          overflow: "auto"
-        }}
-      >
-        <h2>Canvas</h2>
-
-        {!tree && (
-          <p style={{ color: "#888" }}>
-            Describe the app you want to build.  
-            The AI will generate a live UI here.
-          </p>
-        )}
-
-        {tree && (
-          <div
-            style={{
-              padding: 16,
-              border: "2px solid #4a6cf7",
-              borderRadius: 6
-            }}
-          >
-            <CanvasRenderer node={tree} registry={RegistryV2} />
+      {/* CENTER PANEL: The Canvas */}
+      <main className="flex-1 relative flex flex-col bg-[#020202]">
+        <header className="h-12 border-b border-slate-800 flex items-center px-6 justify-between bg-slate-900/30">
+          <span className="text-xs font-medium text-slate-500">Live Preview</span>
+          <div className="flex gap-2">
+            <div className="w-2 h-2 rounded-full bg-slate-700" />
+            <div className="w-2 h-2 rounded-full bg-slate-700" />
+            <div className="w-2 h-2 rounded-full bg-slate-700" />
           </div>
-        )}
+        </header>
+
+        <div className="flex-1 overflow-auto p-12 flex justify-center">
+          <div className="w-full max-w-4xl min-h-full bg-white rounded-t-xl shadow-2xl shadow-blue-900/10 overflow-hidden">
+            <LivePreview tree={tree} />
+          </div>
+        </div>
       </main>
-    </div>
-  );
-}
 
-/* -------------------------------------------------------------
-   AI INPUT COMPONENT
-------------------------------------------------------------- */
+      {/* RIGHT PANEL: Inspector */}
+      <aside className="w-72 border-l border-slate-800 bg-slate-900/50">
+        <Inspector tree={tree} setTree={setTree} />
+      </aside>
 
-function AIInput({ onSubmit }) {
-  const [value, setValue] = useState("");
-
-  function send() {
-    if (!value.trim()) return;
-    onSubmit(value.trim());
-    setValue("");
-  }
-
-  return (
-    <div>
-      <textarea
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Describe the UI or app you want to build"
-        style={{ width: "100%", minHeight: 80 }}
-      />
-      <button onClick={send} style={{ marginTop: 8 }}>
-        Build
-      </button>
+      {/* Persistent Status Overlay */}
+      <AppStatusPanel app={{ name: "New Project" }} activeScreen={tree} />
     </div>
   );
 }
