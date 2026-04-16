@@ -1,7 +1,15 @@
-import React, { createContext, useContext, useState } from "react";
+// frontend/src/state/ProjectContext.jsx
+import React, { createContext, useContext, useState, useCallback } from "react";
+import { findNodeById } from "../utils/findNodeById";
 
 const ProjectContext = createContext(null);
 
+/**
+ * ProjectProvider (Empire Edition)
+ * ------------------------------
+ * The master construction vessel for Blue Lotus.
+ * Hardened to prevent tree corruption during complex site-cloning.
+ */
 export function ProjectProvider({ children }) {
   const [project, setProject] = useState({
     root: {
@@ -11,64 +19,47 @@ export function ProjectProvider({ children }) {
       children: [],
     },
   });
-
+  
   const [selectedId, setSelectedId] = useState(null);
 
-  function addComponent(component) {
-    function insertNode(node) {
-      // Insert into selected component
-      if (node.id === selectedId) {
-        return {
-          ...node,
-          children: [...(node.children || []), component],
-        };
-      }
-
-      // Recurse through children
-      if (Array.isArray(node.children)) {
-        return {
-          ...node,
-          children: node.children.map(insertNode),
-        };
-      }
-
-      return node;
-    }
-
+  // Hardened Component Insertion
+  const addComponent = useCallback((component) => {
     setProject((prev) => {
-      // No selection → add to root
-      if (!selectedId) {
-        return {
-          ...prev,
-          root: {
-            ...prev.root,
-            children: [...prev.root.children, component],
-          },
-        };
+      const newProject = { ...prev };
+      const targetId = selectedId || "root";
+      
+      // Use our hardened traversal utility
+      const targetNode = findNodeById(newProject.root, targetId);
+
+      if (targetNode) {
+        targetNode.children = [...(targetNode.children || []), component];
+        console.log(`CONSTRUCTION_SUCCESS: Node [${component.type}] fused to [${targetId}]`);
+      } else {
+        console.warn(`CONSTRUCTION_WARNING: Target [${targetId}] vanished. Defaulting to root.`);
+        newProject.root.children.push(component);
       }
 
-      // Selection exists → insert into tree
-      return {
-        ...prev,
-        root: insertNode(prev.root),
-      };
+      return { ...newProject };
     });
-  }
+  }, [selectedId]);
 
   return (
-    <ProjectContext.Provider
-      value={{
-        project,
-        addComponent,
-        selectedId,
-        setSelectedId,
-      }}
-    >
+    <ProjectContext.Provider value={{ 
+      project, 
+      addComponent, 
+      selectedId, 
+      setSelectedId,
+      architect_tax: 0.10 
+    }}>
       {children}
     </ProjectContext.Provider>
   );
 }
 
 export function useProject() {
-  return useContext(ProjectContext);
+  const context = useContext(ProjectContext);
+  if (!context) {
+    throw new Error("ARCHITECT_ERROR: useProject must be used within a ProjectProvider");
+  }
+  return context;
 }
