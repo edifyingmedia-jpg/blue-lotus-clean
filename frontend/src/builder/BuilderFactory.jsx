@@ -4,9 +4,11 @@ import React from "react";
 /** Default meta for builder specs */
 export const defaultMeta = {
   name: "builder",
-  version: "0.1.0",
+  version: "1.0.0-PRIME",
   createdAt: null,
-  description: "A builder spec (manifest + tokens + initial nodes)",
+  description: "Architectural blueprint for neural actuation.",
+  tier: "ACOLYTE", // Default tier
+  commission_rate: 0.10 // Your 10% Architect Fee
 };
 
 /** Create a canonical builder spec object */
@@ -22,10 +24,12 @@ export function createBuilderSpec({ meta = {}, manifest = [], tokens = {}, nodes
 
 /** Instantiate a builder in the current Workspace from a spec */
 export function instantiateBuilderFromSpec(spec, { storageKeyPrefix = "blue-lotus" } = {}) {
-  if (!spec || typeof spec !== "object") return { ok: false, error: "Invalid spec" };
+  if (!spec || typeof spec !== "object") return { ok: false, error: "INVALID_SPEC" };
+  
   try {
-    const manifestKey = `${storageKeyPrefix}:manifest:${spec.meta.name || "builder"}`;
-    const tokensKey = `${storageKeyPrefix}:tokens:${spec.meta.name || "builder"}`;
+    const manifestKey = `${storageKeyPrefix}:manifest:${spec.meta.name}`;
+    const tokensKey = `${storageKeyPrefix}:tokens:${spec.meta.name}`;
+    
     localStorage.setItem(manifestKey, JSON.stringify(spec.manifest));
     localStorage.setItem(tokensKey, JSON.stringify(spec.tokens));
 
@@ -35,56 +39,61 @@ export function instantiateBuilderFromSpec(spec, { storageKeyPrefix = "blue-lotu
         id: n.id || `n-${Math.random().toString(36).slice(2, 9)}`
       }));
       window.twinSetSpec(nodes);
-      return { ok: true, seeded: true, manifestKey, tokensKey };
+      return { ok: true, seeded: true };
     }
 
-    const nodesKey = `${storageKeyPrefix}:nodes:${spec.meta.name || "builder"}`;
-    localStorage.setItem(nodesKey, JSON.stringify(spec.nodes || []));
-    return { ok: true, seeded: false, manifestKey, tokensKey, nodesKey };
+    return { ok: true, seeded: false };
   } catch (err) {
-    return { ok: false, error: String(err) };
+    return { ok: false, error: "STORAGE_FAULT" };
   }
 }
 
-/** Lightweight React helper component for the Factory UI */
+/** The Premium Factory UI */
 export function BuilderFactoryUI({ spec, onResult }) {
   const handleInstantiate = () => {
     const res = instantiateBuilderFromSpec(spec);
     if (onResult) onResult(res);
   };
 
-  const handleSave = () => {
-    // Note: saveSpecToLocalStorage logic omitted for brevity but remains same as original
-    console.log("Saving spec...");
-  };
-
   return (
-    <div className="p-4 bg-slate-900/50 border border-slate-800 rounded-xl">
-      <div className="mb-2 font-bold text-sm text-slate-200">
-        {spec?.meta?.name || "Builder Spec"}
+    <div className="p-6 bg-[#0F0F14] border border-white/5 rounded-[2rem] shadow-2xl">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <div className="font-black text-[10px] text-cyan-500 uppercase tracking-[0.3em]">
+            {spec?.meta?.name || "Blueprint_Null"}
+          </div>
+          <div className="text-[9px] font-mono text-slate-600 mt-1 uppercase tracking-widest">
+            Tier: {spec?.meta?.tier || "UNRANKED"}
+          </div>
+        </div>
+        <div className="text-[10px] font-mono text-slate-500 bg-white/5 px-2 py-1 rounded">
+          v{spec?.meta?.version}
+        </div>
       </div>
-      <div className="text-xs text-slate-500 mb-4 leading-relaxed">
-        {spec?.meta?.description || "Portable builder spec"}
+
+      <p className="text-xs text-slate-400 mb-6 leading-relaxed italic">
+        "{spec?.meta?.description || "No description provided for this architecture."}"
+      </p>
+
+      <div className="flex gap-3">
+        <button 
+          onClick={handleInstantiate} 
+          className="flex-1 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-cyan-400 transition-all active:scale-[0.95]"
+        >
+          Actuate Template
+        </button>
+        <button className="flex-1 py-4 bg-transparent border border-white/10 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-xl hover:text-white transition-colors">
+          Forge Clone
+        </button>
       </div>
-      <div className="flex gap-2">
-        <button 
-          onClick={handleInstantiate}
-          className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest rounded transition-all"
-        >
-          Instantiate
-        </button>
-        <button 
-          onClick={handleSave}
-          className="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-black uppercase tracking-widest rounded transition-all"
-        >
-          Save Template
-        </button>
+      
+      {/* Commission Logic Teaser */}
+      <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center">
+        <span className="text-[8px] font-mono text-slate-700 uppercase tracking-[0.2em]">Architecture Tax</span>
+        <span className="text-[9px] font-bold text-cyan-900">10.00%</span>
       </div>
     </div>
   );
 }
 
-export default {
-  createBuilderSpec,
-  instantiateBuilderFromSpec,
-};
+export default { createBuilderSpec, instantiateBuilderFromSpec };
