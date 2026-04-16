@@ -1,23 +1,16 @@
 // frontend/src/runtime/RenderScreen.jsx
-
 import React from "react";
 import ComponentRenderer from "./ComponentRenderer";
 
 /**
  * RenderScreen
  * ----------------------------------------------------
- * Renders a single screen definition:
- * {
- *   id: "Home",
- *   components: [ ... ],
- *   params: { ... }
- * }
+ * Hardened assembly for a single screen view.
  */
-
 export default function RenderScreen({ screen }) {
   if (!screen) {
     return (
-      <div style={{ padding: 20, color: "#999" }}>
+      <div className="p-10 text-gray-400 italic text-center">
         No screen provided.
       </div>
     );
@@ -26,12 +19,12 @@ export default function RenderScreen({ screen }) {
   const { components = [] } = screen;
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div className="w-full h-full relative overflow-y-auto overflow-x-hidden">
       {components.map((component, index) => (
-        <ComponentRenderer
-          key={component.id || index}
-          component={component}
-          screen={screen}
+        <ComponentRenderer 
+          key={component.id || `comp-${index}`} 
+          component={component} 
+          screen={screen} 
         />
       ))}
     </div>
