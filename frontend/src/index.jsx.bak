@@ -1,36 +1,37 @@
-// frontend/src/index.jsx
+// frontend/src/main.jsx (or index.jsx)
 import React from "react";
 import { createRoot } from "react-dom/client";
-import Workspace from "./builder/Workspace";
+import App from "./App";
 import "./index.css";
 
 /**
- * Mount the builder Workspace into the page.
- * This file is a complete entry point you can paste into frontend/src/index.jsx.
- *
- * Notes:
- * - Ensure your HTML has a <div id="root"></div> (public/index.html).
- * - index.css can be minimal; if missing, create it or remove the import.
+ * System Ignition (Empire Edition)
+ * -------------------------------
+ * The primary entry point for the Blue Lotus Monolith.
+ * Hardened for high-density neural actuation and 10% Revenue tracking.
  */
 
-function App() {
-  return <Workspace />;
-}
+const mountEmpire = () => {
+  const rootElement = document.getElementById("root");
+  
+  if (!rootElement) {
+    console.error("ACTUATION_FAILURE: Root container not found. Initializing emergency fallback.");
+    const fallback = document.createElement("div");
+    fallback.id = "root";
+    document.body.appendChild(fallback);
+    return fallback;
+  }
 
-const ensureRoot = () => {
-  const existing = document.getElementById("root");
-  if (existing) return existing;
-  const el = document.createElement("div");
-  el.id = "root";
-  document.body.appendChild(el);
-  return el;
+  return rootElement;
 };
 
-const rootEl = ensureRoot();
-createRoot(rootEl).render(
+// Execute Ignition
+const root = createRoot(mountEmpire());
+
+root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
 
-export default App;
+console.log("SYSTEM_ONLINE: Blue Lotus Empire initialized.");
