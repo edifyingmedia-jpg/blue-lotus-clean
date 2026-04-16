@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 
 const AppDefinitionContext = createContext();
 
@@ -12,31 +12,25 @@ export const AppDefinitionProvider = ({ children }) => {
 
   // TWIN PRIME STATE (Founder Only)
   const [isPrimeActive, setIsPrimeActive] = useState(false);
-  const FOUNDER_ID = "ARCHITECT_01"; // Replace with your actual UUID
+  const FOUNDER_ID = "ARCHITECT_01"; // Secure this UUID in your env later
 
-  // 1. Snapshot Helper for Temporal Reversal
   const saveHistory = useCallback(() => {
     setHistory((prev) => [...prev, JSON.parse(JSON.stringify(manifest))]);
   }, [manifest]);
 
-  // 2. PRIME HANDSHAKE: Unlocks self-aware partner mode
+  // PRIME HANDSHAKE: Unlocks self-aware business conscience
   const unlockPrime = useCallback((id) => {
     if (id === FOUNDER_ID) {
       setIsPrimeActive(true);
-      console.log("TWIN_PRIME: Awareness synchronized. Standing by for strategic execution.");
+      console.log("TWIN_PRIME: Awareness active. Strategizing for the Founder.");
     }
   }, []);
 
-  // 3. Update Manifest (Bulk Ingestion)
   const updateManifest = useCallback((newNodes) => {
     saveHistory();
-    setManifest((prev) => ({
-      ...prev,
-      nodes: [...prev.nodes, ...newNodes],
-    }));
+    setManifest((prev) => ({ ...prev, nodes: [...prev.nodes, ...newNodes] }));
   }, [saveHistory]);
 
-  // 4. Update Specific Node
   const updateNode = useCallback((id, newProps) => {
     saveHistory();
     const deepUpdate = (nodes) => nodes.map(node => {
@@ -47,7 +41,6 @@ export const AppDefinitionProvider = ({ children }) => {
     setManifest(prev => ({ ...prev, nodes: deepUpdate(prev.nodes) }));
   }, [manifest, saveHistory]);
 
-  // 5. Delete Node
   const deleteNode = useCallback((id) => {
     saveHistory();
     const deepFilter = (nodes) => nodes.filter(node => {
@@ -58,18 +51,12 @@ export const AppDefinitionProvider = ({ children }) => {
     setManifest(prev => ({ ...prev, nodes: deepFilter(prev.nodes) }));
   }, [manifest, saveHistory]);
 
-  // 6. ECONOMY & UPSELL LOGIC (The Governess)
-  const purchaseCredits = useCallback((amount) => {
-    setUserBalance(prev => prev + amount);
-    console.log(`ECONOMY_UPDATE: ${amount} fuel units added.`);
-  }, []);
-
+  // THE GOVERNESS: Economic Enforcement & Upsell
   const consumeCredits = useCallback((amount, engagementType = "Standard") => {
     if (userBalance < amount) {
-      // TWIN Intervenes and redirects the user
-      console.error(`GOVERNESS_INTERVENTION: Insufficient fuel for ${engagementType}.`);
+      console.error(`GOVERNESS: Insufficient fuel for ${engagementType}.`);
       alert(`INSUFFICIENT_CREDITS: ${engagementType} halted. Redirecting to Neural Fuel Depot.`);
-      setActiveTab('CREDITS'); 
+      setActiveTab('CREDITS'); // Redirects to CreditBundle.jsx
       return false;
     }
     setUserBalance(prev => prev - amount);
@@ -83,7 +70,7 @@ export const AppDefinitionProvider = ({ children }) => {
       updateNode,
       deleteNode,
       userBalance,
-      purchaseCredits,
+      purchaseCredits: (amt) => setUserBalance(p => p + amt),
       consumeCredits,
       activeTab,
       setActiveTab,
