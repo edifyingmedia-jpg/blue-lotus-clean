@@ -1,76 +1,72 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Send, 
-  Plus, 
-  Store, 
+  MessageSquare, 
   Rocket, 
   Github, 
   Settings, 
-  CheckCircle, 
-  Circle, 
-  Loader2, 
-  ChevronRight 
+  Zap,
+  RefreshCw,
+  Send,
+  AlertTriangle
 } from 'lucide-react';
 
-function App() {
+export default function App() {
+  const [userContext, setUserContext] = useState({
+    remainingCredits: 47,
+    membership: 'free',
+    isOwner: false,
+  });
+
   const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: "Hello! I'm TWIN — your self-aware master builder. I know the platform rules, credit system, and every constraint. I'll build stunning, fully functional apps while explaining every decision, updating progress live, and self-correcting when needed. What beautiful app shall we create today?"
+    { 
+      role: 'assistant', 
+      content: "Systems Online. I am TWIN, your master builder. Describe the application you want to build—I will execute the handshake and generate the codebase immediately." 
     }
   ]);
 
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [currentProject, setCurrentProject] = useState("Untitled Project");
-  const [todoList, setTodoList] = useState([
-    { id: '1', text: 'Analyze requirements and plan architecture', status: 'done' },
-    { id: '2', text: 'Craft modern, accessible, pixel-perfect UI', status: 'in-progress' },
-    { id: '3', text: 'Generate production-ready React + TypeScript code', status: 'pending' },
-    { id: '4', text: 'Implement real backend logic & data flow', status: 'pending' },
-    { id: '5', text: 'Self-review, test, and polish', status: 'pending' },
-  ]);
+  const [currentProject, setCurrentProject] = useState("New Architecture");
 
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
-    const userMsg = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMsg]);
-    const currentInput = input;
+    const userMessage = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/twin/chat', {
+      // Connects to your backend builder logic
+      const response = await fetch('http://localhost:3001/api/twin/chat', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, userMsg],
-          userContext: { remainingCredits: 47, membership: 'free', isOwner: false },
-          mode: 'workspace'
+          messages: [...messages, userMessage],
+          userContext,
         }),
       });
 
       const data = await response.json();
 
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || "I've built the next piece beautifully." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
 
-      if (data.todoUpdate) setTodoList(data.todoUpdate);
       if (data.previewUrl) {
         setPreviewUrl(data.previewUrl);
         setCurrentProject(data.projectName || currentProject);
       }
+
     } catch (error) {
       setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: "I ran into an issue while building. I'm self-correcting now — please give me another try or refine the request."
+        role: 'assistant', 
+        content: "Handshake interrupted. System is self-correcting. Please re-issue command."
       }]);
     } finally {
       setIsLoading(false);
@@ -78,167 +74,87 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen bg-zinc-950 text-white overflow-hidden select-none">
-      {/* Ultra-minimal left sidebar */}
-      <div className="w-14 bg-zinc-950 border-r border-zinc-800 flex flex-col items-center py-6 gap-8">
-        <div className="w-9 h-9 bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 rounded-2xl flex items-center justify-center font-bold text-lg shadow-lg">
-          T
-        </div>
-        <div className="flex flex-col gap-7 text-zinc-400">
-          <Send className="w-5 h-5 cursor-pointer hover:text-violet-400 transition" />
-          <Store className="w-5 h-5 cursor-pointer hover:text-violet-400 transition" />
-          <Rocket className="w-5 h-5 cursor-pointer hover:text-violet-400 transition" />
-          <Github className="w-5 h-5 cursor-pointer hover:text-violet-400 transition" />
-          <Settings className="w-5 h-5 cursor-pointer hover:text-violet-400 transition" />
-        </div>
-        <div className="mt-auto text-[10px] text-zinc-500 tracking-widest">TWIN</div>
-      </div>
-
-      {/* Main TWIN Workspace - Left Chat + Progress */}
-      <div className="w-5/12 border-r border-zinc-800 flex flex-col bg-zinc-950">
-        {/* Top bar */}
-        <div className="h-14 border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-md px-6 flex items-center justify-between z-10">
+    <div className="flex h-screen bg-zinc-950 text-white font-mono overflow-hidden">
+      
+      {/* PANEL 1: TWIN BUILDER (LEFT) */}
+      <div className="w-1/2 border-r border-zinc-800 flex flex-col bg-zinc-950">
+        <div className="h-14 border-b border-zinc-800 bg-zinc-900 px-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="text-xl font-semibold tracking-tight">TWIN</div>
-            <div className="text-xs px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">Master Builder</div>
+            <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center font-bold shadow-[0_0_15px_rgba(124,58,237,0.3)]">T</div>
+            <span className="font-bold text-sm tracking-widest text-violet-400 uppercase">TWIN_STUDIO</span>
           </div>
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              Online
-            </div>
-            <span className="text-zinc-400">47 credits remaining</span>
+          <div className="text-xs text-emerald-500 font-bold uppercase tracking-tighter">
+            Credits: {userContext.remainingCredits}
           </div>
         </div>
 
-        {/* Live Progress / TODO */}
-        <div className="border-b border-zinc-800 bg-zinc-900 px-6 py-4">
-          <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-300">
-            <ChevronRight className="w-4 h-4" />
-            Building Progress • Real-time
-          </div>
-          <div className="space-y-3 max-h-56 overflow-y-auto pr-2 custom-scroll">
-            {todoList.map((item) => (
-              <div key={item.id} className="flex gap-3 items-start text-sm">
-                {item.status === 'done' ? (
-                  <CheckCircle className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                ) : item.status === 'in-progress' ? (
-                  <Loader2 className="w-5 h-5 text-violet-400 animate-spin mt-0.5 flex-shrink-0" />
-                ) : (
-                  <Circle className="w-5 h-5 text-zinc-600 mt-0.5 flex-shrink-0" />
-                )}
-                <span className={`${item.status === 'done' ? 'line-through text-zinc-500' : 'text-zinc-200'}`}>
-                  {item.text}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Chat Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scroll">
+        {/* Chat Console */}
+        <div className="flex-1 overflow-auto p-6 space-y-6 bg-[#050505]">
           {messages.map((msg, index) => (
             <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div
-                className={`max-w-[82%] px-6 py-4 rounded-3xl text-[15.2px] leading-relaxed shadow-sm ${
-                  msg.role === 'user'
-                    ? 'bg-violet-600 text-white'
-                    : 'bg-zinc-900 border border-zinc-700/80 text-zinc-100'
-                }`}
-              >
+              <div className={`max-w-[85%] px-5 py-3 rounded-xl text-[14px] leading-relaxed ${
+                msg.role === 'user' 
+                  ? 'bg-violet-600/10 border border-violet-500/50 text-violet-100' 
+                  : 'bg-zinc-900/50 border border-zinc-800 text-zinc-300'
+              }`}>
                 {msg.content}
               </div>
             </div>
           ))}
-
           {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-zinc-900 border border-zinc-700 rounded-3xl px-6 py-4 flex items-center gap-3">
-                <Loader2 className="w-4 h-4 animate-spin text-violet-400" />
-                TWIN is thinking, designing, and self-correcting...
-              </div>
+            <div className="text-[10px] text-violet-500 animate-pulse uppercase tracking-[0.3em]">
+              Executing_Build_Handshake...
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Bar - Premium feel */}
-        <div className="p-6 border-t border-zinc-800 bg-zinc-900">
-          <div className="relative">
+        {/* Input Console */}
+        <div className="p-6 border-t border-zinc-800 bg-[#080808]">
+          <div className="flex gap-3 bg-zinc-900 border border-zinc-800 rounded-xl p-2 px-4 items-center focus-within:border-violet-500 transition-all">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-              placeholder="Describe the app you want TWIN to build... Be as detailed or as visionary as you like"
-              className="w-full bg-zinc-800 border border-zinc-700 focus:border-violet-500 rounded-3xl px-7 py-5 text-base placeholder-zinc-400 focus:outline-none transition"
+              placeholder="Describe architecture..."
+              className="flex-1 bg-transparent border-none outline-none text-white py-2 text-sm"
               disabled={isLoading}
             />
             <button
               onClick={sendMessage}
               disabled={isLoading || !input.trim()}
-              className="absolute right-3 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-500 disabled:bg-zinc-700 p-3 rounded-2xl transition"
+              className="bg-white text-black p-2 px-4 rounded-lg font-bold text-[10px] uppercase hover:bg-violet-500 hover:text-white transition-all disabled:opacity-50"
             >
-              <Send className="w-5 h-5" />
+              Execute
             </button>
           </div>
-          <p className="text-center text-[10px] text-zinc-500 mt-4 tracking-wide">
-            TWIN builds real, production-ready apps • Explains every choice • Self-corrects automatically
-          </p>
         </div>
       </div>
 
-      {/* Right Side — Large Live Preview (the star of the show) */}
-      <div className="flex-1 flex flex-col bg-zinc-50 text-zinc-900">
-        <div className="h-14 border-b bg-white px-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="font-semibold text-xl tracking-tight">{currentProject}</h1>
-            {previewUrl && (
-              <div className="flex items-center gap-1.5 text-emerald-600 text-xs font-medium">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                LIVE • FULLY FUNCTIONAL
+      {/* PANEL 2: LIVE PREVIEW (RIGHT) */}
+      <div className="flex-1 flex flex-col bg-white text-black">
+        <div className="h-14 border-b border-zinc-200 bg-white px-8 flex items-center justify-between">
+          <h2 className="font-black text-sm tracking-tighter uppercase">{currentProject}</h2>
+          <div className="flex gap-4">
+            <button className="text-[10px] font-bold border border-black px-3 py-1 rounded hover:bg-zinc-100 transition">REFRESH</button>
+            <button className="text-[10px] font-bold bg-black text-white px-3 py-1 rounded hover:shadow-lg transition">DEPLOY_LIVE</button>
+          </div>
+        </div>
+
+        <div className="flex-1 p-8 bg-zinc-50 flex items-center justify-center">
+          <div className="w-full h-full bg-white rounded-2xl border border-zinc-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
+            {previewUrl ? (
+              <iframe src={previewUrl} className="w-full h-full border-0" title="TWIN Preview" />
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-400">
+                <Zap size={32} className="mb-4 opacity-20" />
+                <p className="font-black uppercase tracking-[0.3em] text-[10px]">Awaiting_Execution</p>
               </div>
             )}
           </div>
-
-          <div className="flex items-center gap-5 text-sm">
-            <button className="hover:text-black transition">Refresh</button>
-            <button className="flex items-center gap-2 bg-zinc-900 text-white px-6 py-2 rounded-2xl hover:bg-black transition">
-              <Rocket className="w-4 h-4" />
-              Deploy Now
-            </button>
-          </div>
-        </div>
-
-        {/* Preview Canvas */}
-        <div className="flex-1 relative bg-zinc-100 flex items-center justify-center overflow-hidden">
-          {previewUrl ? (
-            <iframe
-              src={previewUrl}
-              className="w-full h-full border-0 shadow-2xl bg-white"
-              title="TWIN Live Preview"
-            />
-          ) : (
-            <div className="text-center max-w-lg px-10">
-              <div className="mx-auto mb-10 w-28 h-28 bg-gradient-to-br from-violet-100 via-fuchsia-100 to-pink-100 rounded-3xl flex items-center justify-center text-7xl shadow-inner">
-                ✨
-              </div>
-              <h2 className="text-3xl font-semibold text-zinc-800 mb-4">Your masterpiece is being crafted</h2>
-              <p className="text-zinc-600 text-lg leading-relaxed">
-                TWIN is working on the left while building a real, beautiful, and fully functional application here.<br />
-                Every step is explained. Every detail is intentional.
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Subtle footer bar */}
-        <div className="h-9 bg-white border-t flex items-center px-8 text-xs text-zinc-400">
-          Powered by OpenAI • React 19 • Tailwind • Real backend logic • Self-aware &amp; self-correcting
         </div>
       </div>
     </div>
   );
 }
-
-export default App;
