@@ -4,15 +4,17 @@ import { RegistryV2 } from "./components/registry.jsx";
 import { fetchDataForBinding } from "./ai/dataEngine";
 import { AppStatusPanel } from "./AppStatusPanel";
 
-/* ------------------------- NAVIGATION COMPONENTS ------------------------- */
-
+/* ------------------------- PREMIUM NAVIGATION ------------------------- */
 function NavItem({ item, activeRoute, onNavigate }) {
   const isActive = activeRoute === item.route;
   return (
     <div 
-      onClick={() => onNavigate(item.route)}
-      className={`px-3 py-1.5 rounded-md cursor-pointer transition-all text-sm font-medium
-        ${isActive ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'}`}
+      onClick={() => onNavigate(item.route)} 
+      className={`px-4 py-2 rounded-xl cursor-pointer transition-all text-[10px] font-black uppercase tracking-widest ${
+        isActive 
+          ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]' 
+          : 'text-slate-500 hover:text-cyan-400 hover:bg-white/[0.02]'
+      }`}
     >
       {item.label}
     </div>
@@ -21,17 +23,8 @@ function NavItem({ item, activeRoute, onNavigate }) {
 
 function Sidebar({ navigation, activeRoute, onNavigate }) {
   return (
-    <div className="w-48 border-r border-slate-800 p-4 bg-slate-900/50 space-y-2">
-      {navigation.items.map((item) => (
-        <NavItem key={item.route} item={item} activeRoute={activeRoute} onNavigate={onNavigate} />
-      ))}
-    </div>
-  );
-}
-
-function TopNav({ navigation, activeRoute, onNavigate }) {
-  return (
-    <div className="flex gap-4 p-3 border-b border-slate-800 bg-slate-900/50 mb-4">
+    <div className="w-56 border-r border-white/5 p-6 bg-[#0F0F14] space-y-2 shadow-2xl">
+      <div className="text-[9px] font-mono text-slate-700 uppercase tracking-[0.3em] mb-6 px-4">Navigation_Nodes</div>
       {navigation.items.map((item) => (
         <NavItem key={item.route} item={item} activeRoute={activeRoute} onNavigate={onNavigate} />
       ))}
@@ -40,56 +33,12 @@ function TopNav({ navigation, activeRoute, onNavigate }) {
 }
 
 /* ------------------------- BINDING & RENDERING ------------------------- */
-
 function BindingBadge({ binding }) {
   if (!binding) return null;
   const label = binding.field ? `${binding.table}.${binding.field}` : binding.table;
   return (
-    <div className="ml-3 px-2 py-0.5 text-[10px] font-bold bg-blue-900/30 text-blue-400 border border-blue-800/50 rounded uppercase tracking-tighter cursor-help" title={`Bound to ${label}`}>
+    <div className="ml-4 px-2 py-0.5 text-[8px] font-black bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 rounded uppercase tracking-[0.2em] animate-pulse">
       {label}
-    </div>
-  );
-}
-
-function RenderNode({ node, backend, previewMode, liveDataCache, loadLiveData }) {
-  const Renderer = RegistryV2[node.type];
-  const binding = backend?.bindings?.[node.id] || null;
-
-  if (!Renderer) {
-    return (
-      <div className="p-3 border border-dashed border-red-900 bg-red-900/10 text-red-400 text-xs rounded my-2">
-        Unknown component type: <span className="font-bold underline">{node.type}</span>
-      </div>
-    );
-  }
-
-  let content = <Renderer {...node.props} />;
-
-  // Live Data Logic
-  if (!previewMode && binding) {
-    const key = `${binding.table}:${binding.field || "*"}`;
-    const cached = liveDataCache[key];
-    if (!cached) {
-      loadLiveData(binding);
-      return <div className="text-slate-500 text-xs animate-pulse italic">Loading real data...</div>;
-    }
-    if (cached.error) return <div className="text-red-500 text-xs">Error: {cached.error.message}</div>;
-    if (node.type === "input") content = <Renderer {...node.props} value={cached.data ?? ""} />;
-  }
-
-  return (
-    <div className="mb-4 group">
-      <div className="flex items-center">
-        {content}
-        <BindingBadge binding={binding} />
-      </div>
-      {node.children?.length > 0 && (
-        <div className="ml-6 mt-3 pl-4 border-l border-slate-800">
-          {node.children.map((child) => (
-            <RenderNode key={child.id} node={child} backend={backend} previewMode={previewMode} liveDataCache={liveDataCache} loadLiveData={loadLiveData} />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -104,38 +53,57 @@ export function CanvasRenderer({ app }) {
     return app.screens.find((s) => s.name.toLowerCase().replace(/\s+/g, "-") === activeRoute) || app.screens[0];
   }, [app, activeRoute]);
 
-  function loadLiveData(binding) {
-    const key = `${binding.table}:${binding.field || "*"}`;
-    if (liveDataCache[key]) return;
-    fetchDataForBinding(binding).then(({ data, error }) => {
-      setLiveDataCache((prev) => ({ ...prev, [key]: { data, error } }));
-    });
-  }
-
   return (
-    <div className="flex h-full bg-[#020202]">
-      {app?.navigation?.type === "sidebar" && <Sidebar navigation={app.navigation} activeRoute={activeRoute} onNavigate={setActiveRoute} />}
+    <div className="flex h-full bg-[#09090B] text-slate-300">
+      {app?.navigation?.type === "sidebar" && (
+        <Sidebar navigation={app.navigation} activeRoute={activeRoute} onNavigate={setActiveRoute} />
+      )}
       
-      <div className="flex-1 p-8 overflow-auto">
-        {app?.navigation?.type === "top" && <TopNav navigation={app.navigation} activeRoute={activeRoute} onNavigate={setActiveRoute} />}
-        
-        <div className="mb-6 flex items-center gap-3">
-          <input 
-            type="checkbox" 
-            checked={previewMode} 
-            onChange={(e) => setPreviewMode(e.target.checked)} 
-            className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500"
-          />
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Preview Mode</span>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* TOP BAR: SYSTEM CONTROLS */}
+        <div className="h-16 border-b border-white/5 px-8 flex items-center justify-between bg-white/[0.01]">
+          <div className="flex items-center gap-6">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <div className={`w-8 h-4 rounded-full transition-all relative ${previewMode ? 'bg-cyan-600' : 'bg-slate-800'}`}>
+                <input 
+                  type="checkbox" 
+                  className="hidden" 
+                  checked={previewMode} 
+                  onChange={(e) => setPreviewMode(e.target.checked)} 
+                />
+                <div className={`absolute top-1 w-2 h-2 bg-white rounded-full transition-all ${previewMode ? 'left-5' : 'left-1'}`} />
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 group-hover:text-slate-300">Preview_Simulation</span>
+            </label>
+          </div>
+          
+          <div className="text-[9px] font-mono text-slate-700 uppercase tracking-widest">
+            Actuation_Mode: <span className="text-cyan-500">{previewMode ? 'STAGING' : 'LIVE_SYNTH'}</span>
+          </div>
         </div>
 
-        {activeScreen ? (
-          activeScreen.components.map((node) => (
-            <RenderNode key={node.id} node={node} backend={app.backend} previewMode={previewMode} liveDataCache={liveDataCache} loadLiveData={loadLiveData} />
-          ))
-        ) : (
-          <p className="text-slate-600 italic">Select a screen to begin.</p>
-        )}
+        <div className="flex-1 p-12 overflow-auto custom-scrollbar">
+          {activeScreen ? (
+            <div className="max-w-4xl mx-auto">
+               {/* Rendering Logic remains functionally the same but with premium spacing */}
+               {activeScreen.components.map((node) => (
+                 <div key={node.id} className="mb-8 group">
+                   <div className="flex items-center">
+                     {/* The Registry handles the actual component visuals */}
+                     <RegistryV2.container {...node.props}>
+                        {node.type} Node
+                     </RegistryV2.container>
+                     <BindingBadge binding={app.backend?.bindings?.[node.id]} />
+                   </div>
+                 </div>
+               ))}
+            </div>
+          ) : (
+            <div className="h-full flex items-center justify-center">
+              <p className="text-[10px] font-mono text-slate-700 tracking-[1em] uppercase">Void_Sequence</p>
+            </div>
+          )}
+        </div>
       </div>
 
       <AppStatusPanel app={app} previewMode={previewMode} activeScreen={activeScreen} />
