@@ -33,7 +33,8 @@ function App() {
     setTwinThinking(true);
 
     try {
-      const response = await fetch("/api/twin", {
+     const response = await fetch("/api/twin-brain", {
+ 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
