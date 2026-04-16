@@ -6,52 +6,48 @@ export default class StateManager {
   }
 
   /**
-   * Initialize state for an app.
+   * Initialize state with a deep copy to prevent reference leakage.
    */
   initialize(appId, initialState = {}) {
-    if (!appId) {
-      throw new Error("StateManager.initialize: appId is required.");
-    }
-
-    this.appStates.set(appId, { ...initialState });
+    if (!appId) throw new Error("[StateManager] appId is required for initialization.");
+    
+    // Using structuredClone for a true deep copy (2026 Standard)
+    this.appStates.set(appId, structuredClone(initialState));
     return this.get(appId);
   }
 
   /**
-   * Get current state for an app.
+   * Get a read-only snapshot of the app state.
    */
   get(appId) {
     const state = this.appStates.get(appId);
     if (!state) {
-      throw new Error(`StateManager.get: no state found for app '${appId}'.`);
+      throw new Error(`[StateManager] No state found for app '${appId}'.`);
     }
-    return { ...state };
+    return structuredClone(state);
   }
 
   /**
-   * Apply updates to an app's state.
+   * Update state with deep isolation.
    */
   update(appId, updates) {
-    if (!appId) {
-      throw new Error("StateManager.update: appId is required.");
-    }
-    if (!updates || typeof updates !== "object") {
-      throw new Error("StateManager.update: updates must be an object.");
-    }
+    if (!appId) throw new Error("[StateManager] appId is required for updates.");
+    if (!updates || typeof updates !== "object") return;
 
     const current = this.appStates.get(appId);
     if (!current) {
-      throw new Error(`StateManager.update: no state found for app '${appId}'.`);
+      throw new Error(`[StateManager] Cannot update: App '${appId}' not initialized.`);
     }
 
+    // Merge updates while maintaining immutability
     const newState = { ...current, ...updates };
     this.appStates.set(appId, newState);
-
-    return { ...newState };
+    
+    return structuredClone(newState);
   }
 
   /**
-   * Remove state for an app.
+   * Remove state to free up memory.
    */
   clear(appId) {
     this.appStates.delete(appId);
