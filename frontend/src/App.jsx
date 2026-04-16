@@ -31,15 +31,15 @@ function App() {
   // THEME
   // -----------------------------
   const theme = {
-    background: darkMode ? "#0f172a" : "#f8fafc",
-    surface: darkMode ? "#1e293b" : "#ffffff",
-    surfaceSoft: darkMode ? "#162032" : "#f1f5f9",
-    text: darkMode ? "#f8fafc" : "#0f172a",
-    textSoft: darkMode ? "#cbd5e1" : "#475569",
-    border: darkMode ? "#334155" : "#e2e8f0",
-    primary: "#3b82f6",
-    primarySoft: "rgba(59,130,246,0.15)"
-  };
+  background: darkMode ? "#1A1A1A" : "#FFFDF8",      // warm cream
+  surface: darkMode ? "#2A2A2A" : "#FFFFFF",         // soft white
+  surfaceSoft: darkMode ? "#242424" : "#FFF7F2",     // peach‑cream
+  text: darkMode ? "#F5F5F5" : "#4A4A4A",            // warm gray
+  textSoft: darkMode ? "#CFCFCF" : "#7A7A7A",        // soft warm gray
+  border: darkMode ? "#3A3A3A" : "#F0E6DD",          // warm beige border
+  primary: "#FF7AC3",                                // Loveable pink
+  primarySoft: "rgba(255, 122, 195, 0.18)",          // soft pink glow
+};
 
   // -----------------------------
   // HEALING UPLOAD
