@@ -1,12 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en" class="dark"> <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Blue Lotus</title>
-  </head>
-  <body>
-    <div id="root"></div>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <title>Blue Lotus | AI App Orchestrator</title>
+    <meta name="description" content="Advanced AI platform for autonomous application generation." />
+    <meta name="theme-color" content="#0f172a" /> <style>
+      /* Critical CSS: Instant Dark Mode */
+      body { 
+        background-color: #0f172a; 
+        margin: 0; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        height: 100vh;
+        overflow: hidden;
+      }
+      /* Sleek Azure Loader */
+      .lotus-pulse {
+        width: 48px;
+        height: 48px;
+        border: 3px solid rgba(56, 189, 248, 0.1);
+        border-top-color: #38bdf8;
+        border-radius: 50%;
+        animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="lotus-pulse"></div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
-  </body>
+</body>
 </html>
