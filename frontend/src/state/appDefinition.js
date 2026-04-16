@@ -1,37 +1,54 @@
-/**
- * appDefinition.js
- * ----------------------------------------------------
- * Single source of truth for the current app structure.
- * This object will be mutated by TWIN in later phases.
- */
+// frontend/src/state/appDefinition.js
 
+/**
+ * appDefinition (Empire Edition)
+ * ----------------------------------------------------
+ * The master neural manifest for the Blue Lotus environment.
+ * Hardened for the Monolith Phase and 10% Revenue Actuation.
+ */
 const appDefinition = {
-  id: "blue-lotus-app",
-  name: "Blue Lotus App",
+  id: "blue-lotus-prime",
+  name: "BLUE_LOTUS_EMPIRE",
+  version: "1.0.0-MONOLITH",
+  metadata: {
+    architect_fee: 0.10,
+    environment: "PROD_CYAN",
+  },
   screens: [
     {
-      id: "home",
-      title: "Home",
+      id: "manifest-deck",
+      title: "COMMAND_DECK",
       components: [
         {
-          id: "text-1",
-          type: "Text",
+          id: "header-text-1",
+          type: "ActionText",
           props: {
-            value: "Welcome to your Blue Lotus app.",
+            text: "SYSTEM_INITIALIZED: BLUE_LOTUS_PRIME",
+            variant: "header",
           },
         },
         {
-          id: "text-2",
-          type: "Text",
+          id: "sub-text-1",
+          type: "ActionText",
           props: {
-            value: "This UI is generated from a shared definition.",
+            text: "Ready for Neural Ingestion and Site Cloning.",
+            variant: "label",
           },
         },
         {
-          id: "button-1",
-          type: "Button",
+          id: "primary-spacer",
+          type: "ActionSpacer",
           props: {
-            label: "Primary Action",
+            size: "lg",
+          },
+        },
+        {
+          id: "initiate-button",
+          type: "ActionButton",
+          props: {
+            label: "OPEN_STOREFRONT",
+            variant: "primary",
+            action: "ACTIVATE_MARKETPLACE",
           },
         },
       ],
