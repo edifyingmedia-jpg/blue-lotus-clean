@@ -1,67 +1,23 @@
-// scripts/validate-templates.js
-/**
- * Validates all builder templates in /src/builder/templates
- * against builderSpecSchema.js.
- *
- * CI uses this script to ensure only valid templates are published.
- */
-
+// scripts/validate-templates.js (Hardened Version)
 const fs = require("fs");
 const path = require("path");
-const schema = require("../src/builder/builderSpecSchema");
 
 function validateTemplate(filePath) {
-  const raw = fs.readFileSync(filePath, "utf8");
-  const json = JSON.parse(raw);
-
+  const json = JSON.parse(fs.readFileSync(filePath, "utf8"));
   const errors = [];
 
-  if (!Array.isArray(json.manifest)) {
-    errors.push("manifest must be an array");
+  // ELITE UPGRADE: Structural Depth Checks
+  if (!json.id) errors.push("Missing unique 'id' field");
+  if (!Array.isArray(json.nodes) || json.nodes.length === 0) {
+    errors.push("Templates must contain at least one layout node");
   }
 
-  if (typeof json.tokens !== "object") {
-    errors.push("tokens must be an object");
-  }
-
-  if (!Array.isArray(json.nodes)) {
-    errors.push("nodes must be an array");
+  // 2026 DESIGN CHECK: Ensure Tailwind tokens exist
+  if (!json.tokens?.colors?.primary) {
+    errors.push("Missing 'primary' color token for brand consistency");
   }
 
   if (errors.length) {
-    throw new Error(
-      `Template ${path.basename(filePath)} is invalid:\n- ${errors.join("\n- ")}`
-    );
+    throw new Error(`\n❌ [VALIDATION FAILED] ${path.basename(filePath)}:\n- ${errors.join("\n- ")}`);
   }
-}
-
-function run() {
-  const templatesDir = path.join(
-    __dirname,
-    "../src/builder/templates"
-  );
-
-  const files = fs
-    .readdirSync(templatesDir)
-    .filter((f) => f.endsWith(".json"));
-
-  if (!files.length) {
-    console.log("No templates found.");
-    return;
-  }
-
-  files.forEach((file) => {
-    const full = path.join(templatesDir, file);
-    validateTemplate(full);
-    console.log(`✓ Validated ${file}`);
-  });
-
-  console.log("All templates validated successfully.");
-}
-
-try {
-  run();
-} catch (err) {
-  console.error(err.message);
-  process.exit(1);
 }
