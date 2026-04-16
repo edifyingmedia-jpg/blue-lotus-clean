@@ -1,13 +1,11 @@
 // backend/twin/actions/validateProjectDefinition.js
-
 /**
  * validateProjectDefinition
  * -------------------------
  * This action validates the structure of a TWIN project definition.
- * It ensures the project has the required fields, correct types,
+ * It ensures the project has the required fields, correct types, 
  * and no missing or malformed sections before saving or rendering.
  */
-
 export async function validateProjectDefinition({ project }) {
   if (!project || typeof project !== "object") {
     throw new Error("Invalid project payload: expected an object.");
@@ -15,20 +13,32 @@ export async function validateProjectDefinition({ project }) {
 
   const errors = [];
 
-  // Required fields
+  // 1. Required Top-Level Fields
   if (!project.id) errors.push("Missing project.id");
   if (!project.name) errors.push("Missing project.name");
   if (!project.pages || !Array.isArray(project.pages)) {
     errors.push("project.pages must be an array");
   }
 
-  // Validate each page
+  // 2. Validate Each Page
   if (Array.isArray(project.pages)) {
-    project.pages.forEach((page, index) => {
-      if (!page.id) errors.push(`Page ${index} missing id`);
-      if (!page.name) errors.push(`Page ${index} missing name`);
+    project.pages.forEach((page, pIdx) => {
+      if (!page.id) errors.push(`Page ${pIdx} missing id`);
+      if (!page.name) errors.push(`Page ${pIdx} missing name`);
+      
       if (!page.components || !Array.isArray(page.components)) {
-        errors.push(`Page ${index} components must be an array`);
+        errors.push(`Page ${pIdx} ("${page.name || 'unnamed'}") components must be an array`);
+      } else {
+        // 3. Deep Validation of Components
+        page.components.forEach((comp, cIdx) => {
+          if (!comp.type) {
+            errors.push(`Page ${pIdx}, Component ${cIdx} missing type (e.g., 'div', 'button')`);
+          }
+          // The Critical Check: Ensure props exists so frontend rendering is safe
+          if (!comp.props || typeof comp.props !== "object") {
+            errors.push(`Page ${pIdx}, Component ${cIdx} ("${comp.type || 'unknown'}") missing props object`);
+          }
+        });
       }
     });
   }
