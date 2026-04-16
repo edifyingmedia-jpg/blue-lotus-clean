@@ -1,22 +1,18 @@
 /**
- * builder.css
+ * builder.css (Empire Edition)
  * ----------------------------------------------------
- * Global styles for the Blue Lotus Builder environment.
- *
- * Principles:
- *  - Minimalist two‑column layout
- *  - No clutter, no visual noise
- *  - Quiet, confident, owner‑first design
- *  - High contrast, readable typography
+ * Global architectural tokens for Blue Lotus.
  */
 
 :root {
-  --bl-bg: #f7f7f8;
-  --bl-panel-bg: #ffffff;
-  --bl-border: #e2e2e6;
-  --bl-text: #1a1a1c;
-  --bl-muted: #6a6a6d;
-  --bl-accent: #4a6bff;
+  /* The Ink & Cyan Palette */
+  --bl-bg: #09090B;           /* Deepest Zinc */
+  --bl-panel-bg: #0F0F14;     /* Industrial Slate */
+  --bl-border: rgba(255, 255, 255, 0.05);
+  --bl-text: #F8FAFC;         /* Off-white readability */
+  --bl-muted: #475569;        /* Slate-600 */
+  --bl-accent: #06B6D4;       /* Cyan-500 */
+  --bl-surface: #121217;      /* Inner Canvas */
 }
 
 body {
@@ -24,66 +20,96 @@ body {
   padding: 0;
   background: var(--bl-bg);
   color: var(--bl-text);
-  font-family: Inter, system-ui, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Two-column builder layout */
+/* Global Scrollbar (The Elite Look) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bl-accent);
+}
+
+/* The Builder Layout Container */
 .bl-builder {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 380px 1fr 320px; /* Optimized 3-column architecture */
   height: 100vh;
   overflow: hidden;
 }
 
-/* Left panel (navigation, components, properties) */
+/* Side Panels */
 .bl-panel {
   background: var(--bl-panel-bg);
   border-right: 1px solid var(--bl-border);
   overflow-y: auto;
-  padding: 16px;
+  padding: 32px;
+  box-shadow: 20px 0 50px rgba(0,0,0,0.5);
 }
 
-/* Right panel (preview) */
-.bl-preview {
-  background: var(--bl-bg);
-  overflow: hidden;
-  position: relative;
-}
-
-/* Section headers */
+/* Section Headers */
 .bl-section-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--bl-muted);
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--bl-accent);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4em;
+  margin-bottom: 24px;
 }
 
-/* Component list items */
+/* Component Items (Storefront Ready) */
 .bl-component-item {
-  padding: 8px 10px;
+  padding: 16px;
   border: 1px solid var(--bl-border);
-  border-radius: 6px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  background: #fff;
-  transition: background 0.15s ease;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  cursor: grab;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--bl-text);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .bl-component-item:hover {
-  background: #f0f0f3;
+  background: rgba(6, 182, 212, 0.05);
+  border-color: rgba(6, 182, 212, 0.3);
+  transform: translateX(4px);
+  color: #fff;
 }
 
-/* Preview frame */
+/* The Preview Area */
+.bl-preview {
+  background: var(--bl-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
+}
+
 .bl-preview-frame {
   width: 100%;
+  max-width: 1200px;
   height: 100%;
-  border: none;
-  background: #fff;
-}
-
-/* Utility spacing */
-.bl-spacer {
-  height: 16px;
+  background: var(--bl-surface);
+  border-radius: 40px;
+  border: 1px solid var(--bl-border);
+  box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+  overflow: hidden;
 }
