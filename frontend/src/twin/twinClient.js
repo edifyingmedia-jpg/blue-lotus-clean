@@ -1,20 +1,34 @@
 // frontend/src/twin/twinClient.js
 
-import TWIN from "./twin";
-
 class TwinClient {
-  constructor() {
-    this.twin = new TWIN();
-  }
+  constructor() {}
 
   /**
-   * Send a command to TWIN.
-   * Example:
-   *   send({ type: "build_app", spec: {...} })
+   * Send a command to the backend TWIN Brain.
+   * This replaces the old local TWIN class.
    */
   async send(command) {
     try {
-      return await this.twin.handleCommand(command);
+      const response = await fetch("/api/twin-brain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "user",
+              content: JSON.stringify(command)
+            }
+          ]
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Backend error");
+      }
+
+      return data.reply;
     } catch (err) {
       console.error("TwinClient error:", err);
       throw err;
@@ -43,7 +57,7 @@ class TwinClient {
       type: "action",
       appId,
       actionName,
-      payload,
+      payload
     });
   }
 }
