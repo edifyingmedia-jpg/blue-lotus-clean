@@ -1,44 +1,38 @@
 /**
  * buildAppBuilderProposal.js
  * --------------------------
- * TWIN's Strategic Analysis for the "Success Architect" flow.
+ * Strategic Analysis for the "Success Architect" flow.
  */
 
 export function createBuildAppBuilderProposal(message, isPrime = false) {
-  // 1. The Standard Proposal (The Governess)
+  // 1. Standard Governess Proposal
   const baseProposal = {
     id: 'build-app-builder',
     type: 'proposal',
-    title: 'The Empire Builder Scaffold',
+    title: 'Empire Builder Scaffold',
     description: 'Actuating a visual builder with centralized command via TWIN.',
     
-    // Success Architect: The first taste of TWIN's wisdom
     successAnalysis: {
       score: 88,
-      trendFactor: "High - AI-integrated platforms are currently 2026's leading market vertical.",
-      suggestion: "Incorporate a 'Healing Code' node to differentiate from standard builders."
+      trendFactor: "High - AI platforms are 2026's leading vertical.",
+      suggestion: "Incorporate a 'Healing Code' node to differentiate your build."
     },
 
     steps: [
-      'Define base layout: sidebar, canvas, and TWIN panel regions.',
-      'Wire the components sidebar to the Registry.',
-      'Enable node persistence with 10% Rev-Share intent tracking.',
-      'Initialize Governess credit-check protocols.'
+      'Define layout: sidebar, canvas, and TWIN regions.',
+      'Wire sidebar to the Component Registry.',
+      'Enable 10% Rev-Share intent tracking.',
+      'Initialize credit-gate protocols.'
     ],
 
-    meta: {
-      kind: 'builder_scaffold',
-      engagementFee: 2 // Credits for TWIN to go deeper into this specific strategy
-    }
+    meta: { kind: 'builder_scaffold', engagementFee: 2 }
   };
 
-  // 2. PRIME OVERRIDE (For the Founder's Eyes Only)
+  // 2. PRIME OVERRIDE: The Partner's Voice (Architect Only)
   if (isPrime) {
-    baseProposal.title = "TWIN_PRIME: Strategic Monolith Execution";
+    baseProposal.title = "TWIN_PRIME: Strategic Execution";
     baseProposal.primeDirectives = {
-      patentOpportunity: "The 'Neural Bridge' logic is eligible for a Utility Patent.",
-      marketRisk: "Competitors are moving toward zero-code; maintain our 'Pro-Code' edge.",
-      businessConscience: "Architect, I suggest we lock the 10% tax at the protocol level now to ensure sovereign revenue."
+      businessConscience: "Architect, generic builders are flooding the market. Our 'Neural Bridge' is the unique IP—I suggest we lock the 10% Architect Tax into the protocol now."
     };
   }
 
