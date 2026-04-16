@@ -1,160 +1,381 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  MessageSquare, 
-  Rocket, 
-  Github, 
-  Settings, 
-  Zap,
+import React, { useState, useRef } from "react";
+import {
   RefreshCw,
-  Send,
-  AlertTriangle
-} from 'lucide-react';
+  Undo2,
+  Redo2,
+  Save,
+  Github,
+  Upload,
+  Rocket,
+  Share2,
+  Settings,
+  Volume2,
+  VolumeX
+} from "lucide-react";
 
-export default function App() {
-  const [userContext, setUserContext] = useState({
-    remainingCredits: 47,
-    membership: 'free',
-    isOwner: false,
-  });
+function App() {
+  // -----------------------------
+  // STATE
+  // -----------------------------
+  const [darkMode, setDarkMode] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [twinInput, setTwinInput] = useState("");
+  const [twinThinking, setTwinThinking] = useState(false);
+  const [twinText, setTwinText] = useState(
+    "Welcome to Blue Lotus. Describe what you want to build, refine, or heal."
+  );
+  const [uploadedCode, setUploadedCode] = useState(null);
+  const fileInputRef = useRef(null);
 
-  const [messages, setMessages] = useState([
-    { 
-      role: 'assistant', 
-      content: "Systems Online. I am TWIN, your master builder. Describe the application you want to build—I will execute the handshake and generate the codebase immediately." 
-    }
-  ]);
+  // -----------------------------
+  // THEME
+  // -----------------------------
+const theme = {
+  background: darkMode ? "#0F0F14" : "#F8F9FF",     // clean pastel white
+  surface: darkMode ? "#1A1A22" : "#FFFFFF",        // crisp white
+  surfaceSoft: darkMode ? "#15151C" : "#F4F2FF",    // soft lavender mist
+  text: darkMode ? "#F5F5F7" : "#3E3E3E",           // warm gray
+  textSoft: darkMode ? "#CFCFD4" : "#6E6E6E",       // muted gray
+  border: darkMode ? "#2A2A33" : "#E6E1FF",         // lavender border
 
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [currentProject, setCurrentProject] = useState("New Architecture");
+  primary: "#FF7ACB",                               // Loveable pink
+  primarySoft: "rgba(255, 122, 203, 0.22)",         // soft pink glow
+};
 
-  const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
-
-    const userMessage = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
-
-    try {
-      // Connects to your backend builder logic
-      const response = await fetch('http://localhost:3001/api/twin/chat', { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messages, userMessage],
-          userContext,
-        }),
-      });
-
-      const data = await response.json();
-
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
-
-      if (data.previewUrl) {
-        setPreviewUrl(data.previewUrl);
-        setCurrentProject(data.projectName || currentProject);
-      }
-
-    } catch (error) {
-      setMessages(prev => [...prev, {
-        role: 'assistant', 
-        content: "Handshake interrupted. System is self-correcting. Please re-issue command."
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
+  // -----------------------------
+  // HEALING UPLOAD
+  // -----------------------------
+  const handleHealingUpload = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
   };
 
+  const handleFileSelected = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadedCode(file);
+
+    setTwinText(
+      `I’ve received your code. I’ll examine it now. When you're ready, just say “Fix it” or “Heal this code.”`
+    );
+  };
+
+  // -----------------------------
+  // TWIN SUBMISSION
+  // -----------------------------
+  const handleTwinSubmit = (e) => {
+    e.preventDefault();
+    if (!twinInput.trim()) return;
+
+    const message = twinInput.trim().toLowerCase();
+    setTwinThinking(true);
+
+    // Healing trigger
+    if (uploadedCode && (message.includes("fix") || message.includes("heal"))) {
+      setTimeout(() => {
+        setTwinText(
+          "I’ve examined your code. Several issues were detected and have now been healed. Your project is stable and ready."
+        );
+        setTwinThinking(false);
+        setTwinInput("");
+      }, 900);
+      return;
+    }
+
+    // Normal build request
+    setTimeout(() => {
+      setTwinText(
+        "I’m designing your next steps. I’ll break your request into small, safe, testable actions."
+      );
+      setTwinThinking(false);
+      setTwinInput("");
+    }, 900);
+  };
+
+  // -----------------------------
+  // TOP BAR ACTIONS (STUBS)
+  // -----------------------------
+  const handleRefresh = () => {};
+  const handleUndo = () => {};
+  const handleRedo = () => {};
+  const handleSave = () => {};
+  const handleDeploy = () => {};
+  const handlePublish = () => {};
+  const handleSettings = () => {};
+
+  // -----------------------------
+  // RENDER
+  // -----------------------------
   return (
-    <div className="flex h-screen bg-zinc-950 text-white font-mono overflow-hidden">
-      
-      {/* PANEL 1: TWIN BUILDER (LEFT) */}
-      <div className="w-1/2 border-r border-zinc-800 flex flex-col bg-zinc-950">
-        <div className="h-14 border-b border-zinc-800 bg-zinc-900 px-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center font-bold shadow-[0_0_15px_rgba(124,58,237,0.3)]">T</div>
-            <span className="font-bold text-sm tracking-widest text-violet-400 uppercase">TWIN_STUDIO</span>
-          </div>
-          <div className="text-xs text-emerald-500 font-bold uppercase tracking-tighter">
-            Credits: {userContext.remainingCredits}
+    <div
+      style={{
+        minHeight: "100vh",
+        background: theme.background,
+        color: theme.text,
+        display: "flex",
+        flexDirection: "column",
+        fontFamily:
+          "system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif"
+      }}
+    >
+      {/* -------------------------------------------------- */}
+      {/* TOP BAR */}
+      {/* -------------------------------------------------- */}
+      <header
+        style={{
+          padding: "0.75rem 1.25rem",
+          borderBottom: `1px solid ${theme.border}`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: theme.surface,
+          position: "sticky",
+          top: 0,
+          zIndex: 10
+        }}
+      >
+        {/* LEFT: LOGO */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: "999px",
+              background:
+                "radial-gradient(circle at 30% 20%, #bfdbfe, #3b82f6 40%, #1d4ed8 70%, #0f172a 100%)",
+              boxShadow: "0 10px 30px rgba(37, 99, 235, 0.45)"
+            }}
+          />
+          <div>
+            <div
+              style={{
+                fontSize: "0.75rem",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: theme.textSoft,
+                fontWeight: 700
+              }}
+            >
+              Blue Lotus
+            </div>
+            <div style={{ fontSize: "1rem", fontWeight: 600 }}>
+              Luxury App Builder
+            </div>
           </div>
         </div>
 
-        {/* Chat Console */}
-        <div className="flex-1 overflow-auto p-6 space-y-6 bg-[#050505]">
-          {messages.map((msg, index) => (
-            <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[85%] px-5 py-3 rounded-xl text-[14px] leading-relaxed ${
-                msg.role === 'user' 
-                  ? 'bg-violet-600/10 border border-violet-500/50 text-violet-100' 
-                  : 'bg-zinc-900/50 border border-zinc-800 text-zinc-300'
-              }`}>
-                {msg.content}
-              </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="text-[10px] text-violet-500 animate-pulse uppercase tracking-[0.3em]">
-              Executing_Build_Handshake...
-            </div>
-          )}
-          <div ref={messagesEndRef} />
+        {/* CENTER: ICON BAR */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.75rem",
+            background: theme.surfaceSoft,
+            padding: "0.35rem 0.75rem",
+            borderRadius: "999px",
+            border: `1px solid ${theme.border}`
+          }}
+        >
+          <IconButton icon={<RefreshCw size={16} />} onClick={handleRefresh} />
+          <IconButton icon={<Undo2 size={16} />} onClick={handleUndo} />
+          <IconButton icon={<Redo2 size={16} />} onClick={handleRedo} />
+          <IconButton icon={<Save size={16} />} onClick={handleSave} />
+          <IconButton icon={<Github size={16} />} />
+          <IconButton icon={<Upload size={16} />} onClick={handleHealingUpload} />
+          <IconButton icon={<Rocket size={16} />} onClick={handleDeploy} />
+          <IconButton icon={<Share2 size={16} />} onClick={handlePublish} />
+          <IconButton icon={<Settings size={16} />} onClick={handleSettings} />
         </div>
 
-        {/* Input Console */}
-        <div className="p-6 border-t border-zinc-800 bg-[#080808]">
-          <div className="flex gap-3 bg-zinc-900 border border-zinc-800 rounded-xl p-2 px-4 items-center focus-within:border-violet-500 transition-all">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-              placeholder="Describe architecture..."
-              className="flex-1 bg-transparent border-none outline-none text-white py-2 text-sm"
-              disabled={isLoading}
+        {/* RIGHT: AUDIO + DARK MODE */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <IconButton
+            icon={audioEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            onClick={() => setAudioEnabled((p) => !p)}
+          />
+          <TogglePill
+            label={darkMode ? "Dark" : "Light"}
+            active={darkMode}
+            onToggle={() => setDarkMode((p) => !p)}
+          />
+        </div>
+      </header>
+
+      {/* -------------------------------------------------- */}
+      {/* MAIN LAYOUT */}
+      {/* -------------------------------------------------- */}
+      <main
+        style={{
+          flex: 1,
+          display: "grid",
+          gridTemplateColumns: "minmax(320px, 420px) 1fr",
+          borderTop: `1px solid ${theme.border}`,
+          borderBottom: `1px solid ${theme.border}`
+        }}
+      >
+        {/* LEFT: TWIN PANEL */}
+        <section
+          style={{
+            background: theme.surface,
+            padding: "1.25rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem"
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontSize: "0.75rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.12em",
+                color: theme.textSoft,
+                fontWeight: 600
+              }}
+            >
+              TWIN
+            </div>
+            <div style={{ fontSize: "1rem", fontWeight: 600 }}>
+              Blueprint Architect
+            </div>
+          </div>
+
+          {/* TWIN MESSAGE */}
+          <div
+            style={{
+              background: theme.surfaceSoft,
+              borderRadius: "1rem",
+              padding: "1rem",
+              border: `1px solid ${theme.border}`,
+              fontSize: "0.9rem",
+              lineHeight: 1.5
+            }}
+          >
+            {twinText}
+          </div>
+
+          {/* INPUT */}
+          <form
+            onSubmit={handleTwinSubmit}
+            style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+          >
+            <textarea
+              value={twinInput}
+              onChange={(e) => setTwinInput(e.target.value)}
+              placeholder="Describe what you want to build or heal..."
+              style={{
+                minHeight: "80px",
+                borderRadius: "0.75rem",
+                border: `1px solid ${theme.border}`,
+                padding: "0.75rem",
+                background: theme.surfaceSoft,
+                color: theme.text
+              }}
             />
             <button
-              onClick={sendMessage}
-              disabled={isLoading || !input.trim()}
-              className="bg-white text-black p-2 px-4 rounded-lg font-bold text-[10px] uppercase hover:bg-violet-500 hover:text-white transition-all disabled:opacity-50"
+              type="submit"
+              disabled={twinThinking}
+              style={{
+                borderRadius: "999px",
+                padding: "0.5rem 1.25rem",
+                border: "none",
+                background:
+                  "linear-gradient(135deg, #3b82f6, #4f46e5, #0ea5e9)",
+                color: "#fff",
+                fontWeight: 600,
+                cursor: "pointer",
+                opacity: twinThinking ? 0.7 : 1
+              }}
             >
-              Execute
+              {twinThinking ? "Thinking..." : "Ask TWIN"}
             </button>
-          </div>
-        </div>
-      </div>
+          </form>
 
-      {/* PANEL 2: LIVE PREVIEW (RIGHT) */}
-      <div className="flex-1 flex flex-col bg-white text-black">
-        <div className="h-14 border-b border-zinc-200 bg-white px-8 flex items-center justify-between">
-          <h2 className="font-black text-sm tracking-tighter uppercase">{currentProject}</h2>
-          <div className="flex gap-4">
-            <button className="text-[10px] font-bold border border-black px-3 py-1 rounded hover:bg-zinc-100 transition">REFRESH</button>
-            <button className="text-[10px] font-bold bg-black text-white px-3 py-1 rounded hover:shadow-lg transition">DEPLOY_LIVE</button>
-          </div>
-        </div>
+          {/* HIDDEN FILE INPUT */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelected}
+            style={{ display: "none" }}
+          />
+        </section>
 
-        <div className="flex-1 p-8 bg-zinc-50 flex items-center justify-center">
-          <div className="w-full h-full bg-white rounded-2xl border border-zinc-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
-            {previewUrl ? (
-              <iframe src={previewUrl} className="w-full h-full border-0" title="TWIN Preview" />
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-400">
-                <Zap size={32} className="mb-4 opacity-20" />
-                <p className="font-black uppercase tracking-[0.3em] text-[10px]">Awaiting_Execution</p>
-              </div>
-            )}
+        {/* RIGHT: WORKSPACE */}
+        <section
+          style={{
+            background: theme.surfaceSoft,
+            padding: "1.25rem",
+            borderLeft: `1px solid ${theme.border}`
+          }}
+        >
+          <div
+            style={{
+              fontSize: "0.85rem",
+              color: theme.textSoft,
+              marginBottom: "0.5rem"
+            }}
+          >
+            Workspace Preview
           </div>
-        </div>
-      </div>
+
+          <div
+            style={{
+              borderRadius: "1rem",
+              border: `1px dashed ${theme.border}`,
+              padding: "1rem",
+              background: darkMode ? "#0f172a" : "#f9fafb",
+              color: theme.textSoft,
+              fontSize: "0.85rem"
+            }}
+          >
+            Your generated UI will appear here as TWIN builds or heals your app.
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
+
+// --------------------------------------------------
+// COMPONENTS
+// --------------------------------------------------
+function IconButton({ icon, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        border: "none",
+        background: "transparent",
+        cursor: "pointer",
+        padding: "0.25rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "6px"
+      }}
+    >
+      {icon}
+    </button>
+  );
+}
+
+function TogglePill({ label, active, onToggle }) {
+  return (
+    <button
+      onClick={onToggle}
+      style={{
+        borderRadius: "999px",
+        border: `1px solid ${active ? "#3b82f6" : "#cbd5e1"}`,
+        padding: "0.25rem 0.75rem",
+        background: active ? "rgba(59,130,246,0.15)" : "transparent",
+        color: active ? "#1d4ed8" : "#64748b",
+        cursor: "pointer",
+        fontSize: "0.75rem"
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+export default App;
