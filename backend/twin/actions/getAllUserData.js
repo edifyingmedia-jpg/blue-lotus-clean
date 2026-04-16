@@ -1,29 +1,28 @@
 // backend/twin/actions/getAllUserData.js
+import { supabase } from "../supabase.js";
 
 /**
  * getAllUserData (Backend Action)
  * Loads all user-related data in a single call.
  */
-
-import { supabase } from "../supabase.js";
-
 export async function getAllUserData({ userId }) {
   if (!userId) {
     throw new Error("Missing userId");
   }
 
-  // Fetch user profile
+  // 1. Fetch user profile
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", userId)
     .single();
 
-  if (profileError) {
-    throw new Error("Supabase error (profile): " + profileError.message);
+  // If there's no profile yet, don't crash—just log it and move on
+  if (profileError && profileError.code !== 'PGRST116') { 
+    console.error("Profile Fetch Error:", profileError);
   }
 
-  // Fetch all projects
+  // 2. Fetch all projects
   const { data: projects, error: projectsError } = await supabase
     .from("projects")
     .select("*")
@@ -31,6 +30,7 @@ export async function getAllUserData({ userId }) {
     .order("updated_at", { ascending: false });
 
   if (projectsError) {
+    console.error("Projects Fetch Error:", projectsError);
     throw new Error("Supabase error (projects): " + projectsError.message);
   }
 
