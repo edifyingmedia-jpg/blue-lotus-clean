@@ -1,20 +1,24 @@
 // frontend/src/builder/index.js
 
-// Core Logic & Registry
-export { generateBuilder } from "./generate";
-export { RegistryV2 } from "./components/registry.jsx";
-export { builderSpecSchema } from "./builderSpecSchema";
+/** * BLUE LOTUS EMPIRE - CORE EXPORTS
+ * Centrally managing the Actuation Engine and Monetization Logic.
+ */
 
-// Main Layout Containers
-export { default as BuilderApp } from "./BuilderApp";
-export { default as Workspace } from "./Workspace";
-export { default as BuilderShell } from "./BuilderShell";
+// 1. Neural Logic & Revenue Enforcement
+export { generateBuilder } from "./generate"; 
+export { RegistryV2 } from "./components/registry.jsx"; 
+export { builderSpecSchema } from "./builderSpecSchema"; 
 
-// Rendering & Panels
-export { default as CanvasRenderer } from "./CanvasRenderer";
-export { default as ComponentRenderer } from "./ComponentRenderer";
-export { default as ComponentPanel } from "./ComponentPanel";
-export { default as AppStatusPanel } from "./AppStatusPanel";
+// 2. High-End Workspace Containers
+export { default as BuilderApp } from "./BuilderApp"; 
+export { default as Workspace } from "./Workspace"; 
+export { default as BuilderShell } from "./BuilderShell"; 
 
-// Factories
+// 3. The Rendering Pipeline (Storefront Ready)
+export { default as CanvasRenderer } from "./CanvasRenderer"; 
+export { default as ComponentRenderer } from "./ComponentRenderer"; 
+export { default as ComponentPanel } from "./ComponentPanel"; 
+export { default as AppStatusPanel } from "./AppStatusPanel"; 
+
+// 4. Production Factories
 export { createBuilderSpec, instantiateBuilderFromSpec } from "./BuilderFactory";
