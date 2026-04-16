@@ -1,30 +1,28 @@
+// frontend/src/builder/BuilderCanvas.jsx
 import React from "react";
-import "./BuilderCanvas.css";
+import { ComponentRenderer } from "../components";
 
 export default function BuilderCanvas({ appDefinition }) {
-  if (!appDefinition || !appDefinition.sections) {
+  // 1. Safety check for empty or invalid definitions
+  if (!appDefinition || (!appDefinition.sections && !appDefinition.root)) {
     return (
-      <div className="builder-canvas empty">
-        <div className="builder-placeholder">
-          <h2>No App Loaded</h2>
-          <p>Ask TWIN to generate an application.</p>
+      <div className="flex flex-col items-center justify-center h-full bg-[#050505] text-slate-500">
+        <div className="text-center p-8 border border-dashed border-slate-800 rounded-2xl">
+          <h2 className="text-lg font-bold text-slate-400 mb-2">No App Manifested</h2>
+          <p className="text-sm">Ask TWIN to begin the architectural sequence.</p>
         </div>
       </div>
     );
   }
 
+  // 2. Modernized Layout using the centralized ComponentRenderer
+  // Supports both 'sections' arrays and single 'root' node trees
+  const rootNode = appDefinition.root || { type: 'Container', children: appDefinition.sections };
+
   return (
-    <div className="builder-canvas">
-      <div className="app-frame">
-        {appDefinition.sections.map((section, index) => (
-          <div key={index} className="builder-section">
-            {section.components.map((component, idx) => (
-              <div key={idx} className="builder-component">
-                {component.render()}
-              </div>
-            ))}
-          </div>
-        ))}
+    <div className="w-full h-full bg-white overflow-auto shadow-inner">
+      <div className="max-w-5xl mx-auto min-h-full">
+        <ComponentRenderer component={rootNode} />
       </div>
     </div>
   );
