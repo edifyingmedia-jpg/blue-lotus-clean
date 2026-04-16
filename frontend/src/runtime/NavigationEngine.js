@@ -1,78 +1,56 @@
 // frontend/src/runtime/NavigationEngine.js
 
-/**
- * NavigationEngine
- * ----------------------------------------------------
- * Minimal but modern navigation engine for runtime apps.
- * Tracks the current screen and optional params.
- *
- * Works with:
- *  - ActionEngine (navigate action)
- *  - RuntimeEngine
- *  - RenderScreen
- *  - ScreenRenderer.component.jsx
- */
-
 export default class NavigationEngine {
   constructor() {
-    this.current = {
-      screen: null,
-      params: {},
-    };
-
+    this.current = { screen: null, params: {} };
+    this.history = []; // Added for "Back" button support
     this.listeners = new Set();
   }
 
   /**
-   * Navigate to a screen by name.
+   * Navigate to a screen with logic to prevent redundant jumps.
    */
-  navigate(screen, params = {}) {
+  navigate(screen, params = {}, pushToHistory = true) {
     if (!screen || typeof screen !== "string") {
-      console.warn("NavigationEngine.navigate: invalid target:", screen);
+      console.warn("[Navigation] Invalid target:", screen);
       return;
     }
 
-    this.current = {
-      screen,
-      params: params || {},
-    };
+    // Prevent redundant navigation to the same screen with same params
+    if (this.current.screen === screen && JSON.stringify(this.current.params) === JSON.stringify(params)) {
+      return;
+    }
 
+    if (pushToHistory && this.current.screen) {
+      this.history.push({ ...this.current });
+    }
+
+    this.current = { screen, params: params || {} };
     this.emit();
   }
 
   /**
-   * Subscribe to navigation changes.
+   * Go back to the previous screen.
    */
+  goBack() {
+    if (this.history.length > 0) {
+      const previous = this.history.pop();
+      this.navigate(previous.screen, previous.params, false);
+    }
+  }
+
   subscribe(fn) {
     if (typeof fn !== "function") return;
     this.listeners.add(fn);
     return () => this.listeners.delete(fn);
   }
 
-  /**
-   * Notify listeners.
-   */
   emit() {
     for (const fn of this.listeners) {
-      try {
-        fn(this.current);
-      } catch (err) {
-        console.error("NavigationEngine listener error:", err);
-      }
+      try { fn(this.current); } catch (err) { console.error("[Navigation] Error:", err); }
     }
   }
 
-  /**
-   * Get the current screen name.
-   */
-  getCurrentScreen() {
-    return this.current.screen;
-  }
-
-  /**
-   * Get current params.
-   */
-  getParams() {
-    return this.current.params;
-  }
+  getCurrentScreen() { return this.current.screen; }
+  getParams() { return this.current.params; }
 }
