@@ -1,20 +1,18 @@
 // frontend/src/builder/ComponentRenderer.jsx
-
 import React from "react";
 import { RegistryV2 } from "./components/registry.jsx";
 
 /**
- * ComponentRenderer (Updated)
+ * ComponentRenderer (Modernized)
  * ---------------------------
- * Uses RegistryV2 — the same registry used by CanvasRenderer.
- * Renders node.props and node.children consistently with the new system.
+ * Uses RegistryV2 for component resolution.
+ * Styled with Tailwind CSS for consistent workspace aesthetics.
  */
-
 export default function ComponentRenderer({ node }) {
   if (!node) {
     return (
-      <div style={{ padding: 12, border: "1px dashed red" }}>
-        Missing node
+      <div className="p-3 border border-dashed border-red-900/50 bg-red-900/10 text-red-500 text-[10px] font-mono rounded">
+        [SYS_ERR]: MISSING_NODE_DATA
       </div>
     );
   }
@@ -23,20 +21,20 @@ export default function ComponentRenderer({ node }) {
 
   if (!Renderer) {
     return (
-      <div style={{ padding: 12, border: "1px dashed red" }}>
-        Unknown component type: <strong>{node.type}</strong>
+      <div className="p-3 border border-dashed border-amber-900/50 bg-amber-900/10 text-amber-500 text-[10px] font-mono rounded">
+        [SYS_ERR]: UNKNOWN_TYPE_{node.type?.toUpperCase()}
       </div>
     );
   }
 
   return (
-    <div style={{ marginBottom: 12 }}>
+    <div className="mb-3 last:mb-0">
       <Renderer {...node.props} />
-
+      
       {node.children?.length > 0 && (
-        <div style={{ marginLeft: 16, marginTop: 8 }}>
+        <div className="ml-4 mt-2 pl-4 border-l border-slate-800/50">
           {node.children.map((child) => (
-            <ComponentRenderer key={child.id} node={child} />
+            <ComponentRenderer key={child.id || Math.random()} node={child} />
           ))}
         </div>
       )}
