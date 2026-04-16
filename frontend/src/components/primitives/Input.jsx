@@ -1,17 +1,13 @@
-export default function Input({ value, onChange, placeholder, style }) {
+// frontend/src/components/primitives/Input.jsx
+
+export default function Input({ value, onChange, placeholder, className = "", style = {} }) {
   return (
     <input
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      style={{
-        padding: "10px 12px",
-        borderRadius: 6,
-        border: "1px solid #ccc",
-        fontSize: 14,
-        width: "100%",
-        ...style
-      }}
+      style={style}
+      className={`w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${className}`}
     />
   );
 }
