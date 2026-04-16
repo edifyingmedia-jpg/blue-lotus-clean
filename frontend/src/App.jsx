@@ -30,16 +30,19 @@ function App() {
   // -----------------------------
   // THEME
   // -----------------------------
-  const theme = {
-  background: darkMode ? "#1A1A1A" : "#FFFDF8",      // warm cream
-  surface: darkMode ? "#2A2A2A" : "#FFFFFF",         // soft white
-  surfaceSoft: darkMode ? "#242424" : "#FFF7F2",     // peach‑cream
-  text: darkMode ? "#F5F5F5" : "#4A4A4A",            // warm gray
-  textSoft: darkMode ? "#CFCFCF" : "#7A7A7A",        // soft warm gray
-  border: darkMode ? "#3A3A3A" : "#F0E6DD",          // warm beige border
-  primary: "#FF7AC3",                                // Loveable pink
-  primarySoft: "rgba(255, 122, 195, 0.18)",          // soft pink glow
+ const theme = {
+  background: darkMode ? "#0E0E12" : "#FAFAFF",        // clean pastel white
+  surface: darkMode ? "#1A1A22" : "#FFFFFF",          // crisp white
+  surfaceSoft: darkMode ? "#14141A" : "#F5F3FF",      // lavender mist
+  text: darkMode ? "#F5F5F7" : "#4A4A4A",             // soft gray
+  textSoft: darkMode ? "#CFCFD4" : "#6E6E6E",         // muted gray
+  border: darkMode ? "#2A2A33" : "#E8E4FF",           // lavender border
+  primary: "#FF8CCF",                                 // Loveable pink
+  primarySoft: "rgba(255, 140, 207, 0.22)",           // soft pink glow
+  accentBlue: "#AEE4FF",                              // sky blue accent
+  accentPurple: "#C7A4FF"                             // neon lavender
 };
+
 
   // -----------------------------
   // HEALING UPLOAD
