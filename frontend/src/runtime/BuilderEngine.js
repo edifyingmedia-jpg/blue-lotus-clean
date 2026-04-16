@@ -1,29 +1,31 @@
 // frontend/src/runtime/BuilderEngine.js
+import generateId from './utils/generateId';
 
+/**
+ * The "Blueprinting Station": Translates high-level AI/User specs 
+ * into a structured, renderable application definition.
+ */
 export default class BuilderEngine {
   /**
-   * Convert a high-level spec into an app definition.
-   * This is intentionally minimal until the full builder is implemented.
+   * Convert a high-level spec into a hardened app definition.
    */
   async build(spec) {
     if (!spec || typeof spec !== "object") {
       throw new Error("BuilderEngine.build: spec must be an object.");
     }
 
+    // Ensures that even minimal specs result in a valid, timestamped blueprint
     const appDefinition = {
-      id: spec.id || this._generateId(),
-      name: spec.name || "Untitled App",
+      id: spec.id || generateId('app'),
+      name: spec.name || "Untitled Project",
       pages: Array.isArray(spec.pages) ? spec.pages : [],
-      createdAt: Date.now(),
+      metadata: {
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        version: "1.0.0"
+      }
     };
 
     return appDefinition;
-  }
-
-  /**
-   * Simple unique ID generator.
-   */
-  _generateId() {
-    return "app-" + Math.random().toString(36).slice(2);
   }
 }
