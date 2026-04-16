@@ -1,18 +1,28 @@
+// frontend/src/runtime/index.js
+
+// --- Core Logic & Engines ---
 export { default as ActionDispatcher } from "./ActionDispatcher";
 export { default as ActionEngine } from "./ActionEngine";
-export { default as AppDefinitionValidator } from "./AppDefinitionValidator";
-export { default as AppRenderer } from "./AppRenderer";
-export { default as CanvasRenderer } from "./CanvasRenderer";
-export { default as ComponentRegistry } from "./ComponentRegistry";
-export { default as ComponentRenderer } from "./ComponentRenderer";
-export { default as LivePreview } from "./LivePreview";
 export { default as NavigationEngine } from "./NavigationEngine";
-export { default as PageRenderer } from "./PageRenderer";
-export { default as PreviewHost } from "./PreviewHost";
-export { default as ProjectLoader } from "./ProjectLoader";
-export { default as RenderScreen } from "./RenderScreen";
-export { default as RuntimeApp } from "./RuntimeApp";
-export { default as RuntimeContext } from "./RuntimeContext";
 export { default as StateEngine } from "./StateEngine";
 export { default as StateManager } from "./StateManager";
+export { default as RuntimeEngine } from "./RuntimeEngine";
+
+// --- Components & Rendering ---
+export { default as AppRenderer } from "./AppRenderer";
+export { default as CanvasRenderer } from "./CanvasRenderer";
+export { default as ComponentRenderer } from "./ComponentRenderer";
+export { default as PageRenderer } from "./PageRenderer";
+export { default as RenderScreen } from "./RenderScreen";
+export { default as RuntimeApp } from "./RuntimeApp";
+
+// --- Infrastructure & Safety ---
+export { default as AppDefinitionValidator } from "./AppDefinitionValidator";
+export { default as ComponentRegistry } from "./ComponentRegistry";
+export { default as PreviewHost } from "./PreviewHost";
+export { default as ProjectLoader } from "./ProjectLoader";
+export { default as LivePreview } from "./LivePreview";
+export { default as RuntimeContext, useRuntime } from "./RuntimeContext";
+
+// --- Utilities ---
 export { default as resolveNode } from "./resolveNode";
