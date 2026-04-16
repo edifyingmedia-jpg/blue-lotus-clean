@@ -1,90 +1,51 @@
-// frontend/src/twin/interpretCommand.js
-
 /**
  * TWIN Command Interpreter
- * Converts natural language into structured commands
- * for the Blue Lotus TWIN engine.
+ * Bridges the frontend to the Vercel AI backend.
  */
-
-export default function interpretCommand(input) {
+export default async function interpretCommand(input) {
   if (!input || typeof input !== "string") {
     return { type: "invalid", reason: "Input must be a string." };
   }
 
   const text = input.trim();
-  const lower = text.toLowerCase();
+  
+  try {
+    // 1. Send the command to your Vercel AI endpoint
+    const response = await fetch('/api/twin-brain', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: "user", content: text }
+        ]
+      })
+    });
 
-  // ----------------------------------------
-  // BUILD APP
-  // ----------------------------------------
-  if (lower.startsWith("build app")) {
+    if (!response.ok) {
+      throw new Error(`Server responded with ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // 2. Return the structured response from the AI
+    // We assume the AI returns a JSON string that we need to parse
+    try {
+      return typeof data.reply === 'string' ? JSON.parse(data.reply) : data.reply;
+    } catch (parseError) {
+      // Fallback if the AI returns plain text instead of structured JSON
+      return {
+        type: "chat",
+        prompt: data.reply
+      };
+    }
+
+  } catch (err) {
+    console.error("Connection to TWIN failed:", err);
     return {
-      type: "build_app",
-      spec: {
-        name: extractName(text, "build app"),
-        pages: []
-      }
+      type: "error",
+      message: "The neural engine is currently offline."
     };
   }
-
-  // ----------------------------------------
-  // RUN APP
-  // ----------------------------------------
-  if (lower.startsWith("run app")) {
-    const parts = lower.split(" ");
-    const appId = parts[2] || null;
-
-    return {
-      type: "run_app",
-      appId
-    };
-  }
-
-  // ----------------------------------------
-  // ACTION INSIDE APP
-  // Example: "in app 123 click button Save"
-  // ----------------------------------------
-  if (lower.startsWith("in app")) {
-    const parts = lower.split(" ");
-    const appId = parts[2] || null;
-
-    const actionText = text.substring(text.indexOf(parts[3]));
-    return {
-      type: "action",
-      appId,
-      actionName: "natural_language",
-      payload: { text: actionText }
-    };
-  }
-
-  // ----------------------------------------
-  // BUILD MODE (explicit)
-  // "build:" or "generate app:"
-  // ----------------------------------------
-  if (lower.startsWith("build:") || lower.startsWith("generate app:")) {
-    return {
-      type: "build_app",
-      spec: {
-        name: "Generated App",
-        prompt: text
-      }
-    };
-  }
-
-  // ----------------------------------------
-  // DEFAULT → CHAT MODE
-  // ----------------------------------------
-  return {
-    type: "chat",
-    prompt: text
-  };
-}
-
-/**
- * Extracts a name after a command prefix.
- * Example: "build app My Store" → "My Store"
- */
-function extractName(full, prefix) {
-  const raw = full.substring(prefix.length).trim();
-  return raw.length > 0 ? raw : "Untitled App";
 }
