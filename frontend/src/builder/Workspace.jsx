@@ -1,5 +1,4 @@
 // frontend/src/builder/Workspace.jsx
-
 import React, { useState } from "react";
 import TwinPanel from "../twin/TwinPanel";
 import CanvasRenderer from "../runtime/CanvasRenderer";
@@ -9,68 +8,39 @@ export default function Workspace() {
   const [app, setApp] = useState(null);
 
   return (
-    <div style={styles.shell}>
-      <header style={styles.header}>
-        <strong>Blue Lotus Workspace</strong>
-        <span style={{ color: "#94a3b8" }}>Architect Mode</span>
+    <div className="h-screen flex flex-col bg-slate-950 font-sans text-slate-200">
+      {/* HEADER */}
+      <header className="h-12 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+          <strong className="text-xs font-black uppercase tracking-widest text-white">
+            Blue Lotus Workspace
+          </strong>
+        </div>
+        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
+          Architect Mode
+        </span>
       </header>
 
-      <div style={styles.body}>
-        <aside style={styles.left}>
+      {/* MAIN WORKSPACE BODY */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* LEFT: TWIN AI CONTROL */}
+        <aside className="w-[340px] bg-slate-900 border-r border-slate-800 p-3 overflow-y-auto custom-scrollbar">
           <TwinPanel onBuild={setApp} />
         </aside>
 
-        <aside style={styles.components}>
+        {/* MIDDLE: COMPONENT LIBRARY */}
+        <aside className="w-[260px] bg-slate-900/50 border-r border-slate-800 overflow-y-auto">
           <ComponentPanel />
         </aside>
 
-        <main style={styles.right}>
-          <CanvasRenderer app={app} />
+        {/* RIGHT: LIVE CANVAS */}
+        <main className="flex-1 bg-[#020202] overflow-auto p-4 relative">
+          <div className="h-full w-full rounded-xl border border-slate-800/40 overflow-hidden shadow-2xl">
+            <CanvasRenderer app={app} />
+          </div>
         </main>
       </div>
     </div>
   );
 }
-
-const styles = {
-  shell: {
-    height: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    background: "#0f172a"
-  },
-  header: {
-    height: "48px",
-    background: "#020617",
-    color: "#e5e7eb",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 16px",
-    borderBottom: "1px solid #1e293b"
-  },
-  body: {
-    flex: 1,
-    display: "flex",
-    overflow: "hidden"
-  },
-  left: {
-    width: "340px",
-    background: "#020617",
-    borderRight: "1px solid #1e293b",
-    padding: "12px",
-    overflowY: "auto"
-  },
-  components: {
-    width: "260px",
-    background: "#f7f7f7",
-    borderRight: "1px solid #ddd",
-    overflowY: "auto"
-  },
-  right: {
-    flex: 1,
-    background: "#0f172a",
-    overflow: "auto",
-    padding: "16px"
-  }
-};
