@@ -1,11 +1,13 @@
 // frontend/src/components/index.js
 
-export { default as ComponentRenderer } from "./ComponentRenderer.jsx";
+// 1. Core Logic & Registry
+export { default as componentRegistry } from "./ComponentRegistry";
+export { default as ComponentRenderer } from "./ComponentRenderer";
+export { default as LivePreview } from "./LivePreview";
 
-// Correct default export import — ComponentRegistry.js does NOT have a named export
-export { default as componentRegistry } from "./ComponentRegistry.js";
+// 2. Editor Panels
+export { default as ComponentPanel } from "./ComponentPanel";
+export { default as Inspector } from "./Inspector";
 
-export default {
-  ComponentRenderer: require("./ComponentRenderer.jsx").default,
-  componentRegistry: require("./ComponentRegistry.js").default,
-};
+// 3. High-Level Components
+export { default as Card } from "./Card";
