@@ -5,15 +5,12 @@
  * This ensures templates follow a consistent structure
  * and can be validated by CI and TWIN at runtime.
  */
-
-module.exports = {
+export const builderSpecSchema = {
   required: ["name", "label", "description", "manifest", "tokens", "nodes"],
-
   fields: {
     name: { type: "string" },
     label: { type: "string" },
     description: { type: "string" },
-
     manifest: {
       type: "array",
       items: {
@@ -27,11 +24,7 @@ module.exports = {
         }
       }
     },
-
-    tokens: {
-      type: "object"
-    },
-
+    tokens: { type: "object" },
     nodes: {
       type: "array",
       items: {
@@ -45,3 +38,5 @@ module.exports = {
     }
   }
 };
+
+export default builderSpecSchema;
