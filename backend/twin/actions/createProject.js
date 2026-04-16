@@ -1,10 +1,8 @@
 // backend/twin/actions/createProject.js
-
 /**
  * createProject (Backend Action)
- * Creates a new project in Supabase.
+ * Creates a new project in Supabase and returns the database record.
  */
-
 import { supabase } from "../supabase.js";
 
 /**
@@ -17,7 +15,6 @@ export async function createProject({ name, ownerId }) {
   if (!name) {
     throw new Error("Missing project name");
   }
-
   if (!ownerId) {
     throw new Error("Missing ownerId");
   }
@@ -29,16 +26,20 @@ export async function createProject({ name, ownerId }) {
     updated_at: new Date().toISOString()
   };
 
+  // 1. Insert the project into the 'projects' table
   const { data, error } = await supabase
     .from("projects")
     .insert(newProject)
-    .select()
+    .select() // Ensures we get the created record (including its new ID) back
     .single();
 
+  // 2. Error handling specifically for Supabase
   if (error) {
-    throw new Error("Supabase error: " + error.message);
+    console.error("Supabase Project Creation Error:", error);
+    throw new Error(`Supabase error: ${error.message}`);
   }
 
+  // 3. Return the project data for the frontend/brain to use
   return {
     ok: true,
     project: data,
