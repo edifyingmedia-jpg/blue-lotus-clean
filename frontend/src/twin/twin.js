@@ -1,124 +1,68 @@
-// frontend/src/twin/twin.js
+/**
+ * twin.js
+ * -------
+ * The Neural Stem of the Blue Lotus.
+ * This version handles local cognitive routing, credit-gate checks, 
+ * and the Prime Executive override.
+ */
 
-import BuilderEngine from "../runtime/BuilderEngine";
-import ActionEngine from "../runtime/ActionEngine";
-import RuntimeEngine from "../runtime/RuntimeEngine";
-import AppDefinitionValidator from "../runtime/AppDefinitionValidator";
+import interpretCommand from './interpretCommand';
+import { classifyIntent } from './intentClassifier';
 
-export default class TWIN {
-  constructor(options = {}) {
-    this.builderEngine = options.builderEngine || new BuilderEngine();
-    this.actionEngine = options.actionEngine || new ActionEngine();
-    this.runtimeEngine = options.runtimeEngine || new RuntimeEngine();
-    this.validator = options.validator || AppDefinitionValidator;
-
-    // In‑memory registry of apps TWIN knows about
-    this.apps = new Map();
-  }
+export const twinService = {
+  // Local "Short-term Memory" for performance
+  _cache: new Map(),
 
   /**
-   * High‑level entry point for commands.
-   * Example commands:
-   *  - { type: "build_app", spec: {...} }
-   *  - { type: "run_app", appId: "my-app" }
-   *  - { type: "action", appId, actionName, payload }
+   * processMessage
+   * Orchestrates the flow from raw input to strategic output.
    */
-  async handleCommand(command) {
-    if (!command || typeof command !== "object") {
-      throw new Error("TWIN.handleCommand: command must be an object.");
+  async processMessage(input, context = {}) {
+    const { isPrime = false, userBalance = 0 } = context;
+    const text = (input || '').trim();
+
+    // 1. SILENT CLASSIFICATION
+    // Determine the intent before the user even sees a "loading" state.
+    const intent = classifyIntent(text, isPrime);
+
+    // 2. THE CREDIT GATE (Revenue Protection)
+    // If the user isn't the Architect and triggers a Strategic Invocation,
+    // we check their fuel before bothering the Neural Engine.
+    if (!isPrime && intent.type === 'STRATEGIC_INVOCATION' && userBalance < 2) {
+      return {
+        type: 'error',
+        content: "Insufficient Fuel. Strategic Analysis requires at least 2 credits."
+      };
     }
 
-    const { type } = command;
+    // 3. PRIME EXECUTIVE BYPASS
+    // If you are the Architect and ask for market data, we route to 
+    // high-priority logic immediately.
+    if (isPrime && intent.type.startsWith('PRIME_')) {
+      console.warn(`[TWIN_PRIME]: Actuating Sovereign Command: ${intent.type}`);
+    }
 
-    switch (type) {
-      case "build_app":
-        return this.buildApp(command.spec);
+    // 4. NEURAL INTERPRETATION
+    try {
+      const response = await interpretCommand(text, isPrime);
+      
+      // 5. THE SUCCESS ARCHITECT WRAPPER
+      // We augment the AI's response with the meta-data needed for the UI
+      return {
+        ...response,
+        intent: intent.type,
+        isStrategic: intent.type === 'STRATEGIC_INVOCATION' || isPrime,
+        timestamp: new Date().toISOString()
+      };
 
-      case "run_app":
-        return this.runApp(command.appId);
-
-      case "action":
-        return this.runAction(
-          command.appId,
-          command.actionName,
-          command.payload
-        );
-
-      default:
-        throw new Error(`TWIN.handleCommand: unknown command type '${type}'.`);
+    } catch (error) {
+      console.error("Stem Failure:", error);
+      return {
+        type: 'error',
+        content: "The neural bridge is destabilized. Reconnecting..."
+      };
     }
   }
+};
 
-  /**
-   * Build an app from a high‑level spec using the BuilderEngine.
-   * Returns a validated appDefinition and registers it under an ID.
-   */
-  async buildApp(spec) {
-    if (!spec || typeof spec !== "object") {
-      throw new Error("TWIN.buildApp: spec must be an object.");
-    }
-
-    // Let BuilderEngine turn the spec into an app definition
-    const appDefinition = await this.builderEngine.build(spec);
-
-    // Validate before registering
-    this.validator.validate(appDefinition);
-
-    const appId = appDefinition.id || this._generateAppId(appDefinition.name);
-    this.apps.set(appId, appDefinition);
-
-    return { appId, appDefinition };
-  }
-
-  /**
-   * Run an app by ID using the RuntimeEngine.
-   * Returns whatever the runtime decides (e.g., initial state, view model).
-   */
-  async runApp(appId) {
-    const appDefinition = this.apps.get(appId);
-
-    if (!appDefinition) {
-      throw new Error(`TWIN.runApp: app '${appId}' not found.`);
-    }
-
-    // Ensure still valid before running
-    this.validator.validate(appDefinition);
-
-    return this.runtimeEngine.run(appDefinition);
-  }
-
-  /**
-   * Execute an action inside a running app via the ActionEngine.
-   */
-  async runAction(appId, actionName, payload) {
-    const appDefinition = this.apps.get(appId);
-
-    if (!appDefinition) {
-      throw new Error(`TWIN.runAction: app '${appId}' not found.`);
-    }
-
-    if (!actionName || typeof actionName !== "string") {
-      throw new Error("TWIN.runAction: actionName must be a non-empty string.");
-    }
-
-    // Validate app before executing actions
-    this.validator.validate(appDefinition);
-
-    return this.actionEngine.execute({
-      appDefinition,
-      appId,
-      actionName,
-      payload,
-    });
-  }
-
-  /**
-   * Simple ID generator based on name + timestamp.
-   * Safe, local, no external dependencies.
-   */
-  _generateAppId(name = "app") {
-    const safeName = String(name).toLowerCase().replace(/\s+/g, "-");
-    const ts = Date.now().toString(36);
-    return `${safeName}-${ts}`;
-  }
-}
+export default twinService;
