@@ -1,21 +1,21 @@
 {
   "name": "basic-builder",
-  "label": "Blue Lotus Starter",
-  "description": "A high-performance Tailwind starter template.",
+  "label": "Blue Lotus Architect Starter",
+  "description": "Premium neural-grid starter for high-end AI applications.",
   "manifest": [
-    { "name": "View", "label": "Layout Box", "description": "Flexbox container for layout." },
-    { "name": "Container", "label": "Page Wrapper", "description": "Centered content container." },
-    { "name": "Text", "label": "Typography", "description": "Heading or paragraph text." },
-    { "name": "Button", "label": "Action Button", "description": "Interactive click element." },
-    { "name": "Input", "label": "Data Input", "description": "Text input field." },
-    { "name": "Spacer", "label": "Spacing", "description": "Vertical or horizontal gap." }
+    { "name": "View", "label": "Structure Box" },
+    { "name": "Container", "label": "Architectural Wrapper" },
+    { "name": "Text", "label": "Typography Node" },
+    { "name": "Button", "label": "Action Trigger" },
+    { "name": "Input", "label": "Data Portal" },
+    { "name": "Spacer", "label": "Void Spacing" }
   ],
   "tokens": {
     "theme": "dark",
     "colors": {
-      "background": "bg-slate-950",
-      "surface": "bg-slate-900",
-      "primary": "blue-600",
+      "background": "bg-[#09090B]",
+      "surface": "bg-[#0F0F14]",
+      "primary": "cyan-500",
       "text": "text-slate-200"
     }
   },
@@ -23,18 +23,34 @@
     {
       "id": "root-1",
       "type": "Container",
-      "props": { "className": "py-10" },
+      "props": { "className": "py-20 px-6 max-w-5xl mx-auto" },
       "children": [
         {
           "type": "Text",
-          "props": { "as": "h1", "className": "text-4xl font-bold mb-4", "children": "New Project" }
+          "props": { 
+            "as": "h1", 
+            "className": "text-6xl font-black tracking-tighter mb-6 text-white leading-none", 
+            "children": "PROJECT_ZERO" 
+          }
         },
         {
           "type": "View",
-          "props": { "direction": "row", "gap": "4" },
+          "props": { "direction": "row", "gap": "6", "className": "items-center" },
           "children": [
-            { "type": "Button", "props": { "label": "Get Started", "className": "bg-blue-600 text-white" } },
-            { "type": "Button", "props": { "label": "Documentation", "className": "border border-slate-700" } }
+            { 
+              "type": "Button", 
+              "props": { 
+                "label": "INITIATE SESSION", 
+                "className": "bg-white text-black px-8 py-4 rounded-xl font-bold tracking-widest text-xs" 
+              } 
+            },
+            { 
+              "type": "Button", 
+              "props": { 
+                "label": "VIEW ARCHITECTURE", 
+                "className": "border border-white/10 text-slate-400 px-8 py-4 rounded-xl text-xs tracking-widest hover:text-white transition-colors" 
+              } 
+            }
           ]
         }
       ]
