@@ -1,16 +1,11 @@
-export default function Button({ label, onClick, style }) {
+// frontend/src/components/primitives/Button.jsx
+
+export default function Button({ label, onClick, className = "", style = {} }) {
   return (
     <button
       onClick={onClick}
-      style={{
-        padding: "10px 16px",
-        borderRadius: 6,
-        border: "1px solid #ccc",
-        background: "#f5f5f5",
-        cursor: "pointer",
-        fontSize: 14,
-        ...style
-      }}
+      style={style}
+      className={`px-4 py-2 rounded-md border border-gray-300 bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors cursor-pointer text-sm font-medium text-gray-700 ${className}`}
     >
       {label}
     </button>
