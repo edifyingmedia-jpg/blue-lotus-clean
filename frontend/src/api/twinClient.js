@@ -1,23 +1,22 @@
 const twinClient = {
   generate: async ({ prompt, contract }) => {
-    // This points to the new /api route we just set up in Vercel
-    const response = await fetch('/api/twin-brain', {
+    const response = await fetch('/api/twin-brain', { // Double-check this filename!
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json' 
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt,
         systemContext: contract
       }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.details || 'ACTUATION_OFFLINE');
+      // Use the 'details' field if the AI error handling provides it
+      throw new Error(data.details || data.error || 'ACTUATION_OFFLINE');
     }
-    
-    return await response.json();
+
+    return data;
   }
 };
 
