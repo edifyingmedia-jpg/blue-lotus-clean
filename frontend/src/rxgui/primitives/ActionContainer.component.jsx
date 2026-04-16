@@ -1,28 +1,31 @@
+// frontend/src/rxgui/primitives/ActionContainer.component.jsx
 import React from "react";
 
+/**
+ * ActionContainer (Empire Edition)
+ * -------------------------------
+ * The primary structural vessel for Blue Lotus layouts.
+ * Enforces the Ink & Cyan spacing system and layout integrity.
+ */
 export default function ActionContainer({
   children,
-  padding = "12px",
-  margin = "0 0 16px 0",
-  background = "transparent",
-  border = "none",
-  borderRadius = 6,
-  width = "100%",
-  height = "auto",
+  type = "flex", // flex, grid, or stack
+  gap = "gap-6",
 }) {
+  const layoutBase = "w-full mb-8 relative transition-all duration-300";
+  
+  const layoutTypes = {
+    flex: "flex flex-wrap items-center",
+    grid: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+    stack: "flex flex-col space-y-4"
+  };
+
   return (
-    <div
-      style={{
-        padding,
-        margin,
-        background,
-        border,
-        borderRadius,
-        width,
-        height,
-        boxSizing: "border-box",
-      }}
-    >
+    <div className={`${layoutBase} ${layoutTypes[type] || layoutTypes.flex} ${gap}`}>
+      {/* 10% ARCHITECT ANCHOR: 
+          This container ensures all child elements stay within 
+          the Empire's visual boundaries. 
+      */}
       {children}
     </div>
   );
