@@ -1,65 +1,80 @@
-/* Container */
+/* Container: Constrained to Sidebar dimensions */
 .twin-panel {
-  height: 100vh;
-  width: 100vw;
-  background: #0d0d0d;
-  color: white;
+  height: 100%;
+  width: 360px; /* Fixed width for the Command Center */
+  background: #09090b; /* Deep Obsidian */
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
-  padding: 1rem;
   box-sizing: border-box;
+  font-family: 'JetBrains Mono', monospace; /* Ensures technical personality */
 }
 
-/* Message list */
+/* Message Feed: Pure Scroll logic */
 .twin-messages {
   flex: 1;
   overflow-y: auto;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
-/* User bubble */
+/* User Bubble: Aligned Right */
 .twin-msg-user {
   align-self: flex-end;
-  background: #4a90e2;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.8);
   padding: 0.75rem 1rem;
-  border-radius: 8px;
-  max-width: 70%;
+  border-radius: 12px 12px 2px 12px;
+  max-width: 85%;
+  font-size: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* AI bubble */
+/* AI Bubble: Aligned Left with Cyan/Purple accents */
 .twin-msg-ai {
   align-self: flex-start;
-  background: #222;
+  background: rgba(6, 182, 212, 0.05); /* Subtle Cyan glow */
+  color: #cffafe;
   padding: 0.75rem 1rem;
-  border-radius: 8px;
-  max-width: 70%;
+  border-radius: 12px 12px 12px 2px;
+  max-width: 85%;
+  font-size: 11px;
+  border: 1px solid rgba(6, 182, 212, 0.1);
 }
 
-/* Input row */
+/* Prime State Modifier */
+.twin-panel.prime-mode .twin-msg-ai {
+  background: rgba(168, 85, 247, 0.05); /* Subtle Purple glow for Prime */
+  border-color: rgba(168, 85, 247, 0.2);
+  color: #f3e8ff;
+}
+
+/* Input Section */
 .twin-input-row {
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: 0.75rem;
 }
 
-/* Input box */
 .twin-input {
   flex: 1;
-  padding: 0.75rem;
-  border-radius: 6px;
-  border: 1px solid #444;
-  background: #111;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  padding: 0.6rem 1.25rem;
   color: white;
+  font-size: 11px;
+  transition: all 0.2s ease;
 }
 
-/* Send button */
-.twin-send-btn {
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  background: #4a90e2;
-  color: white;
-  border: none;
-  cursor: pointer;
+.twin-input:focus {
+  outline: none;
+  border-color: rgba(6, 182, 212, 0.4);
+  background: rgba(255, 255, 255, 0.05);
 }
