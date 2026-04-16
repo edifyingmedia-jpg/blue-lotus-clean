@@ -4,12 +4,13 @@ const AppDefinitionContext = createContext();
 
 export const AppDefinitionProvider = ({ children }) => {
   const [manifest, setManifest] = useState({ nodes: [] });
-  const [history, setHistory] = useState([]); 
+  const [history, setHistory] = useState([]); // THE TEMPORAL STACK
 
   const updateManifest = useCallback((newNodes) => {
-    // SAVE_TEMPORAL_POINT: Deep clone current state into history before update
+    // 1. Snapshot the current state before the change (Temporal Point)
     setHistory((prev) => [...prev, JSON.parse(JSON.stringify(manifest))]);
     
+    // 2. Apply the new nodes to the manifest
     setManifest((prev) => ({
       ...prev,
       nodes: [...prev.nodes, ...newNodes],
@@ -17,7 +18,10 @@ export const AppDefinitionProvider = ({ children }) => {
   }, [manifest]);
 
   const undoActuation = useCallback(() => {
-    if (history.length === 0) return;
+    if (history.length === 0) {
+      console.warn("TEMPORAL_ERROR: No prior states detected in the stack.");
+      return;
+    }
     
     const previousState = history[history.length - 1];
     setManifest(previousState);
