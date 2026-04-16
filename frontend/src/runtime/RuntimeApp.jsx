@@ -1,61 +1,29 @@
-import React, { useEffect, useState } from "react";
-import RenderScreen from "./RenderScreen";
+// frontend/src/runtime/RuntimeApp.jsx
+import React, { Suspense } from "react";
+import { useRuntime } from "./RuntimeContext";
+import PageRenderer from "./PageRenderer";
 
 /**
- * RuntimeApp
- * ----------------------------------------------------
- * React host for a running app.
- * Subscribes to RuntimeEngine and renders the active screen.
+ * The Root Container for the rendered application.
  */
+export default function RuntimeApp() {
+  const { navigation, stateEngine } = useRuntime();
+  const [current, setCurrent] = React.useState(navigation.current);
 
-export default function RuntimeApp({ runtimeEngine }) {
-  const [snapshot, setSnapshot] = useState(() =>
-    runtimeEngine.getSnapshot()
-  );
+  // Sync React state with the Navigation Engine
+  React.useEffect(() => {
+    return navigation.subscribe((nav) => setCurrent({ ...nav }));
+  }, [navigation]);
 
-  useEffect(() => {
-    // Subscribe to runtime updates
-    const unsubscribe = runtimeEngine.subscribe((next) => {
-      setSnapshot(next);
-    });
-
-    return unsubscribe;
-  }, [runtimeEngine]);
-
-  const { screen, params, appDefinition } = snapshot;
-
-  if (!appDefinition) {
-    return (
-      <div style={{ padding: 20, color: "#999" }}>
-        No app loaded.
-      </div>
-    );
-  }
-
-  if (!screen) {
-    return (
-      <div style={{ padding: 20, color: "#999" }}>
-        No screen selected.
-      </div>
-    );
-  }
-
-  const screenDef = appDefinition.pages?.find((p) => p.id === screen);
-
-  if (!screenDef) {
-    return (
-      <div style={{ padding: 20, color: "red" }}>
-        Screen not found: {screen}
-      </div>
-    );
-  }
+  const appDefinition = stateEngine.get();
+  const activePage = appDefinition?.pages?.find(p => p.id === current.screen) 
+    || appDefinition?.pages?.[0];
 
   return (
-    <RenderScreen
-      screen={{
-        ...screenDef,
-        params: params || {},
-      }}
-    />
+    <div className="runtime-app-root w-full h-full bg-white text-gray-900">
+      <Suspense fallback={<div className="p-10 animate-pulse">Loading UI...</div>}>
+        <PageRenderer page={activePage} />
+      </Suspense>
+    </div>
   );
 }
