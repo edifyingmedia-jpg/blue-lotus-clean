@@ -1,67 +1,42 @@
 // frontend/src/runtime/ComponentRenderer.jsx
-
-import React from "react";
+import React, { useMemo } from "react";
 import { useRuntime } from "./RuntimeContext";
 import componentRegistry from "./ComponentRegistry";
-
-/**
- * ComponentRenderer
- * ----------------------------------------------------
- * Resolves a component definition into a real UI element.
- * Supports:
- *  - runtime context injection
- *  - action dispatching
- *  - nested children
- *  - registry-based component lookup
- */
 
 export default function ComponentRenderer({ component, screen }) {
   const { dispatcher, stateEngine } = useRuntime();
 
   if (!component || typeof component !== "object") {
-    return (
-      <div style={{ color: "red" }}>
-        Invalid component
-      </div>
-    );
+    return <div className="text-red-500">Invalid component structure</div>;
   }
 
   const { id, type, props = {}, children = [] } = component;
+  const Resolved = componentRegistry.getComponent(type);
 
-  // Resolve the actual React component from the registry
-  const Resolved = componentRegistry.get(type);
-
-  if (!Resolved) {
-    return (
-      <div style={{ color: "orange", padding: 8 }}>
-        Unknown component type: <strong>{type}</strong>
-      </div>
-    );
-  }
-
-  // Wrap event handlers so they dispatch actions
-  const wrappedProps = {
+  // Memoize props to prevent child re-renders unless the AI actually changes something
+  const wrappedProps = useMemo(() => ({
     ...props,
-    onClick: props.onClick
-      ? () => dispatcher.dispatch(props.onClick)
-      : props.onClick,
-    onChange: props.onChange
-      ? (e) => dispatcher.dispatch(props.onChange, e.target.value)
-      : props.onChange,
+    id,
+    onClick: props.onClick ? (e) => {
+      e?.stopPropagation(); // Prevent event bubbling in complex layouts
+      dispatcher.dispatch(props.onClick, { id, ...props });
+    } : undefined,
+    onChange: props.onChange ? (e) => {
+      dispatcher.dispatch(props.onChange, { value: e.target.value, id });
+    } : undefined,
     state: stateEngine.get(),
     screen,
-  };
+  }), [props, id, dispatcher, stateEngine, screen]);
 
   return (
     <Resolved {...wrappedProps}>
-      {Array.isArray(children) &&
-        children.map((child) => (
-          <ComponentRenderer
-            key={child.id}
-            component={child}
-            screen={screen}
-          />
-        ))}
+      {Array.isArray(children) && children.map((child) => (
+        <ComponentRenderer 
+          key={child.id || `child-${Math.random()}`} 
+          component={child} 
+          screen={screen} 
+        />
+      ))}
     </Resolved>
   );
 }
