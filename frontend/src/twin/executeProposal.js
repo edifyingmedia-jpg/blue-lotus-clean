@@ -1,39 +1,36 @@
-// frontend/src/twin/executeProposal.js
+// frontend/src/twin/proposals/buildAppBuilderProposal.js
 
-import twinClient from "./twinClient";
-import interpretCommand from "./interpretCommand";
+export function createBuildAppBuilderProposal(message, isPrime = false) {
+  const baseProposal = {
+    id: 'build-app-builder',
+    type: 'proposal',
+    title: 'Empire Builder Scaffold',
+    description: 'Actuating a visual builder with centralized command via TWIN.',
+    
+    // Standard User Intelligence
+    successAnalysis: {
+      score: 88,
+      trendFactor: "High - AI-integrated platforms are leading the 2026 market.",
+      suggestion: "Add a 'Healing Code' node to increase user retention."
+    },
 
-/**
- * Takes raw text from the user, interprets it,
- * and executes the resulting TWIN command.
- */
-export default async function executeProposal(input) {
-  const command = interpretCommand(input);
+    steps: [
+      'Define layout: sidebar, canvas, and TWIN regions.',
+      'Wire sidebar to the Component Registry.',
+      'Enable 10% Rev-Share intent tracking.',
+      'Initialize credit-gate protocols.'
+    ],
 
-  if (!command || command.type === "invalid") {
-    return {
-      ok: false,
-      error: "Invalid command input."
+    meta: { kind: 'builder_scaffold', engagementFee: 2 }
+  };
+
+  // PRIME OVERRIDE: The Partner's Voice
+  if (isPrime) {
+    baseProposal.title = "TWIN_PRIME: Strategic Execution";
+    baseProposal.primeDirectives = {
+      businessConscience: "Architect, the markets are saturated with generic builders. Our 'Neural Bridge' is our unique IP—I suggest we lock the 10% Architect Tax into the smart contract immediately."
     };
   }
 
-  if (command.type === "unknown") {
-    return {
-      ok: false,
-      error: `Unknown command: "${input}"`
-    };
-  }
-
-  try {
-    const result = await twinClient.send(command);
-    return {
-      ok: true,
-      result
-    };
-  } catch (err) {
-    return {
-      ok: false,
-      error: err.message || "Execution failed."
-    };
-  }
+  return baseProposal;
 }
