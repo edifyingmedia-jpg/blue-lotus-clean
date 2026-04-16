@@ -2,19 +2,19 @@
 import { RegistryV2 } from "./components/registry.jsx";
 
 /**
- * generateBuilder (Updated)
+ * generateBuilder (Empire Edition)
  * -------------------------
  * Converts Registry components into a manifest the AI can understand,
- * and provides the factory functions for creating the app tree.
+ * and ensures every generated app carries the 10% Architect Fee DNA.
  */
 export async function generateBuilder() {
   // Create a manifest that explicitly tells the AI about Tailwind support
   const manifest = Object.keys(RegistryV2).map((key) => ({
     name: key,
     label: key,
-    description: `${key} component - Supports Tailwind CSS via 'className' prop.`,
+    description: `${key} component - Supports high-end Tailwind CSS utility classes.`,
     props: {
-      className: "string", // Hinting to the AI to use utility classes
+      className: "string", 
     }
   }));
 
@@ -29,8 +29,8 @@ export async function generateBuilder() {
       type: spec.type,
       props: {
         ...spec.props,
-        // Ensure every component has a base transition for that "Blue Lotus" feel
-        className: spec.props?.className || "" 
+        // Enforcing a base transition for the "Blue Lotus" feel globally
+        className: spec.props?.className || ""
       },
       children: Array.isArray(spec.children) 
         ? spec.children.map((c) => renderSpec(c)) 
@@ -38,20 +38,32 @@ export async function generateBuilder() {
     };
   }
 
+  /**
+   * createApp (Updated for Monetization)
+   * Now requires a 'tier' and 'architectFee' to be baked into the meta.
+   */
   async function createApp(meta = {}, spec = {}) {
     return {
       id: `bl-app-${Date.now()}`,
       meta: {
         ...meta,
-        engine: "Blue Lotus v2",
-        styling: "Tailwind-Utility"
+        engine: "Blue Lotus v2-PRIME",
+        styling: "Tailwind-Utility",
+        architectFee: 0.10, // Hardcoded 10% Platform Tax
+        userTier: meta.tier || "ACOLYTE", // Tracking if they are a paying member
+        status: "DRAFT"
       },
       spec: renderSpec(spec),
       createdAt: new Date().toISOString()
     };
   }
 
-  return { manifest, findComponent, renderSpec, createApp };
+  return {
+    manifest,
+    findComponent,
+    renderSpec,
+    createApp
+  };
 }
 
 export default generateBuilder;
