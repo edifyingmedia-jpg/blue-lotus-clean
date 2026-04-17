@@ -10,7 +10,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "build": "vite build",
-    "install": "npm install --legacy-peer-deps"
+    "build": "npm run build --prefix frontend",
+    "install": "npm install --prefix frontend --legacy-peer-deps"
   }
 }
