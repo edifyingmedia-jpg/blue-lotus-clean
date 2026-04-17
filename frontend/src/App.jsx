@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, ArrowRight, Sparkles, Zap, ShieldCheck, Coins } from 'lucide-react';
 
@@ -6,6 +6,15 @@ const App = () => {
   const [stage, setStage] = useState("landing");
   const [billing, setBilling] = useState("monthly");
   const [prompt, setPrompt] = useState("");
+  const textareaRef = useRef(null);
+
+  // Auto-resize the textarea as the user types
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [prompt]);
 
   const calculatePrice = (base) => {
     if (billing === "monthly") return `$${base}`;
@@ -41,40 +50,58 @@ const App = () => {
         <button style={{ background: 'none', border: '1px solid #E5E7EB', padding: '0.5rem 1.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer', letterSpacing: '0.05em' }}>SIGN IN</button>
       </nav>
 
+      {/* CENTERED AREA: Now vertically balanced */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 2rem' }}>
         
-        {/* CENTERED CREATION SPACE */}
-        <div style={{ width: '100%', maxWidth: '1000px', textAlign: 'center', marginTop: '10vh' }}>
-          <h2 style={{ fontSize: '4.5rem', fontWeight: '800', letterSpacing: '-0.05em', color: '#111827', marginBottom: '3rem', lineHeight: '1.1' }}>
+        <div style={{ width: '100%', maxWidth: '950px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '4.2rem', fontWeight: '800', letterSpacing: '-0.05em', color: '#111827', marginBottom: '3rem', lineHeight: '1.1' }}>
             What shall we build today?
           </h2>
           
           <div style={{ 
             display: 'flex', 
+            flexDirection: 'column',
             border: '1px solid #D1D5DB', 
-            borderRadius: '8px', 
-            padding: '0.75rem', 
+            borderRadius: '12px', 
+            padding: '1rem', 
             backgroundColor: '#FFFFFF', 
             boxShadow: '0 20px 40px rgba(0,0,0,0.02)',
-            marginBottom: '2rem'
+            marginBottom: '2rem',
+            position: 'relative'
           }}>
-            <input 
-              type="text" 
-              placeholder="Describe your vision..." 
-              style={{ flex: 1, border: 'none', padding: '1.5rem 2rem', fontSize: '1.5rem', outline: 'none', color: '#374151', fontWeight: '300' }} 
+            {/* TEXTAREA: Allows multiple lines and keeps words visible */}
+            <textarea 
+              ref={textareaRef}
+              rows="1"
+              placeholder="Describe your vision in full detail..." 
+              style={{ 
+                width: '100%', 
+                border: 'none', 
+                padding: '1rem', 
+                fontSize: '1.5rem', 
+                outline: 'none', 
+                color: '#374151', 
+                fontWeight: '300', 
+                resize: 'none', 
+                overflow: 'hidden',
+                lineHeight: '1.4',
+                minHeight: '80px'
+              }} 
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
             />
-            <button 
-              onClick={() => setStage("workspace")} 
-              style={{ backgroundColor: '#2563EB', color: 'white', padding: '0 3.5rem', borderRadius: '4px', border: 'none', fontWeight: '800', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.75rem', textTransform: 'uppercase' }}
-            >
-              Build <ArrowRight size={20} />
-            </button>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem' }}>
+              <button 
+                onClick={() => setStage("workspace")} 
+                style={{ backgroundColor: '#2563EB', color: 'white', padding: '0.8rem 3.5rem', borderRadius: '4px', border: 'none', fontWeight: '800', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.75rem', textTransform: 'uppercase' }}
+              >
+                Build <ArrowRight size={20} />
+              </button>
+            </div>
           </div>
 
           {/* Billing Toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', marginBottom: '8rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', marginBottom: '10vh' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: billing === 'monthly' ? '700' : '400', color: billing === 'monthly' ? '#111827' : '#9CA3AF' }}>Monthly</span>
             <div 
               onClick={() => setBilling(billing === 'monthly' ? 'yearly' : 'monthly')} 
@@ -89,7 +116,7 @@ const App = () => {
         </div>
 
         {/* LOWER THIRD: Pricing & Bundles */}
-        <div style={{ display: 'flex', gap: '1.25rem', width: '100%', maxWidth: '1300px', paddingBottom: '5rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', width: '100%', maxWidth: '1400px', paddingBottom: '4rem' }}>
           {[
             { name: 'Explore', price: 'Free', credits: '10 Credits', features: ['Standard Access', 'Non-expiring'], icon: <Sparkles size={16} color="#9CA3AF"/> },
             { name: 'Pro', price: calculatePrice(9.99), credits: '100 Credits', features: ['Priority Core', 'Credit Rollover'], icon: <Zap size={16} color="#2563EB"/>, featured: true },
@@ -98,7 +125,7 @@ const App = () => {
             { name: 'Refuel', price: '$19.99', credits: '200 Credits', features: ['Instant Bundle', 'One-time Buy'], icon: <ArrowRight size={16} color="#8B5CF6"/> }
           ].map((tier, i) => (
             <div key={i} style={{ 
-              flex: 1, padding: '2rem 1.5rem', border: tier.featured ? '1.5px solid #2563EB' : '1px solid #F3F4F6', borderRadius: '4px', textAlign: 'left',
+              flex: 1, padding: '2rem 1.2rem', border: tier.featured ? '1.5px solid #2563EB' : '1px solid #F3F4F6', borderRadius: '4px', textAlign: 'left',
               backgroundColor: tier.featured ? '#F9FAFB' : 'white', display: 'flex', flexDirection: 'column'
             }}>
               <div style={{ marginBottom: '1.25rem' }}>{tier.icon}</div>
