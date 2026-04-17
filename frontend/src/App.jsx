@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-// DIRECT PATH IMPORTS (More stable for Vercel)
+// Using simplified paths to bypass Vercel's case-sensitivity glitch
 import BlueLotusLoader from './components/BlueLotusLoader.jsx'
 import AIPanel from './components/AIPanel.jsx'
 import PreviewPanel from './components/PreviewPanel.jsx'
@@ -76,7 +76,7 @@ export default function App() {
         animate={{ opacity: showLoader ? 0 : 1 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        <div className="w-1/2 h-full border-r border-white/5">
+        <div className="w-1/2 h-full border-r border-white/5 text-white">
           <AIPanel 
             onGenerate={handleBuildRequest} 
             isGenerating={appState.isGenerating}
@@ -84,7 +84,7 @@ export default function App() {
           />
         </div>
 
-        <div className="w-1/2 h-full bg-[#05050a]">
+        <div className="w-1/2 h-full bg-[#05050a] text-white">
           <PreviewPanel 
             appState={appState} 
             isGenerating={appState.isGenerating} 
