@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Send } from 'lucide-react'
+import { Send, Sparkles } from 'lucide-react'
 import LotusIcon from './LotusIcon'
 
 export default function AIPanel({ onGenerate, isGenerating, governanceMode }) {
@@ -10,52 +10,87 @@ export default function AIPanel({ onGenerate, isGenerating, governanceMode }) {
   ])
   const endRef = useRef(null)
 
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+  useEffect(() => { 
+    endRef.current?.scrollIntoView({ behavior: 'smooth' }) 
+  }, [messages])
 
   const send = () => {
     if (!input.trim() || isGenerating) return
-    setMessages([...messages, { role: 'user', content: input }])
+    const userMsg = { role: 'user', content: input }
+    setMessages(prev => [...prev, userMsg])
+    
+    // Trigger the build logic
     onGenerate({ id: Date.now(), name: input }, `Generating ${input}...`)
     setInput('')
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#0d0e1a] border-r border-white/5">
-      <div className="flex items-center gap-3 px-4 h-14 bg-[#0a0b14] border-b border-white/5">
-        <LotusIcon className={governanceMode ? "text-purple-400" : "text-blue-400"} size={24} />
+    <div className="bl-panel-split bg-[#0d0e1a] border-r border-white/5">
+      {/* Header */}
+      <div className="flex items-center gap-3 px-6 h-14 bg-[#0a0b14] border-b border-white/5">
+        <LotusIcon 
+          className={governanceMode ? "text-purple-400" : "text-blue-400"} 
+          size={24} 
+        />
         <div className="flex flex-col">
-          <span className="text-sm font-bold text-gray-200">{governanceMode ? 'TWIN Prime' : 'TWIN'}</span>
-          <span className="text-[10px] uppercase tracking-widest text-blue-500/80 font-bold">
-            {governanceMode ? 'Governess' : 'Master Builder'}
+          <span className="text-sm font-bold tracking-tight text-gray-200">
+            {governanceMode ? 'TWIN Prime' : 'TWIN'}
           </span>
+          <span className="text-[9px] uppercase tracking-[0.2em] text-blue-500/80 font-black">
+            {governanceMode ? 'Governess Mode' : 'Master Builder'}
+          </span>
+        </div>
+        
+        <div className="ml-auto flex items-center gap-2 px-2 py-1 rounded-full bg-green-500/5 border border-green-500/10">
+          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+          <span className="text-[8px] text-green-500 font-bold uppercase tracking-widest">Live</span>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[85%] p-3 rounded-2xl text-sm ${
-              msg.role === 'user' ? 'bg-blue-600/20 text-blue-50 border border-blue-500/20' : 'bg-white/5 text-gray-300 border border-white/10'
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
+              msg.role === 'user' 
+                ? 'bg-blue-600/10 text-blue-50 border border-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.05)]' 
+                : 'bg-white/5 text-gray-300 border border-white/5'
             }`}>
               {msg.content}
             </div>
-          </div>
+          </motion.div>
         ))}
+        {isGenerating && (
+          <div className="flex gap-1 p-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-500/40 animate-dot" style={{ animationDelay: '0s' }} />
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-500/40 animate-dot" style={{ animationDelay: '0.2s' }} />
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-500/40 animate-dot" style={{ animationDelay: '0.4s' }} />
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 
-      <div className="p-4 bg-[#0a0b14]">
-        <div className="relative border border-white/10 rounded-xl bg-white/5 focus-within:border-blue-500/50 transition-all">
+      {/* Input */}
+      <div className="p-6 bg-[#0a0b14]/50 backdrop-blur-xl">
+        <div className="relative border border-white/10 rounded-2xl bg-white/5 focus-within:border-blue-500/40 transition-all duration-500 group">
           <textarea 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), send())}
-            placeholder="Direct the Presence..."
-            className="w-full bg-transparent p-3 pr-12 text-sm text-gray-200 outline-none resize-none"
+            placeholder="Command the Presence..."
+            className="w-full bg-transparent p-4 pr-14 text-sm text-gray-200 outline-none resize-none placeholder:text-gray-600"
             rows={2}
           />
-          <button onClick={send} className="absolute bottom-2 right-2 p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500">
-            <Send size={16} />
+          <button 
+            onClick={send} 
+            className="absolute bottom-3 right-3 p-2.5 rounded-xl bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white border border-blue-500/20 transition-all active:scale-95"
+          >
+            <Send size={18} />
           </button>
         </div>
       </div>
