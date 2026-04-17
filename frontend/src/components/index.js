@@ -1,13 +1,17 @@
-// frontend/src/components/index.js
+/**
+ * THE SOVEREIGN COMPONENT MAP
+ * This file tells the App exactly where to find TWIN and the Forge.
+ */
 
-// 1. Core Logic & Registry
-export { default as componentRegistry } from "./ComponentRegistry";
-export { default as ComponentRenderer } from "./ComponentRenderer";
-export { default as LivePreview } from "./LivePreview";
+export { default as AIPanel } from './AIPanel';
+export { default as PreviewPanel } from './PreviewPanel';
+export { default as BlueLotusLoader } from './BlueLotusLoader';
 
-// 2. Editor Panels
-export { default as ComponentPanel } from "./ComponentPanel";
-export { default as Inspector } from "./Inspector";
+// UI Primitives
+export { default as Button } from './Button';
+export { default as Card } from './Card';
+export { default as LotusIcon } from './LotusIcon';
 
-// 3. High-Level Components
-export { default as Card } from "./Card";
+// Legacy components (kept for stability)
+export { default as ComponentPanel } from './ComponentPanel';
+export { default as Inspector } from './Inspector';
