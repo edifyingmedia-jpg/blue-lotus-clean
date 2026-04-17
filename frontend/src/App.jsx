@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-// Using simplified paths to bypass Vercel's case-sensitivity glitch
+/**
+ * SOVEREIGN APP CORE - PATH HARDENED VERSION
+ * Direct imports to bypass Vercel case-sensitivity glitches.
+ */
 import BlueLotusLoader from './components/BlueLotusLoader.jsx'
 import AIPanel from './components/AIPanel.jsx'
 import PreviewPanel from './components/PreviewPanel.jsx'
@@ -45,7 +48,7 @@ export default function App() {
         setFailCount(2)
         setAppState(prev => ({ 
           ...prev, 
-          isGenerating: false,
+          isGenerating: false, 
           lastAction: "Alternative logic applied." 
         }))
         return;
@@ -63,7 +66,7 @@ export default function App() {
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden flex bg-[#0a0b14]">
+    <div className="w-screen h-screen overflow-hidden flex bg-[#0a0b14] text-white">
       <AnimatePresence>
         {showLoader && (
           <BlueLotusLoader key="presence-loader" onComplete={handlePresenceInit} />
@@ -76,7 +79,8 @@ export default function App() {
         animate={{ opacity: showLoader ? 0 : 1 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        <div className="w-1/2 h-full border-r border-white/5 text-white">
+        {/* LEFT PANEL: TWIN PRESENCE */}
+        <div className="w-1/2 h-full border-r border-white/5">
           <AIPanel 
             onGenerate={handleBuildRequest} 
             isGenerating={appState.isGenerating}
@@ -84,7 +88,8 @@ export default function App() {
           />
         </div>
 
-        <div className="w-1/2 h-full bg-[#05050a] text-white">
+        {/* RIGHT PANEL: THE FORGE */}
+        <div className="w-1/2 h-full bg-[#05050a]">
           <PreviewPanel 
             appState={appState} 
             isGenerating={appState.isGenerating} 
