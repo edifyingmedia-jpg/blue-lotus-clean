@@ -10,6 +10,6 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "build": "cd frontend && npm install --legacy-peer-deps && npm run build"
+    "build": "npm run build --prefix frontend"
   }
 }
