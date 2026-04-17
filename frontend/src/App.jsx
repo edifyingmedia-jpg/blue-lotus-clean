@@ -1,97 +1,70 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Tablet as Lotus, Activity, Zap, ShieldCheck, Cpu } from 'lucide-react';
+import { Tablet as Lotus, Sparkles, User, ArrowRight } from 'lucide-react';
 
 const App = () => {
+  const [prompt, setPrompt] = useState("");
+
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-white flex flex-col items-center justify-center p-6 overflow-hidden relative">
-      {/* Dynamic Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px] animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-900/20 rounded-full blur-[120px]" />
-      
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        className="z-10 text-center w-full max-w-5xl"
-      >
-        <div className="flex justify-center mb-10">
-          <motion.div
-            animate={{ 
-              y: [0, -10, 0],
-              filter: ["drop-shadow(0 0 15px #a855f7)", "drop-shadow(0 0 30px #6366f1)", "drop-shadow(0 0 15px #a855f7)"],
-            }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="relative"
-          >
-            <Lotus size={80} className="text-indigo-400" strokeWidth={1.5} />
-            <div className="absolute -top-2 -right-2">
-              <SparkleIcon />
+    <div className="min-h-screen bg-[#0a0a0c] text-white flex flex-col font-sans overflow-hidden">
+      {/* Navigation */}
+      <nav className="p-6 flex justify-between items-center z-20">
+        <div className="flex items-center gap-2 italic font-black tracking-tighter text-xl">
+          <Lotus className="text-indigo-500" size={24} />
+          <span>BLUE LOTUS</span>
+        </div>
+        <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10 transition-all text-sm font-medium">
+          <User size={16} />
+          Sign In
+        </button>
+      </nav>
+
+      <main className="flex-1 flex flex-col items-center justify-center p-6 relative">
+        {/* Background Glows */}
+        <div className="absolute w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] -z-10" />
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-2xl text-center"
+        >
+          <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight italic">
+            Create <span className="text-indigo-500">anything.</span>
+          </h1>
+          <p className="text-gray-400 mb-12 tracking-wide text-sm md:text-base">
+            Type your vision. Watch the Sovereign Forge build it in real-time.
+          </p>
+
+          {/* THE PROMPT BOX */}
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+            <div className="relative flex items-center bg-[#121215] rounded-xl p-2 border border-white/10">
+              <input 
+                type="text"
+                placeholder="Describe the app you want to build..."
+                className="flex-1 bg-transparent border-none focus:ring-0 px-4 py-3 text-lg placeholder:text-gray-600"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+              />
+              <button className="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg transition-all flex items-center gap-2 font-bold px-6">
+                Build
+                <ArrowRight size={18} />
+              </button>
             </div>
-          </motion.div>
-        </div>
+          </div>
 
-        <h1 className="text-7xl font-black tracking-[0.15em] mb-2 bg-gradient-to-r from-indigo-300 via-purple-400 to-indigo-300 bg-clip-text text-transparent italic uppercase">
-          Blue Lotus
-        </h1>
-        
-        <div className="flex items-center justify-center gap-4 text-indigo-300/60 tracking-[0.4em] text-[10px] font-bold uppercase mb-16">
-          <span className="w-8 h-[1px] bg-indigo-500/30" />
-          <Activity size={12} className="text-purple-500 animate-pulse" />
-          <span>Neural Presence Synced</span>
-          <span className="w-8 h-[1px] bg-indigo-500/30" />
-        </div>
+          <div className="mt-8 flex justify-center gap-6 text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">
+            <span className="flex items-center gap-2"><Sparkles size={12}/> 10 Free Credits</span>
+            <span className="flex items-center gap-2 border-l border-white/10 pl-6">No-Code Output</span>
+          </div>
+        </motion.div>
+      </main>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
-          <FeatureCard 
-            icon={<Cpu size={20}/>} 
-            title="TWIN Governor" 
-            desc="The central AI authority managing memory and node networking."
-          />
-          <FeatureCard 
-            icon={<Zap size={20}/>} 
-            title="Sovereign Forge" 
-            desc="Rapid application synthesis with zero-latency deployment."
-          />
-          <FeatureCard 
-            icon={<ShieldCheck size={20}/>} 
-            title="The Lounge" 
-            desc="Secure ecosystem for creator testing and bug-bounty credits."
-          />
-        </div>
-      </motion.div>
-
-      <footer className="absolute bottom-10 flex flex-col items-center gap-2">
-        <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-gray-700 to-transparent mb-2" />
-        <p className="text-[9px] text-gray-500 uppercase tracking-[0.3em] font-medium">
-          Powered by Lumora // 2026 Edition
-        </p>
+      <footer className="p-8 text-center text-[9px] text-gray-600 tracking-[0.3em] uppercase">
+        Powered by Lumora Neural Engine
       </footer>
     </div>
   );
 };
-
-const FeatureCard = ({ icon, title, desc }) => (
-  <motion.div
-    whileHover={{ y: -5, backgroundColor: "rgba(255,255,255,0.05)" }}
-    className="p-8 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-xl text-left transition-all group cursor-pointer"
-  >
-    <div className="text-purple-500 mb-6 group-hover:scale-110 transition-transform duration-300">{icon}</div>
-    <h3 className="text-sm font-bold text-gray-200 mb-3 tracking-wide">{title}</h3>
-    <p className="text-xs text-gray-500 leading-relaxed font-medium">{desc}</p>
-  </motion.div>
-);
-
-const SparkleIcon = () => (
-  <motion.div
-    animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
-    transition={{ duration: 2, repeat: Infinity }}
-    className="text-purple-400"
-  >
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-    </svg>
-  </motion.div>
-);
 
 export default App;
