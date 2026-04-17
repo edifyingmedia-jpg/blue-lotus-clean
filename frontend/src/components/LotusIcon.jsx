@@ -2,13 +2,15 @@ import { motion } from 'framer-motion'
 
 export default function LotusIcon({ className, size = 22, ...props }) {
   return (
-    <svg
+    <motion.svg
       viewBox="0 0 200 120"
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"
       width={size}
       height={size}
       className={className}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
       {...props}
     >
       <path d="M 12,108 Q -10,84 16,54 Q 44,78 52,108 Z" />
@@ -19,6 +21,6 @@ export default function LotusIcon({ className, size = 22, ...props }) {
       <path d="M 119,108 Q 126,56 104,18 Q 89,56 91,108 Z" />
       <path d="M 93,108 Q 88,48 100,4 Q 112,48 107,108 Z" />
       <ellipse cx="100" cy="110" rx="88" ry="9" />
-    </svg>
+    </motion.svg>
   )
 }
