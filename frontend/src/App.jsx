@@ -24,25 +24,16 @@ const App = () => {
 
   const LotusLogo = () => (
     <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path 
-        d="M50 20C55 35 65 45 80 50C65 55 55 65 50 80C45 65 35 55 20 50C35 45 45 35 50 20Z" 
-        stroke="#2563EB" 
-        strokeWidth="3" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-      />
-      <path 
-        d="M50 40C52 45 55 48 60 50C55 52 52 55 50 60C48 55 45 52 40 50C45 48 48 45 50 40Z" 
-        fill="#2563EB"
-      />
+      <path d="M50 20C55 35 65 45 80 50C65 55 55 65 50 80C45 65 35 55 20 50C35 45 45 35 50 20Z" stroke="#2563EB" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M50 40C52 45 55 48 60 50C55 52 52 55 50 60C48 55 45 52 40 50C45 48 48 45 50 40Z" fill="#2563EB"/>
     </svg>
   );
 
   return (
     <div style={{ minHeight: '100vh', width: '100%', backgroundColor: 'white', fontFamily: 'Inter, sans-serif', color: '#111827', display: 'flex', flexDirection: 'column' }}>
       
-      {/* HEADER */}
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 4rem', position: 'fixed', top: 0, width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(10px)', zIndex: 100 }}>
+      {/* 1. NAVIGATION: Fixed at the very top */}
+      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 4rem', position: 'fixed', top: 0, width: '100%', boxSizing: 'border-box', background: 'white', borderBottom: '1px solid #F3F4F6', zIndex: 1000 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <LotusLogo />
           <h1 style={{ fontSize: '1.1rem', fontWeight: '900', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#1E3A8A', margin: 0 }}>Blue Lotus</h1>
@@ -50,26 +41,26 @@ const App = () => {
         <button style={{ background: 'none', border: '1px solid #E5E7EB', padding: '0.5rem 1.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer', letterSpacing: '0.05em' }}>SIGN IN</button>
       </nav>
 
-      {/* CENTERED AREA: Now vertically balanced */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 2rem' }}>
+      {/* 2. MAIN CENTERED SECTION */}
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 2rem', paddingTop: '120px' }}>
         
-        <div style={{ width: '100%', maxWidth: '950px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '4.2rem', fontWeight: '800', letterSpacing: '-0.05em', color: '#111827', marginBottom: '3rem', lineHeight: '1.1' }}>
+        {/* Title & Input Group */}
+        <div style={{ width: '100%', maxWidth: '950px', textAlign: 'center', marginBottom: '80px' }}>
+          <h2 style={{ fontSize: '4.2rem', fontWeight: '800', letterSpacing: '-0.05em', color: '#111827', marginBottom: '4rem', lineHeight: '1.1' }}>
             What shall we build today?
           </h2>
           
+          {/* THE INPUT BOX: Distinctly outlined and separate */}
           <div style={{ 
             display: 'flex', 
             flexDirection: 'column',
-            border: '1px solid #D1D5DB', 
+            border: '1.5px solid #E5E7EB', // Thin, clear border
             borderRadius: '12px', 
-            padding: '1rem', 
+            padding: '1.5rem', 
             backgroundColor: '#FFFFFF', 
-            boxShadow: '0 20px 40px rgba(0,0,0,0.02)',
-            marginBottom: '2rem',
-            position: 'relative'
+            boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
+            transition: 'border-color 0.2s',
           }}>
-            {/* TEXTAREA: Allows multiple lines and keeps words visible */}
             <textarea 
               ref={textareaRef}
               rows="1"
@@ -77,42 +68,43 @@ const App = () => {
               style={{ 
                 width: '100%', 
                 border: 'none', 
-                padding: '1rem', 
+                padding: '0.5rem', 
                 fontSize: '1.5rem', 
                 outline: 'none', 
                 color: '#374151', 
                 fontWeight: '300', 
                 resize: 'none', 
                 overflow: 'hidden',
-                lineHeight: '1.4',
-                minHeight: '80px'
+                lineHeight: '1.5',
+                minHeight: '120px', // Generous starting space
+                backgroundColor: 'transparent'
               }} 
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
             />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
               <button 
                 onClick={() => setStage("workspace")} 
-                style={{ backgroundColor: '#2563EB', color: 'white', padding: '0.8rem 3.5rem', borderRadius: '4px', border: 'none', fontWeight: '800', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.75rem', textTransform: 'uppercase' }}
+                style={{ backgroundColor: '#2563EB', color: 'white', padding: '1rem 3.5rem', borderRadius: '4px', border: 'none', fontWeight: '800', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.75rem', textTransform: 'uppercase', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)' }}
               >
                 Build <ArrowRight size={20} />
               </button>
             </div>
           </div>
+        </div>
 
-          {/* Billing Toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', marginBottom: '10vh' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: billing === 'monthly' ? '700' : '400', color: billing === 'monthly' ? '#111827' : '#9CA3AF' }}>Monthly</span>
-            <div 
-              onClick={() => setBilling(billing === 'monthly' ? 'yearly' : 'monthly')} 
-              style={{ width: '44px', height: '22px', background: '#F3F4F6', borderRadius: '20px', cursor: 'pointer', position: 'relative', border: '1px solid #E5E7EB' }}
-            >
-              <div style={{ position: 'absolute', width: '16px', height: '16px', background: '#2563EB', borderRadius: '50%', top: '2px', left: billing === 'monthly' ? '3px' : '23px', transition: '0.2s cubic-bezier(0.4, 0, 0.2, 1)' }} />
-            </div>
-            <span style={{ fontSize: '0.85rem', fontWeight: billing === 'yearly' ? '700' : '400', color: billing === 'yearly' ? '#111827' : '#9CA3AF' }}>
-              Yearly <span style={{ color: '#10B981', marginLeft: '4px' }}>(Save 10%)</span>
-            </span>
+        {/* Billing Toggle: Spaced further down */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', marginBottom: '80px' }}>
+          <span style={{ fontSize: '0.85rem', fontWeight: billing === 'monthly' ? '700' : '400', color: billing === 'monthly' ? '#111827' : '#9CA3AF' }}>Monthly</span>
+          <div 
+            onClick={() => setBilling(billing === 'monthly' ? 'yearly' : 'monthly')} 
+            style={{ width: '44px', height: '22px', background: '#F3F4F6', borderRadius: '20px', cursor: 'pointer', position: 'relative', border: '1px solid #E5E7EB' }}
+          >
+            <div style={{ position: 'absolute', width: '16px', height: '16px', background: '#2563EB', borderRadius: '50%', top: '2px', left: billing === 'monthly' ? '3px' : '23px', transition: '0.2s' }} />
           </div>
+          <span style={{ fontSize: '0.85rem', fontWeight: billing === 'yearly' ? '700' : '400', color: billing === 'yearly' ? '#111827' : '#9CA3AF' }}>
+            Yearly <span style={{ color: '#10B981', marginLeft: '4px' }}>(Save 10%)</span>
+          </span>
         </div>
 
         {/* LOWER THIRD: Pricing & Bundles */}
