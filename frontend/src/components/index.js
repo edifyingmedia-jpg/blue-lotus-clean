@@ -10,7 +10,7 @@ export { default as BlueLotusLoader } from './BlueLotusLoader';
 // UI Primitives
 export { default as Button } from './Button';
 export { default as Card } from './Card';
-export { default as LotusIcon } from './LotusIcon';
+export { default as LotusIcon } from './LotusIcon'; // Keep it here!
 
 // Legacy components (kept for stability)
 export { default as ComponentPanel } from './ComponentPanel';
