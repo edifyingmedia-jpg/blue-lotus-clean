@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, Eye, Zap, Database, Loader2, Send, CheckCircle2, Save, Trash2, Undo2, Github, Rocket, Sparkles } from 'lucide-react';
+import { ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, Eye, Zap, Database, Loader2, Send, CheckCircle2, Save, Trash2, Undo2, Github, Rocket, Sparkles, ShieldCheck } from 'lucide-react';
 
 const App = () => {
   const [view, setView] = useState("garden"); 
@@ -11,10 +11,10 @@ const App = () => {
   const [consoleLogs, setConsoleLogs] = useState([]);
 
   const plans = [
-    { n: 'SPROUT', i: <Leaf size={32}/>, p: 0, c: 10, d: "Basic AI generation." },
-    { n: 'SAPLING', i: <Sprout size={32}/>, p: 9.99, c: 100, d: "Includes Auto-Healing V1." },
-    { n: 'OAK', i: <Trees size={32}/>, p: 19.99, c: 200, d: "Advanced Sovereign Healing." },
-    { n: 'SOVEREIGN', i: <Crown size={32}/>, p: 29.99, c: 300, d: "Infinite Prime Healing Access." }
+    { n: 'SPROUT', i: <Leaf size={32}/>, p: 0, c: 10, d: "Basic generation via TWIN." },
+    { n: 'SAPLING', i: <Sprout size={32}/>, p: 9.99, c: 100, d: "TWIN Prime Healing V1." },
+    { n: 'OAK', i: <Trees size={32}/>, p: 19.99, c: 200, d: "Advanced Sovereign Shielding." },
+    { n: 'SOVEREIGN', i: <Crown size={32}/>, p: 29.99, c: 300, d: "Full Governess & Prime Access." }
   ];
 
   const calculatePrice = (base) => {
@@ -30,8 +30,8 @@ const App = () => {
     setView("forge");
     setIsBuilding(true);
     setConsoleLogs([
-      { sender: "TWIN", msg: `Prime, initiating architectural scan: "${activePrompt.substring(0, 40)}..."` },
-      { sender: "PRIME", msg: "Scanning design patterns. Applying Sovereign Healing protocols..." }
+      { sender: "TWIN", msg: `Prime, initiating architectural scan for our user: "${activePrompt.substring(0, 40)}..."` },
+      { sender: "PRIME", msg: "Scanning patterns. Applying Sovereign Healing. Final authority engaged." }
     ]);
     
     try {
@@ -43,13 +43,13 @@ const App = () => {
       const data = await response.json();
       if (data.code) {
         setConsoleLogs(prev => [...prev, 
-          { sender: "PRIME", msg: "Structure refined. Code healing complete." },
-          { sender: "TWIN", msg: "Sprout stabilized. Preview updated." }
+          { sender: "PRIME", msg: "Architecture validated. Healing protocols complete. I have authorized this build." },
+          { sender: "TWIN", msg: "The Master Builder has finished. Sprout stabilized." }
         ]);
         setGeneratedCode(data.code);
       }
     } catch (err) {
-      setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: "CRITICAL: Cultivation failed." }]);
+      setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: "CRITICAL: Cultivation halted by Prime Authority." }]);
     } finally {
       setIsBuilding(false);
     }
@@ -108,7 +108,7 @@ const App = () => {
               </div>
             </div>
           ))}
-          <div onClick={() => setSelectedPlan('REFUEL')} style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', width: '210px', textAlign: 'center', cursor: 'pointer', border: selectedPlan === 'REFUEL' ? '4px solid #4F46E5' : '3px dashed #4F46E5', background: '#F8FAFF', transition: '0.3s' }}>
+          <div onClick={() => setSelectedPlan('REFUEL')} style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', width: '210px', textAlign: 'center', cursor: 'pointer', border: selectedPlan === 'REFUEL' ? '4px solid #4F46E5' : '3px dashed #4F46E5', background: '#F8FAFF' }}>
              <Database color="#4F46E5" size={32} style={{ marginBottom: '10px' }} />
              <div style={{ fontWeight: '900', fontSize: '1.1rem' }}>REFUEL</div>
              <div style={{ fontSize: '2.2rem', fontWeight: '900' }}>$19.99</div>
@@ -160,13 +160,13 @@ const App = () => {
         <div style={{ width: '450px', borderRight: '1px solid #1E293B', display: 'flex', flexDirection: 'column' }}>
           <div style={{ flex: 1, padding: '2.5rem', overflowY: 'auto' }}>
             <h3 style={{ color: '#818CF8', borderBottom: '1px solid #1E293B', paddingBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Sparkles size={18} /> TWIN INTERFACE
+              <ShieldCheck size={18} /> TWIN INTERFACE
             </h3>
             <div style={{ marginTop: '1.5rem', fontSize: '0.9rem' }}>
               {consoleLogs.map((log, i) => (
                 <div key={i} style={{ marginBottom: '1rem', paddingLeft: '10px', borderLeft: log.sender === 'PRIME' ? '2px solid #4F46E5' : '2px solid #818CF8' }}>
                   <span style={{ fontWeight: 'bold', color: log.sender === 'PRIME' ? '#4F46E5' : '#818CF8', fontSize: '0.7rem', display: 'block' }}>{log.sender}</span>
-                  <p style={{ color: log.msg.includes('Healing') ? '#10B981' : '#94A3B8' }}>{log.msg}</p>
+                  <p style={{ color: log.msg.includes('Healing') || log.msg.includes('validated') ? '#10B981' : '#94A3B8' }}>{log.msg}</p>
                 </div>
               ))}
             </div>
@@ -180,14 +180,4 @@ const App = () => {
         </div>
         
         {/* PREVIEW */}
-        <div style={{ flex: 1, background: '#F1F5F9', padding: '1.5rem' }}>
-          <div style={{ width: '100%', height: '100%', background: 'white', borderRadius: '30px', overflow: 'hidden' }}>
-            <iframe srcDoc={generatedCode || `<html><body style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif; color:#cbd5e1;"><h2>Waiting for TWIN Prime...</h2></body></html>`} style={{ width: '100%', height: '100%', border: 'none' }} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default App;
+        <div style={{ flex
