@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, Eye, Zap, Database, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, Eye, Zap, Database } from 'lucide-react';
 
 const App = () => {
   const [view, setView] = useState("garden"); 
@@ -10,10 +10,10 @@ const App = () => {
   const [consoleLogs, setConsoleLogs] = useState([]);
 
   const plans = [
-    { n: 'SPROUT', i: <Leaf size={32}/>, p: 0, c: 10, d: "Perfect for testing ideas." },
-    { n: 'SAPLING', i: <Sprout size={32}/>, p: 9.99, c: 100, d: "For growing projects." },
-    { n: 'OAK', i: <Trees size={32}/>, p: 19.99, c: 200, d: "Advanced architectural power." },
-    { n: 'SOVEREIGN', i: <Crown size={32}/>, p: 29.99, c: 300, d: "The ultimate builder experience." }
+    { n: 'SPROUT', i: <Leaf size={32}/>, p: 0, c: 10, d: "Test your ideas." },
+    { n: 'SAPLING', i: <Sprout size={32}/>, p: 9.99, c: 100, d: "Growing projects." },
+    { n: 'OAK', i: <Trees size={32}/>, p: 19.99, c: 200, d: "Architectural power." },
+    { n: 'SOVEREIGN', i: <Crown size={32}/>, p: 29.99, c: 300, d: "The ultimate builder." }
   ];
 
   const calculatePrice = (base) => {
@@ -21,21 +21,26 @@ const App = () => {
     return billing === "monthly" ? `$${base}` : `$${(base * 12 * 0.85).toFixed(0)}/yr`;
   };
 
-  const handleBeginCultivation = () => {
-    if (!prompt) return;
+  // Fixed Button Logic
+  const goToForge = () => {
     setView("forge");
+    if (prompt) handleBeginCultivation();
+  };
+
+  const handleBeginCultivation = async () => {
     setIsBuilding(true);
-    setConsoleLogs(["> Initializing Blue Lotus V.1.07...", "> Establishing OpenAI Secure Tunnel..."]);
+    setView("forge");
+    setConsoleLogs(["> Initializing Blue Lotus V.1.07...", "> OpenAI Tunnel Active..."]);
     setTimeout(() => {
-      setConsoleLogs(prev => [...prev, "> Analyzing architectural request...", "> Sprouting UI components..."]);
-      setGeneratedCode("// Code generation in progress...");
+      setConsoleLogs(prev => [...prev, "> Sprouting UI components...", "> HEALING COMPLETE."]);
+      setGeneratedCode("// Sovereign Code successfully generated.");
       setIsBuilding(false);
     }, 1500);
   };
 
   if (view === "garden") {
     return (
-      <div style={{ minHeight: '100vh', width: '100vw', background: 'white', display: 'flex', flexDirection: 'column', fontFamily: 'sans-serif' }}>
+      <div style={{ minHeight: '100vh', width: '100vw', background: 'white', display: 'flex', flexDirection: 'column', fontFamily: 'sans-serif', color: '#111827' }}>
         
         {/* HEADER */}
         <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 4rem', borderBottom: '1px solid #eee' }}>
@@ -43,17 +48,18 @@ const App = () => {
             <div style={{ background: '#4F46E5', padding: '8px', borderRadius: '8px' }}>
                <svg width="24" height="24" viewBox="0 0 100 100" fill="white"><path d="M50 20C55 35 65 45 80 50C65 55 55 65 50 80C45 65 35 55 20 50C35 45 45 35 50 20Z" /></svg>
             </div>
-            <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#111827', letterSpacing: '2px' }}>BLUE LOTUS</span>
+            <span style={{ fontSize: '1.5rem', fontWeight: '900', letterSpacing: '2px' }}>BLUE LOTUS</span>
           </div>
-          <div style={{ display: 'flex', gap: '20px' }}>
-            <button style={{ background: 'transparent', border: 'none', fontWeight: 'bold', color: '#6B7280', fontSize: '1.1rem', cursor: 'pointer' }}>Sign In</button>
-            <button style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem 1.8rem', borderRadius: '12px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer' }}>Join</button>
+          
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+            <button onClick={goToForge} style={{ background: 'transparent', border: 'none', fontWeight: 'bold', color: '#6B7280', fontSize: '1.1rem', cursor: 'pointer' }}>Sign In</button>
+            <button onClick={goToForge} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem 1.8rem', borderRadius: '12px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer' }}>Join</button>
           </div>
         </nav>
 
         {/* HERO */}
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem' }}>
-          <h2 style={{ fontSize: '4.5rem', fontWeight: '900', color: '#111827', margin: '0 0 2rem 0', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '4.5rem', fontWeight: '900', margin: '0 0 2rem 0', textAlign: 'center' }}>
             Plant a <span style={{ color: '#4F46E5' }}>new idea.</span>
           </h2>
           <div style={{ width: '100%', maxWidth: '850px', background: '#f8faff', border: '3px solid #4F46E5', borderRadius: '40px', padding: '2.5rem', boxShadow: '0 30px 60px rgba(79, 70, 229, 0.2)' }}>
@@ -79,51 +85,52 @@ const App = () => {
           </div>
         </div>
 
-        {/* PRICING TIERS */}
-        <div style={{ padding: '0 4rem 4rem', display: 'flex', gap: '25px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        {/* PRICING & REFUEL ROW */}
+        <div style={{ padding: '0 2rem 6rem', display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'stretch' }}>
           {plans.map((plan, idx) => (
-            <div key={idx} style={{ padding: '2.5rem', borderRadius: '35px', border: '2px solid #eee', width: '240px', textAlign: 'center', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : '#111827', position: 'relative' }}>
-              <div style={{ color: '#4F46E5', marginBottom: '15px' }}>{plan.i}</div>
-              <div style={{ fontWeight: '900', fontSize: '1.1rem', letterSpacing: '2px', marginBottom: '10px' }}>{plan.n}</div>
-              <div style={{ fontSize: '2.5rem', fontWeight: '900', marginBottom: '10px' }}>{calculatePrice(plan.p)}</div>
-              <div style={{ background: '#EEF2FF', color: '#4F46E5', padding: '5px 15px', borderRadius: '20px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '5px', marginBottom: '15px' }}>
-                <Zap size={14} fill="#4F46E5" /> {plan.c} Credits
+            <div key={idx} style={{ padding: '2rem 1.5rem', borderRadius: '35px', border: '2px solid #eee', width: '210px', textAlign: 'center', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : '#111827', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ color: '#4F46E5', marginBottom: '10px' }}>{plan.i}</div>
+                <div style={{ fontWeight: '900', fontSize: '1rem', letterSpacing: '1px', marginBottom: '8px' }}>{plan.n}</div>
+                <div style={{ fontSize: '2.2rem', fontWeight: '900', marginBottom: '10px' }}>{calculatePrice(plan.p)}</div>
+                <div style={{ background: '#EEF2FF', color: '#4F46E5', padding: '4px 12px', borderRadius: '15px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem' }}>
+                  <Zap size={14} fill="#4F46E5" /> {plan.c} Credits
+                </div>
               </div>
-              <p style={{ fontSize: '0.9rem', opacity: 0.7 }}>{plan.d}</p>
+              <p style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '15px' }}>{plan.d}</p>
             </div>
           ))}
-        </div>
 
-        {/* REFUEL SECTION */}
-        <div style={{ padding: '4rem', background: '#F9FAFB', textAlign: 'center', borderTop: '1px solid #eee' }}>
-          <h3 style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '1rem' }}>Need a Refuel?</h3>
-          <p style={{ color: '#6B7280', marginBottom: '2rem' }}>Top up your architectural power instantly.</p>
-          <div style={{ display: 'inline-flex', gap: '20px' }}>
-            <div style={{ background: 'white', padding: '2rem', borderRadius: '25px', border: '2px solid #4F46E5', width: '250px' }}>
-              <Database color="#4F46E5" size={40} style={{ marginBottom: '1rem' }} />
-              <div style={{ fontWeight: '900', fontSize: '1.2rem' }}>200 Credits</div>
-              <div style={{ fontSize: '2rem', fontWeight: '900', margin: '10px 0' }}>$19.99</div>
-              <button style={{ width: '100%', background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem', borderRadius: '12px', fontWeight: 'bold' }}>REFUEL</button>
+          {/* REFUEL OPTION (NOW IN THE SAME LINE) */}
+          <div style={{ padding: '2rem 1.5rem', borderRadius: '35px', border: '3px dashed #4F46E5', width: '210px', textAlign: 'center', background: '#F8FAFF', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <Database color="#4F46E5" size={32} style={{ marginBottom: '10px' }} />
+              <div style={{ fontWeight: '900', fontSize: '1rem', letterSpacing: '1px', marginBottom: '8px' }}>REFUEL</div>
+              <div style={{ fontSize: '2.2rem', fontWeight: '900', marginBottom: '10px' }}>$19.99</div>
+              <div style={{ background: '#4F46E5', color: 'white', padding: '4px 12px', borderRadius: '15px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem' }}>
+                <Zap size={14} fill="white" /> 200 Credits
+              </div>
             </div>
+            <button onClick={goToForge} style={{ marginTop: '15px', width: '100%', background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>TOP UP</button>
           </div>
         </div>
 
         {/* FOOTER */}
         <footer style={{ background: '#020617', color: 'white', padding: '4rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', letterSpacing: '3px', marginBottom: '1rem' }}>BLUE LOTUS</div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', color: '#64748B', marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', color: '#64748B', marginBottom: '2rem', fontSize: '0.9rem' }}>
             <span>Privacy Policy</span><span>Terms of Service</span><span>Contact</span>
           </div>
-          <p style={{ color: '#334155' }}>© 2026 SOVEREIGN APP BUILDER // VERSION 1.07</p>
+          <p style={{ color: '#334155', fontSize: '0.8rem' }}>© 2026 SOVEREIGN APP BUILDER // VERSION 1.07</p>
         </footer>
       </div>
     );
   }
 
+  // FORGE VIEW
   return (
     <div style={{ height: '100vh', width: '100vw', background: '#020617', color: 'white', display: 'flex', flexDirection: 'column', fontFamily: 'monospace' }}>
-       {/* FORGE VIEW CODE REMAINS THE SAME TO ENSURE STABILITY */}
-       <nav style={{ height: '80px', borderBottom: '1px solid #1E293B', display: 'flex', alignItems: 'center', padding: '0 3rem', justifyContent: 'space-between' }}>
+      <nav style={{ height: '80px', borderBottom: '1px solid #1E293B', display: 'flex', alignItems: 'center', padding: '0 3rem', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <RefreshCw size={32} className={isBuilding ? "animate-spin" : ""} color="#818CF8" />
           <span style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>FORGE MODE</span>
@@ -132,13 +139,13 @@ const App = () => {
       </nav>
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         <div style={{ width: '450px', borderRight: '1px solid #1E293B', padding: '3rem', overflowY: 'auto' }}>
-          <h3 style={{ color: '#818CF8', borderBottom: '2px solid #1E293B', paddingBottom: '1.5rem', fontSize: '1.3rem' }}>CONSOLE</h3>
+          <h3 style={{ color: '#818CF8', borderBottom: '1px solid #1E293B', paddingBottom: '1.5rem', fontSize: '1.3rem' }}>CONSOLE</h3>
           <div style={{ marginTop: '2rem', color: '#94A3B8', fontSize: '1.2rem', lineHeight: '1.8' }}>
             {consoleLogs.map((log, i) => <p key={i}>{log}</p>)}
           </div>
         </div>
         <div style={{ flex: 1, background: '#F1F5F9', padding: '2rem' }}>
-          <div style={{ width: '100%', height: '100%', background: 'white', borderRadius: '35px', color: '#1e293b', padding: '2rem' }}>
+          <div style={{ width: '100%', height: '100%', background: 'white', borderRadius: '35px', color: '#1e293b', padding: '2rem', overflowY: 'auto' }}>
             {isBuilding ? <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', opacity: 0.3 }}><Eye size={100} /></div> : <pre>{generatedCode}</pre>}
           </div>
         </div>
