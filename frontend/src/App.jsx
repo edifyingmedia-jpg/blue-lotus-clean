@@ -1,109 +1,101 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Leaf, Sprout, Trees, Crown, Zap, Activity, Loader2, Code, Eye, RefreshCw, CheckCircle2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ArrowRight, Leaf, Sprout, Trees, Crown, Activity, Loader2, Code, Eye, RefreshCw, CheckCircle2 } from 'lucide-react';
 
 const App = () => {
-  const [view, setView] = useState("garden"); // "garden" or "forge"
-  const [billing, setBilling] = useState("monthly");
+  const [view, setView] = useState("garden"); 
   const [prompt, setPrompt] = useState("");
   const [isBuilding, setIsBuilding] = useState(false);
-  const textareaRef = useRef(null);
 
-  // Pricing Logic
-  const calculatePrice = (base) => {
-    if (billing === "monthly") return `$${base}`;
-    const discounted = (base * 12 * 0.85).toFixed(0);
-    return `$${discounted}/yr`;
-  };
-
-  // Switch to the Forge
   const handleBeginCultivation = () => {
     if (!prompt) return;
     setIsBuilding(true);
-    // Simulate the transition to the creation phase
     setTimeout(() => {
       setView("forge");
       setIsBuilding(false);
     }, 1500);
   };
 
-  // --- VIEW 1: THE GARDEN (Landing/Entry) ---
   if (view === "garden") {
     return (
-      <div style={{ height: '100vh', width: '100vw', background: 'radial-gradient(circle at top right, #F0F4FF 0%, #FFFFFF 50%, #FDF2FF 100%)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 4rem', background: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(15px)', borderBottom: '1px solid rgba(0,0,0,0.03)', zIndex: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', padding: '5px', borderRadius: '6px' }}>
-              <svg width="20" height="20" viewBox="0 0 100 100" fill="white"><path d="M50 20C55 35 65 45 80 50C65 55 55 65 50 80C45 65 35 55 20 50C35 45 45 35 50 20Z" /></svg>
-            </div>
-            <span style={{ fontSize: '1rem', fontWeight: '900', letterSpacing: '0.1em', color: '#4F46E5' }}>BLUE LOTUS</span>
-          </div>
-          <button style={{ background: '#111827', color: 'white', border: 'none', padding: '0.5rem 1.2rem', borderRadius: '6px', fontWeight: '700' }}>Get Started</button>
+      <div style={{ height: '100vh', width: '100vw', background: 'white', display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: 'sans-serif' }}>
+        <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 4rem', borderBottom: '1px solid #eee' }}>
+          <span style={{ fontSize: '1.2rem', fontWeight: '900', color: '#4F46E5', letterSpacing: '2px' }}>BLUE LOTUS</span>
+          <button style={{ background: '#111827', color: 'white', border: 'none', padding: '0.6rem 1.5rem', borderRadius: '8px', fontWeight: 'bold' }}>GET STARTED</button>
         </nav>
 
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ width: '100%', maxWidth: '800px', textAlign: 'center', transform: 'translateY(-10%)' }}>
-            <h2 style={{ marginBottom: '1.5rem' }}>
-              <span style={{ fontSize: '2.8rem', fontWeight: '300', color: '#6B7280' }}>Plant a </span>
-              <span style={{ fontSize: '3rem', fontWeight: '900', color: '#111827' }}>new idea.</span>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+          <div style={{ width: '100%', maxWidth: '800px', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '3.5rem', fontWeight: '900', color: '#111827', margin: '0 0 2rem 0' }}>
+              Plant a <span style={{ color: '#4F46E5' }}>new idea.</span>
             </h2>
-            <div style={{ background: 'white', border: '1px solid rgba(79, 70, 229, 0.2)', borderRadius: '20px', padding: '1.25rem', boxShadow: '0 15px 35px rgba(0,0,0,0.04)' }}>
+            <div style={{ background: '#f8faff', border: '2px solid #4F46E5', borderRadius: '32px', padding: '2rem', boxShadow: '0 20px 40px rgba(79, 70, 229, 0.1)' }}>
               <textarea 
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Describe the app you want the Blue Lotus to build..."
-                style={{ width: '100%', border: 'none', outline: 'none', fontSize: '1.25rem', minHeight: '80px', resize: 'none' }}
+                placeholder="Describe the app you want to build..."
+                style={{ width: '100%', border: 'none', outline: 'none', fontSize: '1.5rem', minHeight: '120px', background: 'transparent', resize: 'none', fontFamily: 'inherit' }}
               />
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button onClick={handleBeginCultivation} disabled={isBuilding} style={{ background: 'linear-gradient(135deg, #4F46E5, #3730A3)', color: 'white', border: 'none', padding: '0.8rem 2.2rem', borderRadius: '8px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {isBuilding ? <Loader2 className="animate-spin" size={16} /> : 'BEGIN CULTIVATION'} <ArrowRight size={16} />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                <button 
+                  onClick={handleBeginCultivation} 
+                  style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '1.2rem 3rem', borderRadius: '16px', fontWeight: '900', fontSize: '1.1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                >
+                  {isBuilding ? <Loader2 size={20} className="animate-spin" /> : 'BEGIN CULTIVATION'} <ArrowRight size={20} />
                 </button>
               </div>
             </div>
           </div>
         </main>
 
-        {/* Pricing Tiers */}
-        <div style={{ padding: '0 4rem 2rem' }}>
-          <div style={{ display: 'flex', gap: '10px', maxWidth: '1400px', margin: '0 auto' }}>
-            {[{ name: 'SPROUT', icon: <Leaf size={14}/>, price: 'Free' }, { name: 'SAPLING', icon: <Sprout size={14}/>, price: calculatePrice(9.99), healing: true }, { name: 'OAK', icon: <Trees size={14}/>, price: calculatePrice(19.99), feat: true, healing: true }, { name: 'SOVEREIGN', icon: <Crown size={14}/>, price: calculatePrice(29.99), premium: true, healing: true }].map((plan, i) => (
-              <div key={i} style={{ flex: 1, padding: '1.25rem 1rem', borderRadius: '14px', background: plan.premium ? '#111827' : 'white', color: plan.premium ? 'white' : '#111827', border: plan.feat ? '2px solid #4F46E5' : '1px solid rgba(0,0,0,0.05)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>{plan.icon} <span style={{ fontSize: '0.6rem', fontWeight: '900' }}>{plan.name}</span></div>
-                <div style={{ fontSize: '1.35rem', fontWeight: '900' }}>{plan.price}</div>
-                {plan.healing && <div style={{ color: '#10B981', fontSize: '0.55rem', fontWeight: '800', marginTop: '5px' }}><Activity size={9} /> SOVEREIGN NODE ACTIVE</div>}
-              </div>
-            ))}
-          </div>
+        <div style={{ padding: '0 4rem 3rem', display: 'flex', gap: '20px', justifyContent: 'center' }}>
+          {[{ n: 'SPROUT', i: <Leaf size={16}/> }, { n: 'SAPLING', i: <Sprout size={16}/> }, { n: 'OAK', i: <Trees size={16}/> }, { n: 'SOVEREIGN', i: <Crown size={16}/> }].map((p, idx) => (
+            <div key={idx} style={{ padding: '1.5rem', borderRadius: '16px', border: '1px solid #eee', width: '180px', textAlign: 'center' }}>
+              <div style={{ color: '#4F46E5', marginBottom: '8px' }}>{p.i}</div>
+              <div style={{ fontWeight: '900', fontSize: '0.7rem', color: '#6B7280' }}>{p.n}</div>
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 
-  // --- VIEW 2: THE FORGE (Two-Panel Workspace) ---
   return (
-    <div style={{ height: '100vh', width: '100vw', background: '#0F172A', color: 'white', display: 'flex', flexDirection: 'column' }}>
-      {/* Forge Header */}
-      <nav style={{ height: '60px', borderBottom: '1px solid #1E293B', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <RefreshCw size={18} className="animate-spin" style={{ color: '#818CF8' }} />
-          <span style={{ fontWeight: '800', letterSpacing: '0.1em', fontSize: '0.9rem' }}>FORGE MODE: CULTIVATING {prompt.substring(0, 15)}...</span>
+    <div style={{ height: '100vh', width: '100vw', background: '#020617', color: 'white', display: 'flex', flexDirection: 'column', fontFamily: 'monospace' }}>
+      <nav style={{ height: '60px', borderBottom: '1px solid #1E293B', display: 'flex', alignItems: 'center', padding: '0 2rem', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <RefreshCw size={20} className="animate-spin" color="#818CF8" />
+          <span style={{ fontWeight: 'bold' }}>FORGE: {prompt.substring(0, 20)}...</span>
         </div>
-        <button onClick={() => setView("garden")} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid #334155', padding: '0.4rem 1rem', borderRadius: '6px', fontSize: '0.75rem' }}>Back to Garden</button>
+        <button onClick={() => setView("garden")} style={{ background: '#1E293B', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer' }}>EXIT FORGE</button>
       </nav>
-
-      {/* Main Panels */}
       <div style={{ flex: 1, display: 'flex' }}>
-        
-        {/* LEFT PANEL: The AI Console (The "Nervous System") */}
-        <div style={{ width: '400px', borderRight: '1px solid #1E293B', display: 'flex', flexDirection: 'column', background: '#020617' }}>
-          <div style={{ padding: '1rem', borderBottom: '1px solid #1E293B', background: '#1E293B', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Code size={16} /> <span style={{ fontSize: '0.7rem', fontWeight: '800' }}>SOVEREIGN CONSOLE</span>
+        <div style={{ width: '400px', borderRight: '1px solid #1E293B', padding: '2rem', background: '#020617' }}>
+          <h3 style={{ color: '#818CF8', borderBottom: '1px solid #1E293B', paddingBottom: '1rem' }}>SOVEREIGN CONSOLE</h3>
+          <div style={{ marginTop: '1rem', color: '#94A3B8', fontSize: '0.9rem', lineHeight: '1.6' }}>
+            <p style={{ color: '#10B981' }}>> Initializing Blue Lotus V.1.07</p>
+            <p>> Loading TWIN Advocate Logic...</p>
+            <p>> Throttling architectural generation...</p>
+            <p style={{ marginTop: '2rem', color: 'white' }}>[TWIN SUGGESTION]:</p>
+            <p>"I have structured the primary UI for maximum accessibility. Shall I now bridge the secure database?"</p>
           </div>
-          <div style={{ flex: 1, padding: '1.5rem', fontFamily: 'monospace', fontSize: '0.8rem', color: '#94A3B8', overflowY: 'auto' }}>
-            <p style={{ color: '#818CF8' }}>{`> Initializing Blue Lotus V.1.07...`}</p>
-            <p>{`> Analyzing architectural request...`}</p>
-            <p style={{ color: '#10B981' }}>{`> Sprouting UI components...`}</p>
-            <p>{`> Throttling logic generation...`}</p>
-            <div style={{ marginTop: '2rem', padding: '1rem', background: '#1E293B', borderRadius: '8px', borderLeft: '4px solid #4F46E5' }}>
-              <p style={{ color: 'white', fontWeight: 'bold', marginBottom: '5px' }}>Sovereign Suggestion:</p>
-              <p style={{ fontSize: '0.75rem' }}>"I am applying a dark-mode optimized layout for this client. Shall I add a secure database connection next?"</p>
-              <button
+        </div>
+        <div style={{ flex: 1, background: '#F1F5F9', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+          <div style={{ width: '90%', height: '85%', background: 'white', borderRadius: '24px', boxShadow: '0 40px 60px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ height: '60px', background: '#4F46E5', width: '100%' }}></div>
+            <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#94A3B8' }}>
+              <div style={{ textAlign: 'center' }}>
+                <Eye size={48} style={{ marginBottom: '1rem', opacity: 0.2 }} />
+                <p style={{ fontWeight: 'bold' }}>GENERATING FACE...</p>
+              </div>
+            </div>
+          </div>
+          <div style={{ position: 'absolute', bottom: '30px', right: '30px', background: 'white', padding: '1rem 2rem', borderRadius: '50px', display: 'flex', alignItems: 'center', gap: '10px', color: '#10B981', boxShadow: '0 10px 20px rgba(0,0,0,0.1)', border: '1px solid #10B981' }}>
+            <CheckCircle2 size={20} /> <span style={{ fontWeight: '900', fontSize: '0.8rem' }}>HEALING COMPLETE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
