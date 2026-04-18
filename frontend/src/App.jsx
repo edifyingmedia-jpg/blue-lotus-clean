@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, Eye, Zap, Database, Loader2, Send, CheckCircle2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, Eye, Zap, Database, Loader2, Send, CheckCircle2, Save, Trash2, Undo2, Github, Rocket, Sparkles } from 'lucide-react';
 
 const App = () => {
   const [view, setView] = useState("garden"); 
@@ -11,10 +11,10 @@ const App = () => {
   const [consoleLogs, setConsoleLogs] = useState([]);
 
   const plans = [
-    { n: 'SPROUT', i: <Leaf size={32}/>, p: 0, c: 10, d: "Test your ideas." },
-    { n: 'SAPLING', i: <Sprout size={32}/>, p: 9.99, c: 100, d: "Growing projects." },
-    { n: 'OAK', i: <Trees size={32}/>, p: 19.99, c: 200, d: "Architectural power." },
-    { n: 'SOVEREIGN', i: <Crown size={32}/>, p: 29.99, c: 300, d: "The ultimate builder." }
+    { n: 'SPROUT', i: <Leaf size={32}/>, p: 0, c: 10, d: "Basic AI generation." },
+    { n: 'SAPLING', i: <Sprout size={32}/>, p: 9.99, c: 100, d: "Includes Auto-Healing V1." },
+    { n: 'OAK', i: <Trees size={32}/>, p: 19.99, c: 200, d: "Advanced Sovereign Healing." },
+    { n: 'SOVEREIGN', i: <Crown size={32}/>, p: 29.99, c: 300, d: "Infinite Prime Healing Access." }
   ];
 
   const calculatePrice = (base) => {
@@ -29,7 +29,10 @@ const App = () => {
     
     setView("forge");
     setIsBuilding(true);
-    setConsoleLogs(prev => [...prev, `> Initializing cultivation for: "${activePrompt.substring(0, 30)}..."`, "> Connecting to Sovereign Engine..."]);
+    setConsoleLogs([
+      { sender: "TWIN", msg: `Prime, initiating architectural scan: "${activePrompt.substring(0, 40)}..."` },
+      { sender: "PRIME", msg: "Scanning design patterns. Applying Sovereign Healing protocols..." }
+    ]);
     
     try {
       const response = await fetch('/api/generate', {
@@ -39,11 +42,14 @@ const App = () => {
       });
       const data = await response.json();
       if (data.code) {
-        setConsoleLogs(prev => [...prev, "> UI elements sprouted successfully.", "> HEALING COMPLETE."]);
+        setConsoleLogs(prev => [...prev, 
+          { sender: "PRIME", msg: "Structure refined. Code healing complete." },
+          { sender: "TWIN", msg: "Sprout stabilized. Preview updated." }
+        ]);
         setGeneratedCode(data.code);
       }
     } catch (err) {
-      setConsoleLogs(prev => [...prev, "> ERROR: Sovereign connection interrupted."]);
+      setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: "CRITICAL: Cultivation failed." }]);
     } finally {
       setIsBuilding(false);
     }
@@ -88,30 +94,40 @@ const App = () => {
           </div>
         </div>
 
-        {/* PRICING CARDS */}
+        {/* PRICING */}
         <div style={{ padding: '0 2rem 6rem', display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
           {plans.map((plan, idx) => (
-            <div key={idx} onClick={() => setSelectedPlan(plan.n)} style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', width: '210px', textAlign: 'center', cursor: 'pointer', position: 'relative', border: selectedPlan === plan.n ? '4px solid #4F46E5' : '2px solid #eee', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : '#111827', transform: selectedPlan === plan.n ? 'translateY(-10px)' : 'none', transition: '0.3s' }}>
-              {selectedPlan === plan.n && <CheckCircle2 size={24} style={{ position: 'absolute', top: '15px', right: '15px', color: '#4F46E5' }} />}
+            <div key={idx} onClick={() => setSelectedPlan(plan.n)} style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', width: '210px', textAlign: 'center', cursor: 'pointer', border: selectedPlan === plan.n ? '4px solid #4F46E5' : '2px solid #eee', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : '#111827', position: 'relative', transition: '0.3s' }}>
+              {selectedPlan === plan.n && <Sparkles size={20} style={{ position: 'absolute', top: '15px', right: '15px', color: '#4F46E5' }} />}
               <div style={{ color: '#4F46E5', marginBottom: '10px' }}>{plan.i}</div>
-              <div style={{ fontWeight: '900', fontSize: '1.1rem', marginBottom: '8px' }}>{plan.n}</div>
+              <div style={{ fontWeight: '900', fontSize: '1.1rem' }}>{plan.n}</div>
               <div style={{ fontSize: '2.2rem', fontWeight: '900' }}>{calculatePrice(plan.p)}</div>
-              <div style={{ marginTop: '15px', background: '#EEF2FF', color: '#4F46E5', padding: '5px 12px', borderRadius: '15px', fontWeight: 'bold', fontSize: '0.85rem' }}>
+              <p style={{ fontSize: '0.75rem', opacity: 0.7, margin: '10px 0' }}>{plan.d}</p>
+              <div style={{ background: '#EEF2FF', color: '#4F46E5', padding: '5px 12px', borderRadius: '15px', fontWeight: 'bold', fontSize: '0.8rem' }}>
                 <Zap size={14} fill="#4F46E5" /> {plan.c} Credits
               </div>
             </div>
           ))}
-          
-          {/* REFUEL CARD */}
-          <div onClick={() => setSelectedPlan('REFUEL')} style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', width: '210px', textAlign: 'center', cursor: 'pointer', border: selectedPlan === 'REFUEL' ? '4px solid #4F46E5' : '3px dashed #4F46E5', background: '#F8FAFF', transform: selectedPlan === 'REFUEL' ? 'translateY(-10px)' : 'none', transition: '0.3s' }}>
+          <div onClick={() => setSelectedPlan('REFUEL')} style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', width: '210px', textAlign: 'center', cursor: 'pointer', border: selectedPlan === 'REFUEL' ? '4px solid #4F46E5' : '3px dashed #4F46E5', background: '#F8FAFF', transition: '0.3s' }}>
              <Database color="#4F46E5" size={32} style={{ marginBottom: '10px' }} />
-             <div style={{ fontWeight: '900', fontSize: '1.1rem', marginBottom: '8px' }}>REFUEL</div>
+             <div style={{ fontWeight: '900', fontSize: '1.1rem' }}>REFUEL</div>
              <div style={{ fontSize: '2.2rem', fontWeight: '900' }}>$19.99</div>
-             <div style={{ marginTop: '15px', background: '#4F46E5', color: 'white', padding: '5px 12px', borderRadius: '15px', fontWeight: 'bold', fontSize: '0.85rem' }}>
+             <div style={{ marginTop: '15px', background: '#4F46E5', color: 'white', padding: '5px 12px', borderRadius: '15px', fontWeight: 'bold', fontSize: '0.8rem' }}>
                 <Zap size={14} fill="white" /> 200 Credits
              </div>
           </div>
         </div>
+
+        {/* FOOTER */}
+        <footer style={{ background: '#020617', color: 'white', padding: '4rem', textAlign: 'center', marginTop: 'auto' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '900', letterSpacing: '3px', marginBottom: '1rem' }}>BLUE LOTUS</div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', color: '#64748B', marginBottom: '2rem', fontSize: '0.9rem' }}>
+            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy</a>
+            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Terms</a>
+            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Contact</a>
+          </div>
+          <p style={{ color: '#334155', fontSize: '0.8rem' }}>© 2026 SOVEREIGN APP BUILDER // VERSION 1.07</p>
+        </footer>
       </div>
     );
   }
@@ -124,40 +140,49 @@ const App = () => {
           <RefreshCw size={32} className={isBuilding ? "animate-spin" : ""} color="#818CF8" />
           <span style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>FORGE MODE</span>
         </div>
-        <button onClick={() => setView("garden")} style={{ background: '#1E293B', color: 'white', border: '1px solid #334155', padding: '0.8rem 1.5rem', borderRadius: '10px', cursor: 'pointer' }}>EXIT</button>
+        
+        {/* TOOLBAR */}
+        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+           <button title="Undo" style={{ background: '#1E293B', color: '#94A3B8', border: '1px solid #334155', padding: '10px', borderRadius: '10px', cursor: 'pointer' }}><Undo2 size={18}/></button>
+           <button title="Delete" style={{ background: '#1E293B', color: '#EF4444', border: '1px solid #334155', padding: '10px', borderRadius: '10px', cursor: 'pointer' }}><Trash2 size={18}/></button>
+           <button title="Save" style={{ background: '#1E293B', color: '#10B981', border: '1px solid #334155', padding: '10px', borderRadius: '10px', cursor: 'pointer' }}><Save size={18}/></button>
+           <div style={{ width: '1px', background: '#334155', height: '30px' }}></div>
+           <button title="Github" style={{ background: '#1E293B', color: 'white', border: '1px solid #334155', padding: '10px', borderRadius: '10px', cursor: 'pointer' }}><Github size={18}/></button>
+           <button style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Rocket size={18} /> DEPLOY
+           </button>
+           <button onClick={() => setView("garden")} style={{ background: 'transparent', color: '#94A3B8', border: 'none', cursor: 'pointer', fontWeight: 'bold', marginLeft: '10px' }}>EXIT</button>
+        </div>
       </nav>
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {/* LEFT PANEL: CONSOLE & INPUT */}
+        {/* CONSOLE */}
         <div style={{ width: '450px', borderRight: '1px solid #1E293B', display: 'flex', flexDirection: 'column' }}>
           <div style={{ flex: 1, padding: '2.5rem', overflowY: 'auto' }}>
-            <h3 style={{ color: '#818CF8', borderBottom: '1px solid #1E293B', paddingBottom: '1rem' }}>SOVEREIGN CONSOLE</h3>
-            <div style={{ marginTop: '1.5rem', fontSize: '0.9rem', lineHeight: '1.7' }}>
-              {consoleLogs.map((log, i) => <p key={i} style={{ color: log.includes('COMPLETE') ? '#10B981' : '#94A3B8' }}>{log}</p>)}
+            <h3 style={{ color: '#818CF8', borderBottom: '1px solid #1E293B', paddingBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Sparkles size={18} /> TWIN INTERFACE
+            </h3>
+            <div style={{ marginTop: '1.5rem', fontSize: '0.9rem' }}>
+              {consoleLogs.map((log, i) => (
+                <div key={i} style={{ marginBottom: '1rem', paddingLeft: '10px', borderLeft: log.sender === 'PRIME' ? '2px solid #4F46E5' : '2px solid #818CF8' }}>
+                  <span style={{ fontWeight: 'bold', color: log.sender === 'PRIME' ? '#4F46E5' : '#818CF8', fontSize: '0.7rem', display: 'block' }}>{log.sender}</span>
+                  <p style={{ color: log.msg.includes('Healing') ? '#10B981' : '#94A3B8' }}>{log.msg}</p>
+                </div>
+              ))}
             </div>
           </div>
-          
-          {/* THE NEW AI INPUT PANEL */}
-          <div style={{ padding: '1.5rem', background: '#0F172A', borderTop: '1px solid #1E293B' }}>
-             <div style={{ background: '#1E293B', borderRadius: '15px', padding: '10px 15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <input 
-                  value={prompt} 
-                  onChange={(e) => setPrompt(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleBeginCultivation()}
-                  placeholder="Refine your vision..." 
-                  style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'white', fontSize: '1rem' }} 
-                />
-                <button onClick={() => handleBeginCultivation()} style={{ background: '#4F46E5', color: 'white', border: 'none', borderRadius: '10px', padding: '8px', cursor: 'pointer' }}>
-                   <Send size={18} />
-                </button>
+          <div style={{ padding: '1.5rem', borderTop: '1px solid #1E293B', background: '#0F172A' }}>
+             <div style={{ background: '#1E293B', borderRadius: '15px', padding: '12px', display: 'flex', gap: '10px' }}>
+                <input value={prompt} onChange={(e) => setPrompt(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleBeginCultivation()} placeholder="Message TWIN Prime..." style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'white' }} />
+                <button onClick={() => handleBeginCultivation()} style={{ background: '#4F46E5', border: 'none', borderRadius: '8px', padding: '8px', cursor: 'pointer' }}><Send size={18} color="white"/></button>
              </div>
           </div>
         </div>
         
-        {/* RIGHT PANEL: PREVIEW */}
+        {/* PREVIEW */}
         <div style={{ flex: 1, background: '#F1F5F9', padding: '1.5rem' }}>
           <div style={{ width: '100%', height: '100%', background: 'white', borderRadius: '30px', overflow: 'hidden' }}>
-            <iframe srcDoc={generatedCode || `<html><body style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif; color:#94a3b8;"><h2>Architectural Blueprint Pending...</h2></body></html>`} style={{ width: '100%', height: '100%', border: 'none' }} />
+            <iframe srcDoc={generatedCode || `<html><body style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif; color:#cbd5e1;"><h2>Waiting for TWIN Prime...</h2></body></html>`} style={{ width: '100%', height: '100%', border: 'none' }} />
           </div>
         </div>
       </div>
