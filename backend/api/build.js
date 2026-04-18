@@ -1,43 +1,48 @@
-import OpenAI from "openai";
+// backend/api/build.js
+import path from "path";
+import fs from "fs/promises";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
   try {
-    const { prompt } = req.body;
-
-    if (!prompt || typeof prompt !== "string") {
-      return res.status(400).json({ error: "Missing or invalid prompt" });
+    if (req.method !== "POST") {
+      return res.status(405).json({ ok: false, error: "Method not allowed" });
     }
 
-    const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
+    const { files } = req.body || {};
+
+    if (!files || typeof files !== "object") {
+      return res.status(400).json({
+        ok: false,
+        error: "Build requires a 'files' object containing file paths and content."
+      });
+    }
+
+    // Create a temporary build directory
+    const buildDir = path.join("/tmp", `bluelotus-build-${Date.now()}`);
+    await fs.mkdir(buildDir, { recursive: true });
+
+    // Write each file to the build directory
+    for (const filePath of Object.keys(files)) {
+      const fullPath = path.join(buildDir, filePath);
+      const dir = path.dirname(fullPath);
+
+      await fs.mkdir(dir, { recursive: true });
+      await fs.writeFile(fullPath, files[filePath], "utf8");
+    }
+
+    // Return the list of generated files
+    return res.status(200).json({
+      ok: true,
+      buildDirectory: buildDir,
+      generatedFiles: Object.keys(files),
+      timestamp: Date.now()
     });
 
-    // Ask OpenAI to generate a full HTML/JS app
-    const completion = await client.chat.completions.create({
-      model: "gpt-4o",
-      temperature: 0.2,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You generate complete, working HTML/JS/CSS code for small apps. Return ONLY code, no explanations."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ]
-    });
-
-    const code = completion.choices[0].message.content;
-
-    return res.status(200).json({ code });
   } catch (err) {
-    console.error("BUILD ERROR:", err);
-    return res.status(500).json({ error: "BUILD_FAILED", details: err.message });
+    return res.status(500).json({
+      ok: false,
+      error: "Build engine failure.",
+      details: err.message
+    });
   }
 }
