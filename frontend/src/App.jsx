@@ -7,7 +7,6 @@ const App = () => {
   const [isBuilding, setIsBuilding] = useState(false);
   const textareaRef = useRef(null);
 
-  // Auto-resize for the prompt area
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -21,19 +20,17 @@ const App = () => {
     return `$${discounted}/yr`;
   };
 
-  // THE FORGE EXECUTION LOGIC
   const handleForgeBuild = async () => {
     if (!prompt) return;
     setIsBuilding(true);
     
-    // Simulate the "Sovereign Engine" thinking and building
-    // In our next step, this connects to your OpenAI backend
-    console.log("Forge Engine: Analyzing prompt...", prompt);
+    // THE BLUE LOTUS GENERATION LOGIC
+    console.log("Blue Lotus Engine: Cultivating Sprout from prompt...", prompt);
     
     setTimeout(() => {
-      console.log("Forge Engine: Module generated successfully.");
+      console.log("Blue Lotus Engine: Sovereign Module complete.");
       setIsBuilding(false);
-      setPrompt(""); // Clear for the next architectural command
+      setPrompt(""); 
     }, 2000);
   };
 
@@ -45,7 +42,7 @@ const App = () => {
       display: 'flex', flexDirection: 'column', overflow: 'hidden'
     }}>
       
-      {/* 1. HEADER (Sovereign Navigation) */}
+      {/* 1. HEADER */}
       <nav style={{ 
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
         padding: '0.75rem 4rem', background: 'rgba(255, 255, 255, 0.7)', 
@@ -63,16 +60,16 @@ const App = () => {
         </div>
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <button style={{ background: 'none', border: 'none', color: '#6B7280', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer' }}>Sign In</button>
-          <button style={{ background: '#111827', color: 'white', border: 'none', padding: '0.5rem 1.2rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}>Sign Up</button>
+          <button style={{ background: '#111827', color: 'white', border: 'none', padding: '0.5rem 1.2rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}>Get Started</button>
         </div>
       </nav>
 
-      {/* 2. THE FORGE WORKSPACE (Hero Section) */}
+      {/* 2. THE BLUE LOTUS FORGE */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 2rem' }}>
         <div style={{ width: '100%', maxWidth: '800px', textAlign: 'center', transform: 'translateY(-12%)' }}>
           <h2 style={{ marginBottom: '1.5rem', letterSpacing: '-0.02em', lineHeight: '1.1' }}>
-            <span style={{ fontSize: '2.8rem', fontWeight: '300', color: '#6B7280' }}>Architect a </span>
-            <span style={{ fontSize: '3rem', fontWeight: '900', color: '#111827', background: 'linear-gradient(180deg, #111827, #4B5563)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>new reality.</span>
+            <span style={{ fontSize: '2.8rem', fontWeight: '300', color: '#6B7280' }}>Plant a </span>
+            <span style={{ fontSize: '3rem', fontWeight: '900', color: '#111827', background: 'linear-gradient(180deg, #111827, #4B5563)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>new idea.</span>
           </h2>
           
           <div style={{ 
@@ -82,7 +79,7 @@ const App = () => {
           }}>
             <textarea 
               ref={textareaRef}
-              placeholder="e.g., Build a client portal with a secure login and dashboard..."
+              placeholder="Describe the app you want the Blue Lotus to build..."
               style={{ width: '100%', border: 'none', outline: 'none', fontSize: '1.25rem', minHeight: '60px', resize: 'none', background: 'transparent', color: '#111827', fontFamily: 'inherit' }}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
@@ -97,7 +94,7 @@ const App = () => {
                   fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' 
                 }}
               >
-                {isBuilding ? <Loader2 className="animate-spin" size={16} /> : 'INITIALIZE BUILD'} 
+                {isBuilding ? <Loader2 className="animate-spin" size={16} /> : 'BEGIN CULTIVATION'} 
                 <ArrowRight size={16} />
               </button>
             </div>
@@ -105,7 +102,7 @@ const App = () => {
         </div>
       </main>
 
-      {/* 3. SOVEREIGN TIERS (Pricing Restored) */}
+      {/* 3. GROWTH TIERS */}
       <div style={{ padding: '0 4rem 2rem', flexShrink: 0 }}>
         <div style={{ display: 'flex', gap: '10px', maxWidth: '1400px', margin: '0 auto' }}>
           {[
@@ -133,7 +130,7 @@ const App = () => {
                 
                 {plan.healing && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px', color: '#10B981', fontSize: '0.55rem', fontWeight: '800' }}>
-                    <Activity size={9} /> FORGE ENGINE READY
+                    <Activity size={9} /> SOVEREIGN NODE ACTIVE
                   </div>
                 )}
                 {plan.isAddon && (
