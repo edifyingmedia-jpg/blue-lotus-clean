@@ -1,34 +1,17 @@
-import React from 'react';
+.logo-container {
+  display: flex !important; /* Force layout */
+  justify-content: center;
+  align-items: center;
+  min-height: 150px; /* Ensure there is space for it */
+  width: 100%;
+  position: relative;
+  z-index: 999; /* Put it on top of everything */
+}
 
-const LotusIcon = ({ size = 120 }) => {
-  return (
-    <div className="logo-container">
-      <svg 
-        className="logo"
-        width={size} 
-        height={size} 
-        viewBox="0 0 100 100" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <linearGradient id="lotusGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#4F46E5" /> {/* Indigo */}
-            <stop offset="100%" stopColor="#7C3AED" /> {/* Violet */}
-          </linearGradient>
-        </defs>
-        
-        {/* The Sovereign Geometric Bloom */}
-        <path 
-          d="M50 20C55 35 65 45 80 50C65 55 55 65 50 80C45 65 35 55 20 50C35 45 45 35 50 20Z" 
-          fill="url(#lotusGradient)"
-        />
-        
-        {/* Central "Healing" Glow Point */}
-        <circle cx="50" cy="50" r="6" fill="white" fillOpacity="0.4" />
-      </svg>
-    </div>
-  );
-};
-
-export default LotusIcon;
+.logo {
+  display: block;
+  margin: auto;
+  will-change: filter, transform;
+  /* If the gradient fails, this fallback color ensures you see it */
+  background: transparent; 
+}
