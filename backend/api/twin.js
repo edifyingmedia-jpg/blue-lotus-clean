@@ -1,3 +1,5 @@
+// force vercel rebuild
+
 import OpenAI from "openai";
 import twinBrain from "./twin-brain";
 
