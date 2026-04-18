@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, ArrowRight, Sparkles, Zap, ShieldCheck, Coins } from 'lucide-react';
+import { User, UserPlus, ArrowRight, Sparkles, Zap, ShieldCheck, Coins } from 'lucide-react';
 
 const App = () => {
   const [stage, setStage] = useState("landing");
@@ -29,91 +29,78 @@ const App = () => {
   );
 
   return (
-    <div style={{ height: '100vh', width: '100%', backgroundColor: 'white', fontFamily: 'Inter, sans-serif', color: '#111827', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', width: '100%', backgroundColor: 'white', fontFamily: 'Inter, sans-serif', color: '#111827', display: 'flex', flexDirection: 'column' }}>
       
-      {/* HEADER */}
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 4rem', width: '100%', boxSizing: 'border-box', borderBottom: '1px solid #F3F4F6' }}>
+      {/* HEADER: Added Sign Up */}
+      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 4rem', width: '100%', boxSizing: 'border-box', borderBottom: '1px solid #F3F4F6', background: 'white', zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <LotusLogo />
           <h1 style={{ fontSize: '1.1rem', fontWeight: '900', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#1E3A8A', margin: 0 }}>Blue Lotus</h1>
         </div>
-        <button style={{ background: 'none', border: '1px solid #E5E7EB', padding: '0.5rem 1.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}>SIGN IN</button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button style={{ background: 'none', border: '1px solid #E5E7EB', padding: '0.5rem 1.2rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}>SIGN IN</button>
+          <button style={{ background: '#2563EB', color: 'white', border: 'none', padding: '0.5rem 1.2rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}>SIGN UP</button>
+        </div>
       </nav>
 
-      {/* CENTERED CONTENT - This is what moves the box down */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 2rem' }}>
+      {/* MAIN CONTENT: Balanced Spacing */}
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
         
-        <div style={{ width: '100%', maxWidth: '900px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '4rem', fontWeight: '800', letterSpacing: '-0.05em', color: '#111827', marginBottom: '2.5rem' }}>
+        <div style={{ width: '100%', maxWidth: '900px', textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 style={{ fontSize: '3.5rem', fontWeight: '800', letterSpacing: '-0.05em', color: '#111827', marginBottom: '2rem' }}>
             What shall we build today?
           </h2>
           
-          {/* THE OUTLINED BOX */}
-          <div style={{ 
-            border: '2px solid #D1D5DB', // THE BORDER
-            borderRadius: '12px', 
-            padding: '1.5rem', 
-            backgroundColor: '#FFFFFF', 
-            width: '100%',
-            boxSizing: 'border-box'
-          }}>
+          <div style={{ border: '1.5px solid #D1D5DB', borderRadius: '12px', padding: '1.25rem', backgroundColor: '#FFFFFF', width: '100%', boxSizing: 'border-box' }}>
             <textarea 
               ref={textareaRef}
               rows="1"
               placeholder="Describe your vision..." 
-              style={{ 
-                width: '100%', 
-                border: 'none', 
-                fontSize: '1.5rem', 
-                outline: 'none', 
-                color: '#374151', 
-                fontWeight: '300', 
-                resize: 'none', 
-                minHeight: '120px',
-                lineHeight: '1.5'
-              }} 
+              style={{ width: '100%', border: 'none', fontSize: '1.3rem', outline: 'none', color: '#374151', fontWeight: '300', resize: 'none', minHeight: '100px', lineHeight: '1.5' }} 
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
             />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
-              <button 
-                onClick={() => setStage("workspace")} 
-                style={{ backgroundColor: '#2563EB', color: 'white', padding: '1rem 3.5rem', borderRadius: '4px', border: 'none', fontWeight: '800', cursor: 'pointer', textTransform: 'uppercase' }}
-              >
-                Build <ArrowRight size={20} style={{ marginLeft: '8px' }} />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button onClick={() => setStage("workspace")} style={{ backgroundColor: '#2563EB', color: 'white', padding: '0.8rem 2.5rem', borderRadius: '4px', border: 'none', fontWeight: '800', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                Build <ArrowRight size={18} />
               </button>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', marginTop: '3rem' }}>
-            <span style={{ fontSize: '0.85rem', color: '#9CA3AF' }}>Monthly</span>
-            <div onClick={() => setBilling(billing === 'monthly' ? 'yearly' : 'monthly')} style={{ width: '44px', height: '22px', background: '#F3F4F6', borderRadius: '20px', cursor: 'pointer', position: 'relative', border: '1px solid #E5E7EB' }}>
-              <div style={{ position: 'absolute', width: '16px', height: '16px', background: '#2563EB', borderRadius: '50%', top: '2px', left: billing === 'monthly' ? '3px' : '23px', transition: '0.2s' }} />
+          {/* Billing Toggle: Slightly smaller to save space */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
+            <span style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>Monthly</span>
+            <div onClick={() => setBilling(billing === 'monthly' ? 'yearly' : 'monthly')} style={{ width: '36px', height: '18px', background: '#F3F4F6', borderRadius: '20px', cursor: 'pointer', position: 'relative', border: '1px solid #E5E7EB' }}>
+              <div style={{ position: 'absolute', width: '14px', height: '14px', background: '#2563EB', borderRadius: '50%', top: '1px', left: billing === 'monthly' ? '2px' : '18px', transition: '0.2s' }} />
             </div>
-            <span style={{ fontSize: '0.85rem' }}>Yearly <span style={{ color: '#10B981' }}>(Save 10%)</span></span>
+            <span style={{ fontSize: '0.75rem' }}>Yearly <span style={{ color: '#10B981', fontWeight: '700' }}>(Save 10%)</span></span>
           </div>
+        </div>
+
+        {/* PRICING SECTION: More compact for visibility */}
+        <div style={{ display: 'flex', gap: '0.75rem', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
+          {[
+            { name: 'Explore', price: 'Free', credits: '10 Credits' },
+            { name: 'Pro', price: calculatePrice(9.99), credits: '100 Credits', featured: true },
+            { name: 'Elite', price: calculatePrice(19.99), credits: '200 Credits' },
+            { name: 'Sovereign', price: calculatePrice(29.99), credits: '300 Credits' },
+            { name: 'Refuel', price: '$19.99', credits: '200 Credits' }
+          ].map((tier, i) => (
+            <div key={i} style={{ 
+              flex: 1, padding: '1.25rem', border: tier.featured ? '2px solid #2563EB' : '1px solid #F3F4F6', borderRadius: '4px', textAlign: 'left',
+              backgroundColor: tier.featured ? '#F9FAFB' : 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+            }}>
+              <h3 style={{ fontSize: '0.6rem', fontWeight: '800', textTransform: 'uppercase', color: tier.featured ? '#2563EB' : '#9CA3AF', marginBottom: '0.25rem' }}>{tier.name}</h3>
+              <div style={{ fontSize: '1.2rem', fontWeight: '800' }}>{tier.price}</div>
+              <div style={{ fontSize: '0.75rem', color: '#4B5563', fontWeight: '600' }}>{tier.credits}</div>
+            </div>
+          ))}
         </div>
       </main>
 
-      {/* LOWER THIRD - Fixed to bottom */}
-      <div style={{ display: 'flex', gap: '1rem', width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '2rem 4rem 4rem' }}>
-        {[
-          { name: 'Explore', price: 'Free', credits: '10 Credits' },
-          { name: 'Pro', price: calculatePrice(9.99), credits: '100 Credits', featured: true },
-          { name: 'Elite', price: calculatePrice(19.99), credits: '200 Credits' },
-          { name: 'Sovereign', price: calculatePrice(29.99), credits: '300 Credits' },
-          { name: 'Refuel', price: '$19.99', credits: '200 Credits' }
-        ].map((tier, i) => (
-          <div key={i} style={{ 
-            flex: 1, padding: '1.5rem', border: tier.featured ? '2px solid #2563EB' : '1px solid #F3F4F6', borderRadius: '4px', textAlign: 'left',
-            backgroundColor: tier.featured ? '#F9FAFB' : 'white'
-          }}>
-            <h3 style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', color: tier.featured ? '#2563EB' : '#9CA3AF' }}>{tier.name}</h3>
-            <div style={{ fontSize: '1.5rem', fontWeight: '800' }}>{tier.price}</div>
-            <div style={{ fontSize: '0.85rem', color: '#4B5563' }}>{tier.credits}</div>
-          </div>
-        ))}
-      </div>
+      <footer style={{ padding: '1rem', textAlign: 'center', fontSize: '0.55rem', color: '#D1D5DB', letterSpacing: '0.4em', fontWeight: '800', textTransform: 'uppercase' }}>
+        Sovereign Engine // 2026
+      </footer>
     </div>
   );
 };
