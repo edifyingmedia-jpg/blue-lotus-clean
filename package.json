@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "openai": "^4.0.0"
+    "openai": "^4.0.0",
+    "lucide-react": "^0.284.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "build": "cd frontend && npm install --legacy-peer-deps && npm run build"
+    "install-all": "npm install && cd frontend && npm install --legacy-peer-deps",
+    "build": "cd frontend && npm run build"
   }
 }
