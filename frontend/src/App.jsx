@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, Eye, Zap, Database, Loader2 } from 'lucide-react';
+import { ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, Eye, Zap, Database, Loader2, Send, CheckCircle2 } from 'lucide-react';
 
 const App = () => {
   const [view, setView] = useState("garden"); 
   const [billing, setBilling] = useState("monthly");
+  const [selectedPlan, setSelectedPlan] = useState('SOVEREIGN');
   const [prompt, setPrompt] = useState("");
   const [isBuilding, setIsBuilding] = useState(false);
   const [generatedCode, setGeneratedCode] = useState("");
@@ -22,27 +23,27 @@ const App = () => {
     return billing === "monthly" ? `$${price}` : `$${price}/yr`;
   };
 
-  const handleBeginCultivation = async () => {
-    if (!prompt) return;
+  const handleBeginCultivation = async (overridePrompt) => {
+    const activePrompt = overridePrompt || prompt;
+    if (!activePrompt) return;
+    
     setView("forge");
     setIsBuilding(true);
-    setConsoleLogs(["> Initializing Blue Lotus V.1.07...", "> Establishing OpenAI Tunnel..."]);
+    setConsoleLogs(prev => [...prev, `> Initializing cultivation for: "${activePrompt.substring(0, 30)}..."`, "> Connecting to Sovereign Engine..."]);
     
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt: activePrompt }),
       });
       const data = await response.json();
-      
       if (data.code) {
-        setConsoleLogs(prev => [...prev, "> Sprouting UI components...", "> HEALING COMPLETE."]);
+        setConsoleLogs(prev => [...prev, "> UI elements sprouted successfully.", "> HEALING COMPLETE."]);
         setGeneratedCode(data.code);
       }
     } catch (err) {
-      setConsoleLogs(prev => [...prev, "> ERROR: Connection failed.", "> Check OpenAI Key."]);
-      setGeneratedCode("<html><body style='background:#fee2e2; padding:2rem; font-family:sans-serif;'><h2>Connection Error</h2><p>Please check your Vercel Environment Variables.</p></body></html>");
+      setConsoleLogs(prev => [...prev, "> ERROR: Sovereign connection interrupted."]);
     } finally {
       setIsBuilding(false);
     }
@@ -60,26 +61,19 @@ const App = () => {
             </div>
             <span style={{ fontSize: '1.5rem', fontWeight: '900', letterSpacing: '2px' }}>BLUE LOTUS</span>
           </div>
-          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            <button onClick={() => setView("forge")} style={{ background: 'transparent', border: 'none', fontWeight: 'bold', color: '#6B7280', fontSize: '1.1rem', cursor: 'pointer' }}>Sign In</button>
-            <button onClick={() => setView("forge")} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem 1.8rem', borderRadius: '12px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer' }}>Join</button>
+          <div style={{ display: 'flex', gap: '20px' }}>
+            <button onClick={() => setView("forge")} style={{ background: 'transparent', border: 'none', fontWeight: 'bold', color: '#6B7280', cursor: 'pointer' }}>Sign In</button>
+            <button onClick={() => setView("forge")} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem 1.8rem', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>Join</button>
           </div>
         </nav>
 
         {/* HERO */}
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem' }}>
-          <h2 style={{ fontSize: '4.5rem', fontWeight: '900', marginBottom: '2rem', textAlign: 'center' }}>
-            Plant a <span style={{ color: '#4F46E5' }}>new idea.</span>
-          </h2>
+          <h2 style={{ fontSize: '4.5rem', fontWeight: '900', marginBottom: '2rem' }}>Plant a <span style={{ color: '#4F46E5' }}>new idea.</span></h2>
           <div style={{ width: '100%', maxWidth: '850px', background: '#f8faff', border: '3px solid #4F46E5', borderRadius: '40px', padding: '2.5rem', boxShadow: '0 30px 60px rgba(79, 70, 229, 0.2)' }}>
-            <textarea 
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Describe your app..."
-              style={{ width: '100%', border: 'none', outline: 'none', fontSize: '1.8rem', minHeight: '140px', background: 'transparent', resize: 'none' }}
-            />
+            <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Describe your vision..." style={{ width: '100%', border: 'none', outline: 'none', fontSize: '1.8rem', minHeight: '140px', background: 'transparent', resize: 'none' }} />
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-              <button onClick={handleBeginCultivation} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '1.2rem 4rem', borderRadius: '20px', fontWeight: '900', fontSize: '1.4rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button onClick={() => handleBeginCultivation()} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '1.2rem 4rem', borderRadius: '20px', fontWeight: '900', fontSize: '1.4rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
                 BEGIN CULTIVATION <ArrowRight size={32} />
               </button>
             </div>
@@ -89,56 +83,40 @@ const App = () => {
         {/* BILLING TOGGLE */}
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <div style={{ background: '#F3F4F6', display: 'inline-flex', padding: '6px', borderRadius: '14px', border: '1px solid #E5E7EB' }}>
-            <button onClick={() => setBilling('monthly')} style={{ padding: '0.8rem 2rem', borderRadius: '10px', border: 'none', fontWeight: 'bold', cursor: 'pointer', background: billing === 'monthly' ? 'white' : 'transparent', color: billing === 'monthly' ? '#4F46E5' : '#6B7280' }}>Monthly</button>
-            <button onClick={() => setBilling('yearly')} style={{ padding: '0.8rem 2rem', borderRadius: '10px', border: 'none', fontWeight: 'bold', cursor: 'pointer', background: billing === 'yearly' ? 'white' : 'transparent', color: billing === 'yearly' ? '#4F46E5' : '#6B7280' }}>Yearly (-15%)</button>
+            <button onClick={() => setBilling('monthly')} style={{ padding: '0.8rem 2rem', borderRadius: '10px', border: 'none', fontWeight: 'bold', cursor: 'pointer', background: billing === 'monthly' ? '#4F46E5' : 'transparent', color: billing === 'monthly' ? 'white' : '#6B7280' }}>Monthly</button>
+            <button onClick={() => setBilling('yearly')} style={{ padding: '0.8rem 2rem', borderRadius: '10px', border: 'none', fontWeight: 'bold', cursor: 'pointer', background: billing === 'yearly' ? '#4F46E5' : 'transparent', color: billing === 'yearly' ? 'white' : '#6B7280' }}>Yearly (-15%)</button>
           </div>
         </div>
 
-        {/* PRICING & REFUEL ROW */}
+        {/* PRICING CARDS */}
         <div style={{ padding: '0 2rem 6rem', display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
           {plans.map((plan, idx) => (
-            <div key={idx} style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', border: '2px solid #eee', width: '210px', textAlign: 'center', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : '#111827', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ color: '#4F46E5', marginBottom: '10px' }}>{plan.i}</div>
-                <div style={{ fontWeight: '900', fontSize: '1rem', letterSpacing: '1px', marginBottom: '8px' }}>{plan.n}</div>
-                <div style={{ fontSize: '2.2rem', fontWeight: '900', marginBottom: '10px' }}>{calculatePrice(plan.p)}</div>
-                <div style={{ background: '#EEF2FF', color: '#4F46E5', padding: '4px 12px', borderRadius: '15px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem' }}>
-                  <Zap size={14} fill="#4F46E5" /> {plan.c} Credits
-                </div>
+            <div key={idx} onClick={() => setSelectedPlan(plan.n)} style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', width: '210px', textAlign: 'center', cursor: 'pointer', position: 'relative', border: selectedPlan === plan.n ? '4px solid #4F46E5' : '2px solid #eee', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : '#111827', transform: selectedPlan === plan.n ? 'translateY(-10px)' : 'none', transition: '0.3s' }}>
+              {selectedPlan === plan.n && <CheckCircle2 size={24} style={{ position: 'absolute', top: '15px', right: '15px', color: '#4F46E5' }} />}
+              <div style={{ color: '#4F46E5', marginBottom: '10px' }}>{plan.i}</div>
+              <div style={{ fontWeight: '900', fontSize: '1.1rem', marginBottom: '8px' }}>{plan.n}</div>
+              <div style={{ fontSize: '2.2rem', fontWeight: '900' }}>{calculatePrice(plan.p)}</div>
+              <div style={{ marginTop: '15px', background: '#EEF2FF', color: '#4F46E5', padding: '5px 12px', borderRadius: '15px', fontWeight: 'bold', fontSize: '0.85rem' }}>
+                <Zap size={14} fill="#4F46E5" /> {plan.c} Credits
               </div>
-              <p style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '15px' }}>{plan.d}</p>
             </div>
           ))}
-
-          {/* REFUEL OPTION */}
-          <div style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', border: '3px dashed #4F46E5', width: '210px', textAlign: 'center', background: '#F8FAFF', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <div>
-              <Database color="#4F46E5" size={32} style={{ marginBottom: '10px' }} />
-              <div style={{ fontWeight: '900', fontSize: '1rem', letterSpacing: '1px', marginBottom: '8px' }}>REFUEL</div>
-              <div style={{ fontSize: '2.2rem', fontWeight: '900', marginBottom: '10px' }}>$19.99</div>
-              <div style={{ background: '#4F46E5', color: 'white', padding: '4px 12px', borderRadius: '15px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem' }}>
+          
+          {/* REFUEL CARD */}
+          <div onClick={() => setSelectedPlan('REFUEL')} style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', width: '210px', textAlign: 'center', cursor: 'pointer', border: selectedPlan === 'REFUEL' ? '4px solid #4F46E5' : '3px dashed #4F46E5', background: '#F8FAFF', transform: selectedPlan === 'REFUEL' ? 'translateY(-10px)' : 'none', transition: '0.3s' }}>
+             <Database color="#4F46E5" size={32} style={{ marginBottom: '10px' }} />
+             <div style={{ fontWeight: '900', fontSize: '1.1rem', marginBottom: '8px' }}>REFUEL</div>
+             <div style={{ fontSize: '2.2rem', fontWeight: '900' }}>$19.99</div>
+             <div style={{ marginTop: '15px', background: '#4F46E5', color: 'white', padding: '5px 12px', borderRadius: '15px', fontWeight: 'bold', fontSize: '0.85rem' }}>
                 <Zap size={14} fill="white" /> 200 Credits
-              </div>
-            </div>
-            <button onClick={() => setView("forge")} style={{ marginTop: '15px', width: '100%', background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>TOP UP</button>
+             </div>
           </div>
         </div>
-
-        {/* FOOTER */}
-        <footer style={{ background: '#020617', color: 'white', padding: '4rem', textAlign: 'center', marginTop: 'auto' }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: '900', letterSpacing: '3px', marginBottom: '1rem' }}>BLUE LOTUS</div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', color: '#64748B', marginBottom: '2rem', fontSize: '0.9rem' }}>
-            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy Policy</a>
-            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Terms of Service</a>
-            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Contact</a>
-          </div>
-          <p style={{ color: '#334155', fontSize: '0.8rem' }}>© 2026 SOVEREIGN APP BUILDER // VERSION 1.07</p>
-        </footer>
       </div>
     );
   }
 
-  // FORGE VIEW (WORKSPACE)
+  // FORGE VIEW
   return (
     <div style={{ height: '100vh', width: '100vw', background: '#020617', color: 'white', display: 'flex', flexDirection: 'column', fontFamily: 'monospace' }}>
       <nav style={{ height: '80px', borderBottom: '1px solid #1E293B', display: 'flex', alignItems: 'center', padding: '0 3rem', justifyContent: 'space-between' }}>
@@ -146,40 +124,40 @@ const App = () => {
           <RefreshCw size={32} className={isBuilding ? "animate-spin" : ""} color="#818CF8" />
           <span style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>FORGE MODE</span>
         </div>
-        <button onClick={() => setView("garden")} style={{ background: '#1E293B', color: 'white', border: '2px solid #334155', padding: '0.8rem 1.5rem', borderRadius: '10px', cursor: 'pointer' }}>EXIT</button>
+        <button onClick={() => setView("garden")} style={{ background: '#1E293B', color: 'white', border: '1px solid #334155', padding: '0.8rem 1.5rem', borderRadius: '10px', cursor: 'pointer' }}>EXIT</button>
       </nav>
+
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {/* LEFT PANEL: CONSOLE */}
-        <div style={{ width: '400px', borderRight: '1px solid #1E293B', padding: '2.5rem', overflowY: 'auto' }}>
-          <h3 style={{ color: '#818CF8', borderBottom: '1px solid #1E293B', paddingBottom: '1rem' }}>CONSOLE</h3>
-          <div style={{ marginTop: '1.5rem', color: '#94A3B8', fontSize: '1rem', lineHeight: '1.7' }}>
-            {consoleLogs.map((log, i) => <p key={i} style={{ color: log.includes('COMPLETE') ? '#10B981' : '#94A3B8' }}>{log}</p>)}
+        {/* LEFT PANEL: CONSOLE & INPUT */}
+        <div style={{ width: '450px', borderRight: '1px solid #1E293B', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, padding: '2.5rem', overflowY: 'auto' }}>
+            <h3 style={{ color: '#818CF8', borderBottom: '1px solid #1E293B', paddingBottom: '1rem' }}>SOVEREIGN CONSOLE</h3>
+            <div style={{ marginTop: '1.5rem', fontSize: '0.9rem', lineHeight: '1.7' }}>
+              {consoleLogs.map((log, i) => <p key={i} style={{ color: log.includes('COMPLETE') ? '#10B981' : '#94A3B8' }}>{log}</p>)}
+            </div>
+          </div>
+          
+          {/* THE NEW AI INPUT PANEL */}
+          <div style={{ padding: '1.5rem', background: '#0F172A', borderTop: '1px solid #1E293B' }}>
+             <div style={{ background: '#1E293B', borderRadius: '15px', padding: '10px 15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <input 
+                  value={prompt} 
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleBeginCultivation()}
+                  placeholder="Refine your vision..." 
+                  style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'white', fontSize: '1rem' }} 
+                />
+                <button onClick={() => handleBeginCultivation()} style={{ background: '#4F46E5', color: 'white', border: 'none', borderRadius: '10px', padding: '8px', cursor: 'pointer' }}>
+                   <Send size={18} />
+                </button>
+             </div>
           </div>
         </div>
         
-        {/* RIGHT PANEL: LIVE PREVIEW SPROUT */}
+        {/* RIGHT PANEL: PREVIEW */}
         <div style={{ flex: 1, background: '#F1F5F9', padding: '1.5rem' }}>
-          <div style={{ width: '100%', height: '100%', background: 'white', borderRadius: '30px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-             <div style={{ background: '#f8fafc', padding: '10px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ff5f56' }}></div>
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ffbd2e' }}></div>
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#27c93f' }}></div>
-                <span style={{ marginLeft: '10px', fontSize: '0.75rem', fontWeight: 'bold', color: '#94a3b8' }}>LIVE PREVIEW</span>
-             </div>
-             <div style={{ flex: 1, position: 'relative' }}>
-                {isBuilding ? (
-                  <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                    <Loader2 size={60} className="animate-spin" color="#4F46E5" />
-                    <p style={{ marginTop: '1rem', color: '#4F46E5', fontWeight: '900' }}>CULTIVATING...</p>
-                  </div>
-                ) : (
-                  <iframe
-                    srcDoc={generatedCode || `<html><body style="font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:90vh; color:#cbd5e1; text-align:center;"><div><h2>Ready to Build</h2><p>Enter a prompt to sprout your first component.</p></div></body></html>`}
-                    title="preview"
-                    style={{ width: '100%', height: '100%', border: 'none' }}
-                  />
-                )}
-             </div>
+          <div style={{ width: '100%', height: '100%', background: 'white', borderRadius: '30px', overflow: 'hidden' }}>
+            <iframe srcDoc={generatedCode || `<html><body style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif; color:#94a3b8;"><h2>Architectural Blueprint Pending...</h2></body></html>`} style={{ width: '100%', height: '100%', border: 'none' }} />
           </div>
         </div>
       </div>
