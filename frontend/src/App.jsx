@@ -13,16 +13,25 @@ const App = () => {
     }
   }, [prompt]);
 
+  const isYearly = billing === "yearly";
+
   const calculatePrice = (base) => {
-    if (billing === "monthly") return `$${base}`;
+    if (!isYearly) return `$${base}`;
     return `$${(base * 12 * 0.85).toFixed(0)}/yr`;
+  };
+
+  // Logic to scale credits based on billing cycle
+  const getCredits = (baseCredits) => {
+    if (typeof baseCredits === 'string' && baseCredits.includes('Free')) return baseCredits;
+    const amount = parseInt(baseCredits);
+    return isYearly ? `${amount * 12} Credits` : `${amount} Credits`;
   };
 
   const plans = [
     { name: 'SPROUT', icon: <Leaf size={14}/>, price: 'Free', credits: '10 Credits' },
-    { name: 'SAPLING', icon: <Sprout size={14}/>, price: calculatePrice(9.99), credits: '100 Credits', toggle: true, healing: true },
-    { name: 'OAK', icon: <Trees size={14}/>, price: calculatePrice(19.99), credits: '200 Credits', toggle: true, feat: true, healing: true },
-    { name: 'SOVEREIGN', icon: <Crown size={14}/>, price: calculatePrice(29.99), credits: '300 Credits', toggle: true, premium: true, healing: true },
+    { name: 'SAPLING', icon: <Sprout size={14}/>, price: calculatePrice(9.99), credits: getCredits('100'), toggle: true, healing: true },
+    { name: 'OAK', icon: <Trees size={14}/>, price: calculatePrice(19.99), credits: getCredits('200'), toggle: true, feat: true, healing: true },
+    { name: 'SOVEREIGN', icon: <Crown size={14}/>, price: calculatePrice(29.99), credits: getCredits('300'), toggle: true, premium: true, healing: true },
     { name: 'REFUEL', icon: <Zap size={14}/>, price: '$19', credits: '200 Credits', isAddon: true }
   ];
 
@@ -42,35 +51,23 @@ const App = () => {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           
-          {/* THE REBUILT BLUE LOTUS LOGO */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '42px', height: '42px' }}>
-            <svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="lotusGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#4F46E5" />
-                  <stop offset="100%" stopColor="#9333EA" />
-                </linearGradient>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-              </defs>
-              {/* Outer Glow Circle */}
-              <circle cx="50" cy="50" r="35" fill="url(#lotusGradient)" opacity="0.1" />
-              {/* The Lotus Flower */}
-              <g filter="url(#glow)">
-                <path 
-                  d="M50 15C55 35 75 45 90 50C75 55 55 65 50 85C45 65 25 55 10 50C25 45 45 35 50 15Z" 
-                  fill="url(#lotusGradient)" 
-                />
-                <path 
-                  d="M50 35C52 45 60 50 70 52C60 54 52 60 50 70C48 60 40 54 30 52C40 50 48 45 50 35Z" 
-                  fill="white" opacity="0.5" 
-                />
-                <circle cx="50" cy="52" r="4" fill="white" />
-              </g>
+          {/* THE RE-ENGINEERED BLUE LOTUS LOGO (High Compatibility) */}
+          <div style={{ 
+            width: '38px', height: '38px', 
+            background: 'linear-gradient(135deg, #4F46E5, #9333EA)',
+            borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)'
+          }}>
+            <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path 
+                d="M50 10C55 35 75 45 95 50C75 55 55 65 50 90C45 65 25 55 5 50C25 45 45 35 50 10Z" 
+                fill="white" 
+              />
+              <path 
+                d="M50 30C53 45 65 52 75 55C65 58 53 65 50 75C47 65 35 58 25 55C35 52 47 45 50 30Z" 
+                fill="#4F46E5" opacity="0.4" 
+              />
+              <circle cx="50" cy="52" r="6" fill="white" />
             </svg>
           </div>
 
@@ -84,7 +81,7 @@ const App = () => {
         </div>
       </nav>
 
-      {/* 2. HERO - TIGHTENED */}
+      {/* 2. HERO */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0.5rem 2rem' }}>
         <div style={{ width: '100%', maxWidth: '680px', textAlign: 'center', transform: 'translateY(-5%)' }}>
           <h2 style={{ marginBottom: '1.25rem', letterSpacing: '-0.04em', lineHeight: '1.05' }}>
@@ -113,7 +110,7 @@ const App = () => {
         </div>
       </main>
 
-      {/* 3. PRICING - SUPER COMPACT */}
+      {/* 3. PRICING */}
       <div style={{ padding: '0 3rem 1rem', flexShrink: 0 }}>
         <div style={{ display: 'flex', gap: '10px', maxWidth: '1100px', margin: '0 auto' }}>
           {plans.map((plan, i) => (
@@ -133,7 +130,7 @@ const App = () => {
                   <span style={{ fontSize: '0.55rem', fontWeight: '800', letterSpacing: '0.05em', color: plan.premium ? '#94A3B8' : '#64748B' }}>{plan.name}</span>
                 </div>
                 <div style={{ fontSize: '1.1rem', fontWeight: '800' }}>{plan.price}</div>
-                <div style={{ fontSize: '0.7rem', opacity: 0.7 }}>{plan.credits}</div>
+                <div style={{ fontSize: '0.7rem', fontWeight: '600', color: plan.premium ? '#A5B4FC' : '#6366F1' }}>{plan.credits}</div>
                 
                 {plan.healing && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px', color: '#10B981', fontSize: '0.55rem', fontWeight: '700' }}>
