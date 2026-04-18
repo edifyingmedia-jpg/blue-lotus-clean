@@ -1,5 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, Eye, Zap, Database, Loader2, Send, CheckCircle2, Save, Trash2, Undo2, Github, Rocket, Sparkles, ShieldCheck } from 'lucide-react';
+import React, { useState } from 'react';
+// Adding specific imports to ensure Vite finds everything
+import { 
+  ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, 
+  Zap, Database, Send, Save, Trash2, Undo2, 
+  Github, Rocket, Sparkles, ShieldCheck 
+} from 'lucide-react';
 
 const App = () => {
   const [view, setView] = useState("garden"); 
@@ -30,7 +35,7 @@ const App = () => {
     setView("forge");
     setIsBuilding(true);
     setConsoleLogs([
-      { sender: "TWIN", msg: `Prime, initiating architectural scan for our user: "${activePrompt.substring(0, 40)}..."` },
+      { sender: "TWIN", msg: `Prime, initiating architectural scan: "${activePrompt.substring(0, 40)}..."` },
       { sender: "PRIME", msg: "Scanning patterns. Applying Sovereign Healing. Final authority engaged." }
     ]);
     
@@ -43,7 +48,7 @@ const App = () => {
       const data = await response.json();
       if (data.code) {
         setConsoleLogs(prev => [...prev, 
-          { sender: "PRIME", msg: "Architecture validated. Healing protocols complete. I have authorized this build." },
+          { sender: "PRIME", msg: "Architecture validated. Healing complete. Build authorized." },
           { sender: "TWIN", msg: "The Master Builder has finished. Sprout stabilized." }
         ]);
         setGeneratedCode(data.code);
@@ -58,8 +63,6 @@ const App = () => {
   if (view === "garden") {
     return (
       <div style={{ minHeight: '100vh', width: '100vw', background: 'white', display: 'flex', flexDirection: 'column', fontFamily: 'sans-serif', color: '#111827' }}>
-        
-        {/* HEADER */}
         <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 4rem', borderBottom: '1px solid #eee' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ background: '#4F46E5', padding: '8px', borderRadius: '8px' }}>
@@ -73,7 +76,6 @@ const App = () => {
           </div>
         </nav>
 
-        {/* HERO */}
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem' }}>
           <h2 style={{ fontSize: '4.5rem', fontWeight: '900', marginBottom: '2rem' }}>Plant a <span style={{ color: '#4F46E5' }}>new idea.</span></h2>
           <div style={{ width: '100%', maxWidth: '850px', background: '#f8faff', border: '3px solid #4F46E5', borderRadius: '40px', padding: '2.5rem', boxShadow: '0 30px 60px rgba(79, 70, 229, 0.2)' }}>
@@ -86,7 +88,6 @@ const App = () => {
           </div>
         </main>
 
-        {/* BILLING TOGGLE */}
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <div style={{ background: '#F3F4F6', display: 'inline-flex', padding: '6px', borderRadius: '14px', border: '1px solid #E5E7EB' }}>
             <button onClick={() => setBilling('monthly')} style={{ padding: '0.8rem 2rem', borderRadius: '10px', border: 'none', fontWeight: 'bold', cursor: 'pointer', background: billing === 'monthly' ? '#4F46E5' : 'transparent', color: billing === 'monthly' ? 'white' : '#6B7280' }}>Monthly</button>
@@ -94,7 +95,6 @@ const App = () => {
           </div>
         </div>
 
-        {/* PRICING */}
         <div style={{ padding: '0 2rem 6rem', display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
           {plans.map((plan, idx) => (
             <div key={idx} onClick={() => setSelectedPlan(plan.n)} style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', width: '210px', textAlign: 'center', cursor: 'pointer', border: selectedPlan === plan.n ? '4px solid #4F46E5' : '2px solid #eee', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : '#111827', position: 'relative', transition: '0.3s' }}>
@@ -118,21 +118,14 @@ const App = () => {
           </div>
         </div>
 
-        {/* FOOTER */}
         <footer style={{ background: '#020617', color: 'white', padding: '4rem', textAlign: 'center', marginTop: 'auto' }}>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', letterSpacing: '3px', marginBottom: '1rem' }}>BLUE LOTUS</div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', color: '#64748B', marginBottom: '2rem', fontSize: '0.9rem' }}>
-            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy</a>
-            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Terms</a>
-            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Contact</a>
-          </div>
           <p style={{ color: '#334155', fontSize: '0.8rem' }}>© 2026 SOVEREIGN APP BUILDER // VERSION 1.07</p>
         </footer>
       </div>
     );
   }
 
-  // FORGE VIEW
   return (
     <div style={{ height: '100vh', width: '100vw', background: '#020617', color: 'white', display: 'flex', flexDirection: 'column', fontFamily: 'monospace' }}>
       <nav style={{ height: '80px', borderBottom: '1px solid #1E293B', display: 'flex', alignItems: 'center', padding: '0 3rem', justifyContent: 'space-between' }}>
@@ -141,22 +134,20 @@ const App = () => {
           <span style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>FORGE MODE</span>
         </div>
         
-        {/* TOOLBAR */}
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-           <button title="Undo" style={{ background: '#1E293B', color: '#94A3B8', border: '1px solid #334155', padding: '10px', borderRadius: '10px', cursor: 'pointer' }}><Undo2 size={18}/></button>
-           <button title="Delete" style={{ background: '#1E293B', color: '#EF4444', border: '1px solid #334155', padding: '10px', borderRadius: '10px', cursor: 'pointer' }}><Trash2 size={18}/></button>
-           <button title="Save" style={{ background: '#1E293B', color: '#10B981', border: '1px solid #334155', padding: '10px', borderRadius: '10px', cursor: 'pointer' }}><Save size={18}/></button>
+           <button title="Undo" style={{ background: '#1E293B', color: '#94A3B8', border: '1px solid #334155', padding: '10px', borderRadius: '10px' }}><Undo2 size={18}/></button>
+           <button title="Delete" style={{ background: '#1E293B', color: '#EF4444', border: '1px solid #334155', padding: '10px', borderRadius: '10px' }}><Trash2 size={18}/></button>
+           <button title="Save" style={{ background: '#1E293B', color: '#10B981', border: '1px solid #334155', padding: '10px', borderRadius: '10px' }}><Save size={18}/></button>
            <div style={{ width: '1px', background: '#334155', height: '30px' }}></div>
-           <button title="Github" style={{ background: '#1E293B', color: 'white', border: '1px solid #334155', padding: '10px', borderRadius: '10px', cursor: 'pointer' }}><Github size={18}/></button>
-           <button style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+           <button title="Github" style={{ background: '#1E293B', color: 'white', border: '1px solid #334155', padding: '10px', borderRadius: '10px' }}><Github size={18}/></button>
+           <button style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '10px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Rocket size={18} /> DEPLOY
            </button>
-           <button onClick={() => setView("garden")} style={{ background: 'transparent', color: '#94A3B8', border: 'none', cursor: 'pointer', fontWeight: 'bold', marginLeft: '10px' }}>EXIT</button>
+           <button onClick={() => setView("garden")} style={{ background: 'transparent', color: '#94A3B8', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>EXIT</button>
         </div>
       </nav>
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {/* CONSOLE */}
         <div style={{ width: '450px', borderRight: '1px solid #1E293B', display: 'flex', flexDirection: 'column' }}>
           <div style={{ flex: 1, padding: '2.5rem', overflowY: 'auto' }}>
             <h3 style={{ color: '#818CF8', borderBottom: '1px solid #1E293B', paddingBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -179,5 +170,14 @@ const App = () => {
           </div>
         </div>
         
-        {/* PREVIEW */}
-        <div style={{ flex
+        <div style={{ flex: 1, background: '#F1F5F9', padding: '1.5rem' }}>
+          <div style={{ width: '100%', height: '100%', background: 'white', borderRadius: '30px', overflow: 'hidden' }}>
+            <iframe srcDoc={generatedCode || `<html><body style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif; color:#cbd5e1;"><h2>Waiting for Prime Authorization...</h2></body></html>`} style={{ width: '100%', height: '100%', border: 'none' }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
