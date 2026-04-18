@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, ArrowRight, Sparkles, Zap, ShieldCheck, Coins } from 'lucide-react';
+import { ArrowRight, Sparkles, Zap, ShieldCheck, Coins } from 'lucide-react';
 
 const App = () => {
   const [stage, setStage] = useState("landing");
@@ -43,7 +43,7 @@ const App = () => {
         </div>
       </nav>
 
-      {/* CENTER: 20% Smaller Input Area */}
+      {/* CENTER AREA */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 2rem' }}>
         <div style={{ width: '100%', maxWidth: '850px', textAlign: 'center', transform: 'translateY(-10%)' }}>
           <h2 style={{ fontSize: '3.2rem', fontWeight: '800', letterSpacing: '-0.05em', color: '#111827', marginBottom: '1.5rem' }}>
@@ -68,7 +68,7 @@ const App = () => {
         </div>
       </main>
 
-      {/* BOTTOM: Integrated Pricing (Toggle inside cards) */}
+      {/* BOTTOM AREA */}
       <div style={{ width: '100%', padding: '0 4rem 3rem', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', gap: '0.75rem', maxWidth: '1400px', margin: '0 auto' }}>
           {[
@@ -79,25 +79,27 @@ const App = () => {
             { name: 'Refuel', price: '$19.99', credits: '200 Credits', hasToggle: false }
           ].map((tier, i) => (
             <div key={i} style={{ 
-              flex: 1, padding: '1.25rem', border: tier.featured ? '2.5px solid #2563EB' : '1px solid #F3F4F6', borderRadius: '6px', textAlign: 'left',
-              backgroundColor: tier.featured ? '#F9FAFB' : 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '140px'
-            }}>
+              flex: 1, padding: '1.25rem', border: tier.featured ? '2px solid #2563EB' : '1px solid #F3F4F6', borderRadius: '6px', textAlign: 'left',
+              backgroundColor: tier.featured ? '#F9FAFB' : 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '140px',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease', cursor: 'default'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 10px 20px rgba(0,0,0,0.05)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}>
               <div>
                 <h3 style={{ fontSize: '0.6rem', fontWeight: '900', textTransform: 'uppercase', color: tier.featured ? '#2563EB' : '#9CA3AF', marginBottom: '0.25rem' }}>{tier.name}</h3>
                 <div style={{ fontSize: '1.25rem', fontWeight: '900' }}>{tier.price}</div>
                 <div style={{ fontSize: '0.8rem', color: '#4B5563', fontWeight: '700' }}>{tier.credits}</div>
               </div>
 
-              {/* Nested Toggle */}
               {tier.hasToggle && (
                 <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <div 
                     onClick={() => setBilling(billing === 'monthly' ? 'yearly' : 'monthly')} 
-                    style={{ width: '28px', height: '14px', background: '#E5E7EB', borderRadius: '10px', cursor: 'pointer', position: 'relative' }}
+                    style={{ width: '28px', height: '14px', background: billing === 'yearly' ? '#DCFCE7' : '#E5E7EB', borderRadius: '10px', cursor: 'pointer', position: 'relative', border: billing === 'yearly' ? '1px solid #10B981' : '1px solid transparent' }}
                   >
-                    <div style={{ position: 'absolute', width: '10px', height: '10px', background: '#2563EB', borderRadius: '50%', top: '2px', left: billing === 'monthly' ? '2px' : '16px', transition: '0.2s' }} />
+                    <div style={{ position: 'absolute', width: '10px', height: '10px', background: billing === 'yearly' ? '#10B981' : '#2563EB', borderRadius: '50%', top: '1px', left: billing === 'monthly' ? '2px' : '14px', transition: '0.2s' }} />
                   </div>
-                  <span style={{ fontSize: '0.6rem', fontWeight: '800', color: billing === 'yearly' ? '#10B981' : '#9CA3AF' }}>
+                  <span style={{ fontSize: '0.6rem', fontWeight: '900', color: billing === 'yearly' ? '#10B981' : '#9CA3AF' }}>
                     {billing === 'yearly' ? 'YEARLY' : 'MONTHLY'}
                   </span>
                 </div>
