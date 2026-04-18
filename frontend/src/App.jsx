@@ -34,22 +34,51 @@ const App = () => {
         backdropFilter: 'blur(15px)', borderBottom: '1px solid rgba(0,0,0,0.03)', zIndex: 10, flexShrink: 0
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Blue Lotus Logo */}
           <div style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', padding: '5px', borderRadius: '6px' }}>
-            <svg width="20" height="20" viewBox="0 0 100 100" fill="white">
-              <path d="M50 20C55 35 65 45 80 50C65 55 55 65 50 80C45 65 35 55 20 50C35 45 45 35 50 20Z" />
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 120 120"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{
+                filter: 'drop-shadow(0 0 6px rgba(79,70,229,0.6)) drop-shadow(0 0 12px rgba(124,58,237,0.4))'
+              }}
+            >
+              <defs>
+                <radialGradient id="lotusGradient" cx="50%" cy="40%" r="60%">
+                  <stop offset="0%" stopColor="#A5B4FC" />
+                  <stop offset="50%" stopColor="#7C3AED" />
+                  <stop offset="100%" stopColor="#4F46E5" />
+                </radialGradient>
+              </defs>
+              <path
+                d="M60 15C65 30 75 45 90 55C75 60 65 75 60 95C55 75 45 60 30 55C45 45 55 30 60 15Z"
+                fill="url(#lotusGradient)"
+                stroke="#E0E7FF"
+                strokeWidth="2"
+              />
+              <path
+                d="M60 35C63 45 70 55 80 60C70 65 63 75 60 85C57 75 50 65 40 60C50 55 57 45 60 35Z"
+                fill="url(#lotusGradient)"
+                opacity="0.8"
+              />
+              <circle cx="60" cy="60" r="6" fill="#F9FAFB" />
             </svg>
           </div>
+
           <span style={{ fontSize: '1rem', fontWeight: '900', letterSpacing: '0.1em', background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             BLUE LOTUS
           </span>
         </div>
+
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <button style={{ background: 'none', border: 'none', color: '#6B7280', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer' }}>Sign In</button>
           <button style={{ background: '#111827', color: 'white', border: 'none', padding: '0.5rem 1.2rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}>Sign Up</button>
         </div>
       </nav>
 
-      {/* 2. HERO - COMPACTED */}
+      {/* 2. HERO */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 2rem' }}>
         <div style={{ width: '100%', maxWidth: '800px', textAlign: 'center', transform: 'translateY(-12%)' }}>
           <h2 style={{ marginBottom: '1.5rem', letterSpacing: '-0.02em', lineHeight: '1.1' }}>
@@ -78,7 +107,7 @@ const App = () => {
         </div>
       </main>
 
-      {/* 3. PRICING & HEALING FEATURES - SHRUNK FOR FIT */}
+      {/* 3. PRICING & HEALING FEATURES */}
       <div style={{ padding: '0 4rem 2rem', flexShrink: 0 }}>
         <div style={{ display: 'flex', gap: '10px', maxWidth: '1400px', margin: '0 auto' }}>
           {[
@@ -91,48 +120,4 @@ const App = () => {
             <div key={i} 
               style={{ 
                 flex: 1, padding: '1.25rem 1rem', borderRadius: '14px', textAlign: 'left',
-                background: plan.premium ? '#111827' : 'white', color: plan.premium ? 'white' : '#111827',
-                border: plan.feat ? '2px solid #4F46E5' : '1px solid rgba(0,0,0,0.05)',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.01)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '135px'
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '6px' }}>
-                  <span style={{ color: plan.premium ? '#A5B4FC' : '#4F46E5' }}>{plan.icon}</span>
-                  <span style={{ fontSize: '0.6rem', fontWeight: '900', letterSpacing: '0.05em', color: '#9CA3AF' }}>{plan.name}</span>
-                </div>
-                <div style={{ fontSize: '1.35rem', fontWeight: '900' }}>{plan.price}</div>
-                <div style={{ fontSize: '0.75rem', fontWeight: '700', color: plan.premium ? '#9CA3AF' : '#4B5563' }}>{plan.credits}</div>
-                
-                {plan.healing && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px', color: '#10B981', fontSize: '0.55rem', fontWeight: '800' }}>
-                    <Activity size={9} /> HEALING CODE ACTIVE
-                  </div>
-                )}
-                {plan.isAddon && (
-                  <div style={{ marginTop: '6px', color: '#7C3AED', fontSize: '0.6rem', fontWeight: '800', textTransform: 'uppercase' }}>
-                    {plan.subtext}
-                  </div>
-                )}
-              </div>
-
-              {plan.toggle && (
-                <div onClick={() => setBilling(billing === 'monthly' ? 'yearly' : 'monthly')} style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                  <div style={{ width: '26px', height: '13px', background: billing === 'yearly' ? '#10B981' : '#E5E7EB', borderRadius: '10px', position: 'relative' }}>
-                    <div style={{ position: 'absolute', width: '9px', height: '9px', background: 'white', borderRadius: '50%', top: '2px', left: billing === 'monthly' ? '2px' : '15px', transition: '0.2s' }} />
-                  </div>
-                  <span style={{ fontSize: '0.55rem', fontWeight: '800', color: billing === 'yearly' ? '#10B981' : '#9CA3AF' }}>{billing.toUpperCase()}</span>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.55rem', color: '#9CA3AF', letterSpacing: '0.5em', fontWeight: '900', opacity: 0.5 }}>
-          BLUE LOTUS SOVEREIGN // V.1.07
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default App;
+                background: plan.premium ? '#111827' : 'white', color: plan.p
