@@ -1,6 +1,7 @@
 // force vercel rebuild
 
-import OpenAI from "openai";
+import OpenAI from "openai"; // esm enforced
+
 import twinBrain from "./twin-brain";
 
 export default async function handler(req, res) {
