@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, Eye, Zap, Database } from 'lucide-react';
+import { ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, Eye, Zap, Database, Loader2 } from 'lucide-react';
 
 const App = () => {
   const [view, setView] = useState("garden"); 
@@ -18,24 +18,34 @@ const App = () => {
 
   const calculatePrice = (base) => {
     if (base === 0) return "Free";
-    return billing === "monthly" ? `$${base}` : `$${(base * 12 * 0.85).toFixed(0)}/yr`;
-  };
-
-  // Fixed Button Logic
-  const goToForge = () => {
-    setView("forge");
-    if (prompt) handleBeginCultivation();
+    const price = billing === "monthly" ? base : (base * 12 * 0.85).toFixed(0);
+    return billing === "monthly" ? `$${price}` : `$${price}/yr`;
   };
 
   const handleBeginCultivation = async () => {
-    setIsBuilding(true);
+    if (!prompt) return;
     setView("forge");
-    setConsoleLogs(["> Initializing Blue Lotus V.1.07...", "> OpenAI Tunnel Active..."]);
-    setTimeout(() => {
-      setConsoleLogs(prev => [...prev, "> Sprouting UI components...", "> HEALING COMPLETE."]);
-      setGeneratedCode("// Sovereign Code successfully generated.");
+    setIsBuilding(true);
+    setConsoleLogs(["> Initializing Blue Lotus V.1.07...", "> Establishing OpenAI Tunnel..."]);
+    
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await response.json();
+      
+      if (data.code) {
+        setConsoleLogs(prev => [...prev, "> Sprouting UI components...", "> HEALING COMPLETE."]);
+        setGeneratedCode(data.code);
+      }
+    } catch (err) {
+      setConsoleLogs(prev => [...prev, "> ERROR: Connection failed.", "> Check OpenAI Key."]);
+      setGeneratedCode("<html><body style='background:#fee2e2; padding:2rem; font-family:sans-serif;'><h2>Connection Error</h2><p>Please check your Vercel Environment Variables.</p></body></html>");
+    } finally {
       setIsBuilding(false);
-    }, 1500);
+    }
   };
 
   if (view === "garden") {
@@ -50,16 +60,15 @@ const App = () => {
             </div>
             <span style={{ fontSize: '1.5rem', fontWeight: '900', letterSpacing: '2px' }}>BLUE LOTUS</span>
           </div>
-          
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            <button onClick={goToForge} style={{ background: 'transparent', border: 'none', fontWeight: 'bold', color: '#6B7280', fontSize: '1.1rem', cursor: 'pointer' }}>Sign In</button>
-            <button onClick={goToForge} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem 1.8rem', borderRadius: '12px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer' }}>Join</button>
+            <button onClick={() => setView("forge")} style={{ background: 'transparent', border: 'none', fontWeight: 'bold', color: '#6B7280', fontSize: '1.1rem', cursor: 'pointer' }}>Sign In</button>
+            <button onClick={() => setView("forge")} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem 1.8rem', borderRadius: '12px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer' }}>Join</button>
           </div>
         </nav>
 
         {/* HERO */}
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem' }}>
-          <h2 style={{ fontSize: '4.5rem', fontWeight: '900', margin: '0 0 2rem 0', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '4.5rem', fontWeight: '900', marginBottom: '2rem', textAlign: 'center' }}>
             Plant a <span style={{ color: '#4F46E5' }}>new idea.</span>
           </h2>
           <div style={{ width: '100%', maxWidth: '850px', background: '#f8faff', border: '3px solid #4F46E5', borderRadius: '40px', padding: '2.5rem', boxShadow: '0 30px 60px rgba(79, 70, 229, 0.2)' }}>
@@ -80,15 +89,15 @@ const App = () => {
         {/* BILLING TOGGLE */}
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <div style={{ background: '#F3F4F6', display: 'inline-flex', padding: '6px', borderRadius: '14px', border: '1px solid #E5E7EB' }}>
-            <button onClick={() => setBilling('monthly')} style={{ padding: '0.8rem 2rem', borderRadius: '10px', border: 'none', fontWeight: 'bold', cursor: 'pointer', background: billing === 'monthly' ? 'white' : 'transparent', boxShadow: billing === 'monthly' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none' }}>Monthly</button>
-            <button onClick={() => setBilling('yearly')} style={{ padding: '0.8rem 2rem', borderRadius: '10px', border: 'none', fontWeight: 'bold', cursor: 'pointer', background: billing === 'yearly' ? 'white' : 'transparent', boxShadow: billing === 'yearly' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none' }}>Yearly (-15%)</button>
+            <button onClick={() => setBilling('monthly')} style={{ padding: '0.8rem 2rem', borderRadius: '10px', border: 'none', fontWeight: 'bold', cursor: 'pointer', background: billing === 'monthly' ? 'white' : 'transparent', color: billing === 'monthly' ? '#4F46E5' : '#6B7280' }}>Monthly</button>
+            <button onClick={() => setBilling('yearly')} style={{ padding: '0.8rem 2rem', borderRadius: '10px', border: 'none', fontWeight: 'bold', cursor: 'pointer', background: billing === 'yearly' ? 'white' : 'transparent', color: billing === 'yearly' ? '#4F46E5' : '#6B7280' }}>Yearly (-15%)</button>
           </div>
         </div>
 
         {/* PRICING & REFUEL ROW */}
-        <div style={{ padding: '0 2rem 6rem', display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'stretch' }}>
+        <div style={{ padding: '0 2rem 6rem', display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
           {plans.map((plan, idx) => (
-            <div key={idx} style={{ padding: '2rem 1.5rem', borderRadius: '35px', border: '2px solid #eee', width: '210px', textAlign: 'center', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : '#111827', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div key={idx} style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', border: '2px solid #eee', width: '210px', textAlign: 'center', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : '#111827', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
                 <div style={{ color: '#4F46E5', marginBottom: '10px' }}>{plan.i}</div>
                 <div style={{ fontWeight: '900', fontSize: '1rem', letterSpacing: '1px', marginBottom: '8px' }}>{plan.n}</div>
@@ -101,8 +110,8 @@ const App = () => {
             </div>
           ))}
 
-          {/* REFUEL OPTION (NOW IN THE SAME LINE) */}
-          <div style={{ padding: '2rem 1.5rem', borderRadius: '35px', border: '3px dashed #4F46E5', width: '210px', textAlign: 'center', background: '#F8FAFF', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          {/* REFUEL OPTION */}
+          <div style={{ padding: '2.5rem 1.5rem', borderRadius: '35px', border: '3px dashed #4F46E5', width: '210px', textAlign: 'center', background: '#F8FAFF', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
               <Database color="#4F46E5" size={32} style={{ marginBottom: '10px' }} />
               <div style={{ fontWeight: '900', fontSize: '1rem', letterSpacing: '1px', marginBottom: '8px' }}>REFUEL</div>
@@ -111,15 +120,17 @@ const App = () => {
                 <Zap size={14} fill="white" /> 200 Credits
               </div>
             </div>
-            <button onClick={goToForge} style={{ marginTop: '15px', width: '100%', background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>TOP UP</button>
+            <button onClick={() => setView("forge")} style={{ marginTop: '15px', width: '100%', background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>TOP UP</button>
           </div>
         </div>
 
         {/* FOOTER */}
-        <footer style={{ background: '#020617', color: 'white', padding: '4rem', textAlign: 'center' }}>
+        <footer style={{ background: '#020617', color: 'white', padding: '4rem', textAlign: 'center', marginTop: 'auto' }}>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', letterSpacing: '3px', marginBottom: '1rem' }}>BLUE LOTUS</div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', color: '#64748B', marginBottom: '2rem', fontSize: '0.9rem' }}>
-            <span>Privacy Policy</span><span>Terms of Service</span><span>Contact</span>
+            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy Policy</a>
+            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Terms of Service</a>
+            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Contact</a>
           </div>
           <p style={{ color: '#334155', fontSize: '0.8rem' }}>© 2026 SOVEREIGN APP BUILDER // VERSION 1.07</p>
         </footer>
@@ -127,7 +138,7 @@ const App = () => {
     );
   }
 
-  // FORGE VIEW
+  // FORGE VIEW (WORKSPACE)
   return (
     <div style={{ height: '100vh', width: '100vw', background: '#020617', color: 'white', display: 'flex', flexDirection: 'column', fontFamily: 'monospace' }}>
       <nav style={{ height: '80px', borderBottom: '1px solid #1E293B', display: 'flex', alignItems: 'center', padding: '0 3rem', justifyContent: 'space-between' }}>
@@ -138,15 +149,37 @@ const App = () => {
         <button onClick={() => setView("garden")} style={{ background: '#1E293B', color: 'white', border: '2px solid #334155', padding: '0.8rem 1.5rem', borderRadius: '10px', cursor: 'pointer' }}>EXIT</button>
       </nav>
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        <div style={{ width: '450px', borderRight: '1px solid #1E293B', padding: '3rem', overflowY: 'auto' }}>
-          <h3 style={{ color: '#818CF8', borderBottom: '1px solid #1E293B', paddingBottom: '1.5rem', fontSize: '1.3rem' }}>CONSOLE</h3>
-          <div style={{ marginTop: '2rem', color: '#94A3B8', fontSize: '1.2rem', lineHeight: '1.8' }}>
-            {consoleLogs.map((log, i) => <p key={i}>{log}</p>)}
+        {/* LEFT PANEL: CONSOLE */}
+        <div style={{ width: '400px', borderRight: '1px solid #1E293B', padding: '2.5rem', overflowY: 'auto' }}>
+          <h3 style={{ color: '#818CF8', borderBottom: '1px solid #1E293B', paddingBottom: '1rem' }}>CONSOLE</h3>
+          <div style={{ marginTop: '1.5rem', color: '#94A3B8', fontSize: '1rem', lineHeight: '1.7' }}>
+            {consoleLogs.map((log, i) => <p key={i} style={{ color: log.includes('COMPLETE') ? '#10B981' : '#94A3B8' }}>{log}</p>)}
           </div>
         </div>
-        <div style={{ flex: 1, background: '#F1F5F9', padding: '2rem' }}>
-          <div style={{ width: '100%', height: '100%', background: 'white', borderRadius: '35px', color: '#1e293b', padding: '2rem', overflowY: 'auto' }}>
-            {isBuilding ? <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', opacity: 0.3 }}><Eye size={100} /></div> : <pre>{generatedCode}</pre>}
+        
+        {/* RIGHT PANEL: LIVE PREVIEW SPROUT */}
+        <div style={{ flex: 1, background: '#F1F5F9', padding: '1.5rem' }}>
+          <div style={{ width: '100%', height: '100%', background: 'white', borderRadius: '30px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+             <div style={{ background: '#f8fafc', padding: '10px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ff5f56' }}></div>
+                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ffbd2e' }}></div>
+                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#27c93f' }}></div>
+                <span style={{ marginLeft: '10px', fontSize: '0.75rem', fontWeight: 'bold', color: '#94a3b8' }}>LIVE PREVIEW</span>
+             </div>
+             <div style={{ flex: 1, position: 'relative' }}>
+                {isBuilding ? (
+                  <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <Loader2 size={60} className="animate-spin" color="#4F46E5" />
+                    <p style={{ marginTop: '1rem', color: '#4F46E5', fontWeight: '900' }}>CULTIVATING...</p>
+                  </div>
+                ) : (
+                  <iframe
+                    srcDoc={generatedCode || `<html><body style="font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:90vh; color:#cbd5e1; text-align:center;"><div><h2>Ready to Build</h2><p>Enter a prompt to sprout your first component.</p></div></body></html>`}
+                    title="preview"
+                    style={{ width: '100%', height: '100%', border: 'none' }}
+                  />
+                )}
+             </div>
           </div>
         </div>
       </div>
