@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, 
   Zap, Send, Save, Trash2, Undo2, Github, Rocket, 
-  Sparkles, ShieldCheck, UserPlus, LogIn
+  Sparkles, ShieldCheck, UserPlus, LogIn, HeartPulse 
 } from 'lucide-react';
 
 const App = () => {
@@ -48,7 +48,7 @@ const App = () => {
       const data = await response.json();
       if (data.code) {
         setGeneratedCode(data.code);
-        setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: "Architecture validated. Build authorized." }]);
+        setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: "Sovereign Healing Applied. Architecture validated." }]);
       } else { throw new Error(); }
     } catch (err) {
       setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: "CRITICAL: Prime Authority requires rest. Check Root Engine." }]);
@@ -57,8 +57,14 @@ const App = () => {
 
   if (view === "garden") {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'white', fontFamily: 'sans-serif' }}>
-        {/* TOP NAV WITH AUTH BUTTONS */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateRows: 'auto 1fr auto', 
+        minHeight: '100vh', 
+        background: 'white', 
+        fontFamily: 'sans-serif' 
+      }}>
+        {/* NAV */}
         <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '1.5rem 4rem', borderBottom: '1px solid #eee', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ background: '#4F46E5', padding: '8px', borderRadius: '8px' }}><Sparkles size={24} color="white"/></div>
@@ -71,50 +77,58 @@ const App = () => {
           </div>
         </nav>
 
-        <main style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '6rem 2rem' }}>
+        {/* HERO/MAIN */}
+        <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '4rem 2rem' }}>
           <h1 style={{ fontSize: '4.5rem', fontWeight: '900', marginBottom: '2rem', textAlign: 'center' }}>Plant a <span style={{ color: '#4F46E5' }}>new idea.</span></h1>
-          <div style={{ width: '100%', maxWidth: '850px', background: '#f8faff', border: '2px solid #4F46E5', borderRadius: '40px', padding: '2.5rem', boxShadow: '0 20px 40px rgba(79, 70, 229, 0.05)' }}>
-            <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="What should we build today?" style={{ width: '100%', border: 'none', outline: 'none', background: 'transparent', fontSize: '1.8rem', minHeight: '140px', resize: 'none' }} />
+          
+          <div style={{ width: '100%', maxWidth: '850px', background: '#f8faff', border: '2px solid #4F46E5', borderRadius: '40px', padding: '2.5rem', boxShadow: '0 20px 40px rgba(79, 70, 229, 0.05)', marginBottom: '4rem' }}>
+            <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="What should we build today?" style={{ width: '100%', border: 'none', outline: 'none', background: 'transparent', fontSize: '1.8rem', minHeight: '120px', resize: 'none' }} />
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
               <button onClick={() => handleBeginCultivation()} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '1.2rem 3rem', borderRadius: '20px', fontWeight: 'bold', fontSize: '1.2rem', cursor: 'pointer' }}>BEGIN CULTIVATION</button>
             </div>
           </div>
 
-          {/* PRICING SECTION */}
-          <div style={{ marginTop: '5rem', textAlign: 'center', paddingBottom: '4rem' }}>
-             <h3 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '2rem' }}>Sovereign Tiers</h3>
+          {/* PRICING & CREDITS */}
+          <div style={{ textAlign: 'center', width: '100%' }}>
+             <h3 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '1rem' }}>Sovereign Tiers</h3>
+             <p style={{ color: '#6B7280', marginBottom: '2rem' }}>All plans include <HeartPulse size={16} inline color="#4F46E5"/> <strong>Sovereign Healing Code</strong></p>
+             
              <div style={{ marginBottom: '3rem' }}>
                 <button onClick={() => setBilling('monthly')} style={{ padding: '0.8rem 2rem', background: billing === 'monthly' ? '#4F46E5' : '#eee', color: billing === 'monthly' ? 'white' : '#666', border: 'none', borderRadius: '12px 0 0 12px', cursor: 'pointer', fontWeight: 'bold' }}>Monthly</button>
                 <button onClick={() => setBilling('yearly')} style={{ padding: '0.8rem 2rem', background: billing === 'yearly' ? '#4F46E5' : '#eee', color: billing === 'yearly' ? 'white' : '#666', border: 'none', borderRadius: '0 12px 12px 0', cursor: 'pointer', fontWeight: 'bold' }}>Yearly</button>
              </div>
-             <div style={{ display: 'flex', gap: '25px', justifyContent: 'center', flexWrap: 'wrap' }}>
+
+             <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 {plans.map((plan) => (
-                  <div key={plan.n} onClick={() => setSelectedPlan(plan.n)} style={{ border: selectedPlan === plan.n ? '4px solid #4F46E5' : '1px solid #eee', padding: '2.5rem', borderRadius: '30px', width: '220px', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : 'black', cursor: 'pointer', transition: 'transform 0.2s' }}>
-                    <div style={{ color: '#4F46E5', marginBottom: '15px' }}>{plan.i}</div>
-                    <div style={{ fontWeight: '900', fontSize: '1.2rem' }}>{plan.n}</div>
-                    <div style={{ fontSize: '2rem', fontWeight: '900', margin: '10px 0' }}>{calculatePrice(plan.p)}</div>
-                    <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>{plan.d}</p>
+                  <div key={plan.n} onClick={() => setSelectedPlan(plan.n)} style={{ border: selectedPlan === plan.n ? '4px solid #4F46E5' : '1px solid #eee', padding: '2rem', borderRadius: '30px', width: '200px', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : 'black', cursor: 'pointer' }}>
+                    <div style={{ color: '#4F46E5', marginBottom: '10px' }}>{plan.i}</div>
+                    <div style={{ fontWeight: '900' }}>{plan.n}</div>
+                    <div style={{ fontSize: '2rem', fontWeight: '900' }}>{calculatePrice(plan.p)}</div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#4F46E5', margin: '10px 0' }}>{plan.c} Cultivations/mo</div>
+                    <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>{plan.d}</p>
                   </div>
                 ))}
              </div>
           </div>
         </main>
 
-        {/* REPAIRED FOOTER */}
-        <footer style={{ background: '#020617', color: 'white', padding: '5rem 2rem', textAlign: 'center', borderTop: '1px solid #1E293B', position: 'relative', zIndex: 10 }}>
+        {/* FOOTER */}
+        <footer style={{ background: '#020617', color: 'white', padding: '4rem 2rem', textAlign: 'center', borderTop: '1px solid #1E293B' }}>
           <div style={{ fontWeight: '900', letterSpacing: '4px', fontSize: '1.5rem', marginBottom: '1rem' }}>BLUE LOTUS</div>
-          <p style={{ opacity: 0.4, fontSize: '0.9rem' }}>© 2026 SOVEREIGN AUTHORITY // SECURED BY TWIN PRIME</p>
+          <p style={{ opacity: 0.4, fontSize: '0.9rem' }}>© 2026 SOVEREIGN AUTHORITY // CULTIVATED BY TWIN PRIME</p>
         </footer>
       </div>
     );
   }
 
+  {/* FORGE MODE */}
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#020617', color: 'white', fontFamily: 'monospace' }}>
       <nav style={{ height: '70px', borderBottom: '1px solid #1E293B', display: 'flex', alignItems: 'center', padding: '0 2rem', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}><RefreshCw className={isBuilding ? "animate-spin" : ""} color="#818CF8" /><strong>FORGE MODE</strong></div>
         <div style={{ display: 'flex', gap: '10px' }}>
            <button style={{ background: '#1E293B', border: '1px solid #334155', padding: '8px', borderRadius: '8px' }}><Trash2 size={18} color="#EF4444" /></button>
+           <button style={{ background: '#1E293B', border: '1px solid #334155', padding: '8px', borderRadius: '8px' }}><Github size={18} color="white" /></button>
            <button onClick={() => setView("garden")} style={{ background: 'transparent', color: '#94A3B8', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>EXIT</button>
         </div>
       </nav>
