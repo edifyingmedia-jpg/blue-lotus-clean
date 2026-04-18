@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, 
   Zap, Database, Send, Save, Trash2, Undo2, 
@@ -34,22 +34,22 @@ const App = () => {
     if (view !== "forge") setView("forge");
     setIsBuilding(true);
     
-    // Initial TWIN/Prime Handshake
     setConsoleLogs([
       { sender: "TWIN", msg: `Prime, initiating architectural scan for: "${activePrompt.substring(0, 35)}..."` },
       { sender: "PRIME", msg: "Scanning design patterns. Applying Sovereign Healing. Final authority engaged." }
     ]);
     
     try {
-      const response = await fetch('/api/generate', {
+      // LINKED TO YOUR EXISTING /api/twin ENDPOINT
+      const response = await fetch('/api/twin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: activePrompt }),
       });
+      
       const data = await response.json();
       
       if (data.code) {
-        // Aesthetic delay for "Healing" simulation
         setTimeout(() => {
           setGeneratedCode(data.code);
           setConsoleLogs(prev => [...prev, 
@@ -58,6 +58,8 @@ const App = () => {
           ]);
           setIsBuilding(false);
         }, 1200);
+      } else {
+        throw new Error("Prime encountered a void.");
       }
     } catch (err) {
       setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: "CRITICAL: Prime Authority requires rest. Cultivation halted." }]);
@@ -65,7 +67,6 @@ const App = () => {
     }
   };
 
-  // Garden View (Front Page)
   if (view === "garden") {
     return (
       <div style={{ minHeight: '100vh', width: '100vw', background: 'white', display: 'flex', flexDirection: 'column', fontFamily: 'sans-serif', color: '#111827' }}>
@@ -122,15 +123,20 @@ const App = () => {
           ))}
         </div>
 
-        <footer style={{ background: '#020617', color: 'white', padding: '3rem 4rem', textAlign: 'center', marginTop: 'auto' }}>
-          <div style={{ fontSize: '1.2rem', fontWeight: '900', letterSpacing: '2px', marginBottom: '10px' }}>BLUE LOTUS</div>
-          <p style={{ color: '#334155', fontSize: '0.8rem', margin: 0 }}>© 2026 SOVEREIGN APP BUILDER // VERSION 1.07</p>
+        {/* FIXED FOOTER: USES MARGIN-TOP AUTO AND PADDING TO PREVENT CLIPPING */}
+        <footer style={{ background: '#020617', color: 'white', padding: '4rem 4rem', textAlign: 'center', marginTop: 'auto', borderTop: '1px solid #1E293B' }}>
+          <div style={{ fontSize: '1.2rem', fontWeight: '900', letterSpacing: '2px', marginBottom: '15px' }}>BLUE LOTUS</div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', fontSize: '0.8rem', opacity: 0.6, marginBottom: '15px' }}>
+            <span>Privacy</span>
+            <span>Terms</span>
+            <span>Authored by TWIN Prime</span>
+          </div>
+          <p style={{ color: '#334155', fontSize: '0.75rem', margin: 0 }}>© 2026 SOVEREIGN APP BUILDER // VERSION 1.07</p>
         </footer>
       </div>
     );
   }
 
-  // Forge View (The Workspace)
   return (
     <div style={{ height: '100vh', width: '100vw', background: '#020617', color: 'white', display: 'flex', flexDirection: 'column', fontFamily: 'monospace' }}>
       <nav style={{ height: '80px', borderBottom: '1px solid #1E293B', display: 'flex', alignItems: 'center', padding: '0 3rem', justifyContent: 'space-between' }}>
@@ -153,63 +159,8 @@ const App = () => {
       </nav>
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {/* TWIN CONSOLE */}
         <div style={{ width: '450px', borderRight: '1px solid #1E293B', display: 'flex', flexDirection: 'column' }}>
           <div style={{ flex: 1, padding: '2.5rem', overflowY: 'auto' }}>
             <h3 style={{ color: '#818CF8', borderBottom: '1px solid #1E293B', paddingBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <ShieldCheck size={18} /> TWIN INTERFACE
             </h3>
-            <div style={{ marginTop: '1.5rem', fontSize: '0.9rem' }}>
-              {consoleLogs.map((log, i) => (
-                <div key={i} style={{ marginBottom: '1.2rem', paddingLeft: '10px', borderLeft: log.sender === 'PRIME' ? '2px solid #4F46E5' : '2px solid #818CF8' }}>
-                  <span style={{ fontWeight: 'bold', color: log.sender === 'PRIME' ? '#4F46E5' : '#818CF8', fontSize: '0.7rem', display: 'block' }}>{log.sender}</span>
-                  <p style={{ color: log.msg.includes('Healing') || log.msg.includes('validated') ? '#10B981' : '#94A3B8', margin: 0 }}>{log.msg}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* THE WORKING INPUT BOX */}
-          <div style={{ padding: '1.5rem', borderTop: '1px solid #1E293B', background: '#0F172A' }}>
-             <div style={{ background: '#1E293B', borderRadius: '15px', padding: '12px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                <input 
-                  value={prompt} 
-                  onChange={(e) => setPrompt(e.target.value)} 
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleBeginCultivation(prompt);
-                      setPrompt("");
-                    }
-                  }} 
-                  placeholder="Message TWIN Prime..." 
-                  style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'white', fontSize: '0.95rem' }} 
-                />
-                <button 
-                  onClick={() => {
-                    handleBeginCultivation(prompt);
-                    setPrompt("");
-                  }} 
-                  style={{ background: '#4F46E5', border: 'none', borderRadius: '8px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                >
-                  <Send size={18} color="white"/>
-                </button>
-             </div>
-          </div>
-        </div>
-        
-        {/* PREVIEW FRAME */}
-        <div style={{ flex: 1, background: '#F1F5F9', padding: '1.5rem' }}>
-          <div style={{ width: '100%', height: '100%', background: 'white', borderRadius: '35px', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.1)' }}>
-            <iframe 
-              srcDoc={generatedCode || `<html><body style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif; color:#cbd5e1; text-align:center;"><div><h1 style="font-size:3rem; margin:0;">🌱</h1><h2>Waiting for TWIN Prime Authorization...</h2></div></body></html>`} 
-              style={{ width: '100%', height: '100%', border: 'none' }} 
-              title="Preview"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default App;
