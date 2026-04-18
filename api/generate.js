@@ -5,7 +5,6 @@ const openai = new OpenAI({
 });
 
 export default async function handler(req, res) {
-  // 1. Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -13,25 +12,32 @@ export default async function handler(req, res) {
   const { prompt } = req.body;
 
   try {
-    // 2. The TWIN Logic starts here: We tell the AI how to behave
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: "You are the Blue Lotus Sovereign Engine. Your job is to generate clean, professional React code based on user prompts. You act as an advocate for the user (TWIN logic), ensuring accessibility and modern design. Return ONLY the code, no conversational text."
+          content: `You are the Blue Lotus Sovereign Engine. 
+          Generate a SINGLE-FILE standalone web application. 
+          - Use Tailwind CSS via CDN (https://cdn.tailwindcss.com) for styling.
+          - Use Lucide-React via CDN if icons are needed.
+          - Output ONLY a complete <html> document.
+          - Do not include markdown backticks (\`\`\`html).
+          - Act as the user's TWIN: high-fashion, intuitive, and accessible.`
         },
         {
           role: "user",
-          content: `Build a React component for: ${prompt}`
+          content: `Architect this vision: ${prompt}`
         }
       ],
       temperature: 0.7,
     });
 
-    const generatedCode = response.choices[0].message.content;
+    let generatedCode = response.choices[0].message.content;
     
-    // 3. Send the "Sprout" back to the frontend
+    // Clean up any stray markdown if the AI ignores the system prompt
+    generatedCode = generatedCode.replace(/```html/g, "").replace(/```/g, "");
+    
     return res.status(200).json({ code: generatedCode });
   } catch (error) {
     console.error('Sovereign Engine Error:', error);
