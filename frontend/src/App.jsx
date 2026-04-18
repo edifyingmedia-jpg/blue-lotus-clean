@@ -29,25 +29,13 @@ const App = () => {
   );
 
   return (
-    <div style={{ height: '100vh', width: '100%', backgroundColor: 'white', fontFamily: 'Inter, sans-serif', color: '#111827', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100vh', width: '100%', backgroundColor: 'white', fontFamily: 'Inter, sans-serif', color: '#111827', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       
-      {/* HEADER: Forced Visibility */}
-      <nav style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        padding: '1.25rem 4rem', 
-        width: '100%', 
-        boxSizing: 'border-box', 
-        borderBottom: '1px solid #F3F4F6', 
-        background: 'white',
-        flexShrink: 0 
-      }}>
+      {/* HEADER */}
+      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 4rem', width: '100%', boxSizing: 'border-box', borderBottom: '1px solid #F3F4F6', background: 'white', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <LotusLogo />
-          <h1 style={{ fontSize: '1.15rem', fontWeight: '900', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#1E3A8A', margin: 0 }}>
-            Blue Lotus
-          </h1>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: '900', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#1E3A8A', margin: 0 }}>Blue Lotus</h1>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <button style={{ background: 'none', border: '1px solid #E5E7EB', padding: '0.5rem 1.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}>SIGN IN</button>
@@ -55,60 +43,69 @@ const App = () => {
         </div>
       </nav>
 
-      {/* CENTER: The Input Area */}
+      {/* CENTER: 20% Smaller Input Area */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 2rem' }}>
-        <div style={{ width: '100%', maxWidth: '850px', textAlign: 'center', transform: 'translateY(-15%)' }}>
-          <h2 style={{ fontSize: '4rem', fontWeight: '800', letterSpacing: '-0.05em', color: '#111827', marginBottom: '2.5rem', lineHeight: '1.1' }}>
+        <div style={{ width: '100%', maxWidth: '850px', textAlign: 'center', transform: 'translateY(-10%)' }}>
+          <h2 style={{ fontSize: '3.2rem', fontWeight: '800', letterSpacing: '-0.05em', color: '#111827', marginBottom: '1.5rem' }}>
             What shall we build today?
           </h2>
           
-          <div style={{ border: '1.5px solid #D1D5DB', borderRadius: '12px', padding: '1.5rem', backgroundColor: '#FFFFFF', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+          <div style={{ border: '1.5px solid #D1D5DB', borderRadius: '12px', padding: '1rem', backgroundColor: '#FFFFFF', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
             <textarea 
               ref={textareaRef}
               rows="1"
               placeholder="Describe your vision..." 
-              style={{ width: '100%', border: 'none', fontSize: '1.5rem', outline: 'none', color: '#374151', fontWeight: '300', resize: 'none', minHeight: '100px', lineHeight: '1.5' }} 
+              style={{ width: '100%', border: 'none', fontSize: '1.3rem', outline: 'none', color: '#374151', fontWeight: '300', resize: 'none', minHeight: '80px', lineHeight: '1.4' }} 
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
             />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
-              <button onClick={() => setStage("workspace")} style={{ backgroundColor: '#2563EB', color: 'white', padding: '0.8rem 3rem', borderRadius: '4px', border: 'none', fontWeight: '800', fontSize: '1rem', cursor: 'pointer', textTransform: 'uppercase' }}>
-                Build <ArrowRight size={18} style={{ marginLeft: '8px' }} />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button onClick={() => setStage("workspace")} style={{ backgroundColor: '#2563EB', color: 'white', padding: '0.6rem 2.5rem', borderRadius: '4px', border: 'none', fontWeight: '800', fontSize: '0.9rem', cursor: 'pointer', textTransform: 'uppercase' }}>
+                Build <ArrowRight size={16} style={{ marginLeft: '8px' }} />
               </button>
             </div>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', marginTop: '3rem' }}>
-            <span style={{ fontSize: '0.8rem', color: '#9CA3AF' }}>Monthly</span>
-            <div onClick={() => setBilling(billing === 'monthly' ? 'yearly' : 'monthly')} style={{ width: '40px', height: '20px', background: '#F3F4F6', borderRadius: '20px', cursor: 'pointer', position: 'relative', border: '1px solid #E5E7EB' }}>
-              <div style={{ position: 'absolute', width: '16px', height: '16px', background: '#2563EB', borderRadius: '50%', top: '1px', left: billing === 'monthly' ? '2px' : '20px', transition: '0.2s' }} />
-            </div>
-            <span style={{ fontSize: '0.8rem' }}>Yearly <span style={{ color: '#10B981', fontWeight: '800' }}>(Save 10%)</span></span>
           </div>
         </div>
       </main>
 
-      {/* BOTTOM: Pricing Section pinned to the foot */}
-      <div style={{ width: '100%', padding: '2rem 4rem 4rem', boxSizing: 'border-box', background: 'white' }}>
+      {/* BOTTOM: Integrated Pricing (Toggle inside cards) */}
+      <div style={{ width: '100%', padding: '0 4rem 3rem', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', gap: '0.75rem', maxWidth: '1400px', margin: '0 auto' }}>
           {[
-            { name: 'Explore', price: 'Free', credits: '10 Credits' },
-            { name: 'Pro', price: calculatePrice(9.99), credits: '100 Credits', featured: true },
-            { name: 'Elite', price: calculatePrice(19.99), credits: '200 Credits' },
-            { name: 'Sovereign', price: calculatePrice(29.99), credits: '300 Credits' },
-            { name: 'Refuel', price: '$19.99', credits: '200 Credits' }
+            { name: 'Explore', price: 'Free', credits: '10 Credits', hasToggle: false },
+            { name: 'Pro', price: calculatePrice(9.99), credits: '100 Credits', featured: true, hasToggle: true },
+            { name: 'Elite', price: calculatePrice(19.99), credits: '200 Credits', hasToggle: true },
+            { name: 'Sovereign', price: calculatePrice(29.99), credits: '300 Credits', hasToggle: true },
+            { name: 'Refuel', price: '$19.99', credits: '200 Credits', hasToggle: false }
           ].map((tier, i) => (
             <div key={i} style={{ 
-              flex: 1, padding: '1.5rem', border: tier.featured ? '2.5px solid #2563EB' : '1px solid #F3F4F6', borderRadius: '6px', textAlign: 'left',
-              backgroundColor: tier.featured ? '#F9FAFB' : 'white'
+              flex: 1, padding: '1.25rem', border: tier.featured ? '2.5px solid #2563EB' : '1px solid #F3F4F6', borderRadius: '6px', textAlign: 'left',
+              backgroundColor: tier.featured ? '#F9FAFB' : 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '140px'
             }}>
-              <h3 style={{ fontSize: '0.65rem', fontWeight: '900', textTransform: 'uppercase', color: tier.featured ? '#2563EB' : '#9CA3AF', marginBottom: '0.5rem' }}>{tier.name}</h3>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900' }}>{tier.price}</div>
-              <div style={{ fontSize: '0.85rem', color: '#4B5563', fontWeight: '700' }}>{tier.credits}</div>
+              <div>
+                <h3 style={{ fontSize: '0.6rem', fontWeight: '900', textTransform: 'uppercase', color: tier.featured ? '#2563EB' : '#9CA3AF', marginBottom: '0.25rem' }}>{tier.name}</h3>
+                <div style={{ fontSize: '1.25rem', fontWeight: '900' }}>{tier.price}</div>
+                <div style={{ fontSize: '0.8rem', color: '#4B5563', fontWeight: '700' }}>{tier.credits}</div>
+              </div>
+
+              {/* Nested Toggle */}
+              {tier.hasToggle && (
+                <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div 
+                    onClick={() => setBilling(billing === 'monthly' ? 'yearly' : 'monthly')} 
+                    style={{ width: '28px', height: '14px', background: '#E5E7EB', borderRadius: '10px', cursor: 'pointer', position: 'relative' }}
+                  >
+                    <div style={{ position: 'absolute', width: '10px', height: '10px', background: '#2563EB', borderRadius: '50%', top: '2px', left: billing === 'monthly' ? '2px' : '16px', transition: '0.2s' }} />
+                  </div>
+                  <span style={{ fontSize: '0.6rem', fontWeight: '800', color: billing === 'yearly' ? '#10B981' : '#9CA3AF' }}>
+                    {billing === 'yearly' ? 'YEARLY' : 'MONTHLY'}
+                  </span>
+                </div>
+              )}
             </div>
           ))}
         </div>
-        <div style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.6rem', color: '#D1D5DB', letterSpacing: '0.4em', fontWeight: '800' }}>
+        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.55rem', color: '#D1D5DB', letterSpacing: '0.4em', fontWeight: '800' }}>
           BLUE LOTUS SOVEREIGN // 2026
         </div>
       </div>
