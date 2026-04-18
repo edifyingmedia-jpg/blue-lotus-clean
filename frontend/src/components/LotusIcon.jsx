@@ -1,26 +1,34 @@
-import { motion } from 'framer-motion'
+import React from 'react';
 
-export default function LotusIcon({ className, size = 22, ...props }) {
+const LotusIcon = ({ size = 120 }) => {
   return (
-    <motion.svg
-      viewBox="0 0 200 120"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="currentColor"
-      width={size}
-      height={size}
-      className={className}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      {...props}
-    >
-      <path d="M 12,108 Q -10,84 16,54 Q 44,78 52,108 Z" />
-      <path d="M 188,108 Q 210,84 184,54 Q 156,78 148,108 Z" />
-      <path d="M 50,108 Q 38,70 68,36 Q 85,70 83,108 Z" />
-      <path d="M 150,108 Q 162,70 132,36 Q 115,70 117,108 Z" />
-      <path d="M 81,108 Q 74,56 96,18 Q 111,56 109,108 Z" />
-      <path d="M 119,108 Q 126,56 104,18 Q 89,56 91,108 Z" />
-      <path d="M 93,108 Q 88,48 100,4 Q 112,48 107,108 Z" />
-      <ellipse cx="100" cy="110" rx="88" ry="9" />
-    </motion.svg>
-  )
-}
+    <div className="logo-container">
+      <svg 
+        className="logo"
+        width={size} 
+        height={size} 
+        viewBox="0 0 100 100" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <linearGradient id="lotusGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#4F46E5" /> {/* Indigo */}
+            <stop offset="100%" stopColor="#7C3AED" /> {/* Violet */}
+          </linearGradient>
+        </defs>
+        
+        {/* The Sovereign Geometric Bloom */}
+        <path 
+          d="M50 20C55 35 65 45 80 50C65 55 55 65 50 80C45 65 35 55 20 50C35 45 45 35 50 20Z" 
+          fill="url(#lotusGradient)"
+        />
+        
+        {/* Central "Healing" Glow Point */}
+        <circle cx="50" cy="50" r="6" fill="white" fillOpacity="0.4" />
+      </svg>
+    </div>
+  );
+};
+
+export default LotusIcon;
