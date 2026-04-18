@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Leaf, Sprout, Trees, Crown, Zap, Activity } from 'lucide-react';
-// This connects the heart to the body
-import { LotusIcon } from './components'; 
 
 const App = () => {
   const [billing, setBilling] = useState("monthly");
@@ -36,9 +34,10 @@ const App = () => {
         backdropFilter: 'blur(15px)', borderBottom: '1px solid rgba(0,0,0,0.03)', zIndex: 10, flexShrink: 0
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ padding: '5px' }}>
-            {/* Pulsing Lotus in Header */}
-            <LotusIcon size={25} />
+          <div style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', padding: '5px', borderRadius: '6px' }}>
+            <svg width="20" height="20" viewBox="0 0 100 100" fill="white">
+              <path d="M50 20C55 35 65 45 80 50C65 55 55 65 50 80C45 65 35 55 20 50C35 45 45 35 50 20Z" />
+            </svg>
           </div>
           <span style={{ fontSize: '1rem', fontWeight: '900', letterSpacing: '0.1em', background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             BLUE LOTUS
@@ -50,15 +49,9 @@ const App = () => {
         </div>
       </nav>
 
-      {/* 2. HERO */}
+      {/* 2. HERO - COMPACTED */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 2rem' }}>
-        <div style={{ width: '100%', maxWidth: '800px', textAlign: 'center', transform: 'translateY(-5%)' }}>
-          
-          {/* Main Pulsing Lotus */}
-          <div className="logo-container" style={{ marginBottom: '1rem' }}>
-            <LotusIcon size={100} />
-          </div>
-
+        <div style={{ width: '100%', maxWidth: '800px', textAlign: 'center', transform: 'translateY(-12%)' }}>
           <h2 style={{ marginBottom: '1.5rem', letterSpacing: '-0.02em', lineHeight: '1.1' }}>
             <span style={{ fontSize: '2.8rem', fontWeight: '300', color: '#6B7280' }}>What shall we </span>
             <span style={{ fontSize: '3rem', fontWeight: '900', color: '#111827', background: 'linear-gradient(180deg, #111827, #4B5563)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>build today?</span>
@@ -85,14 +78,14 @@ const App = () => {
         </div>
       </main>
 
-      {/* 3. PRICING & HEALING FEATURES - RESTORED */}
+      {/* 3. PRICING & HEALING FEATURES - SHRUNK FOR FIT */}
       <div style={{ padding: '0 4rem 2rem', flexShrink: 0 }}>
         <div style={{ display: 'flex', gap: '10px', maxWidth: '1400px', margin: '0 auto' }}>
           {[
             { name: 'SPROUT', icon: <Leaf size={14}/>, price: 'Free', credits: '10 Credits' },
             { name: 'SAPLING', icon: <Sprout size={14}/>, price: calculatePrice(9.99), credits: '100 Credits', toggle: true, healing: true },
             { name: 'OAK', icon: <Trees size={14}/>, price: calculatePrice(19.99), credits: '200 Credits', toggle: true, feat: true, healing: true },
-            { name: 'SOVEREIGN', icon: <Crown size={14}/>, price: <span style={{color: '#A5B4FC'}}>{calculatePrice(29.99)}</span>, credits: '300 Credits', toggle: true, premium: true, healing: true },
+            { name: 'SOVEREIGN', icon: <Crown size={14}/>, price: calculatePrice(29.99), credits: '300 Credits', toggle: true, premium: true, healing: true },
             { name: 'REFUEL', icon: <Zap size={14}/>, price: '$19', credits: '200 Credits', isAddon: true, subtext: "Refuel anytime" }
           ].map((plan, i) => (
             <div key={i} 
