@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Leaf, Sprout, Trees, Crown, Zap, Activity } from 'lucide-react';
-
+import { LotusIcon } from './components';
 const App = () => {
   const [billing, setBilling] = useState("monthly");
   const [prompt, setPrompt] = useState("");
@@ -37,7 +37,7 @@ const App = () => {
           <div style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', padding: '5px', borderRadius: '6px' }}>
             <svg width="20" height="20" viewBox="0 0 100 100" fill="white">
               <path d="M50 20C55 35 65 45 80 50C65 55 55 65 50 80C45 65 35 55 20 50C35 45 45 35 50 20Z" />
-            </svg>
+            <LotusIcon size={30} />
           </div>
           <span style={{ fontSize: '1rem', fontWeight: '900', letterSpacing: '0.1em', background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             BLUE LOTUS
