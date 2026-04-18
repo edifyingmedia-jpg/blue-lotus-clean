@@ -1,29 +1,30 @@
-:root {
-  --bg-main: #050505;
-  --panel-bg: rgba(13, 13, 13, 0.8);
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  
-  /* Governess Colors */
-  --glow-cyan: rgba(6, 182, 212, 0.5);
-  --accent-cyan: #06b6d4;
-
-  /* Prime Colors */
-  --glow-purple: rgba(168, 85, 247, 0.5);
-  --accent-purple: #a855f7;
+/* Blue Lotus Brand Styles */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+  background: transparent;
 }
 
-body {
-  background-color: var(--bg-main);
-  color: #e5e7eb;
-  font-family: 'Inter', 'JetBrains Mono', monospace;
+.logo {
+  width: 120px;
+  height: auto;
+  will-change: filter;
+  /* Uses your existing --accent-cyan variable */
+  filter: drop-shadow(0 0 10px var(--accent-cyan));
+  animation: lotus-pulse 4s infinite ease-in-out;
 }
 
-/* The subtle "Prime" background pulse */
-.prime-aura {
-  box-shadow: inset 0 0 100px rgba(168, 85, 247, 0.03);
-  border-left: 1px solid var(--glow-purple) !important;
-}
-
-.governess-aura {
-  border-left: 1px solid var(--glow-cyan) !important;
+@keyframes lotus-pulse {
+  0%, 100% { 
+    filter: drop-shadow(0 0 8px var(--accent-cyan));
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% { 
+    /* Uses your existing --glow-cyan for a wider spread */
+    filter: drop-shadow(0 0 20px var(--glow-cyan)) drop-shadow(0 0 2px #fff);
+    transform: scale(1.03);
+    opacity: 1;
+  }
 }
