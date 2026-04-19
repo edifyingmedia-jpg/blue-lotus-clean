@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { 
   ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, 
-  Zap, Send, Save, Trash2, Undo2, Github, Rocket, 
-  Sparkles, ShieldCheck, UserPlus, LogIn, HeartPulse 
+  Send, Trash2, Github, Sparkles, ShieldCheck, UserPlus, LogIn, HeartPulse 
 } from 'lucide-react';
 
 const App = () => {
@@ -46,431 +45,104 @@ const App = () => {
       });
       
       const data = await response.json();
-      if (data.code) {
-        setGeneratedCode(data.code);
-        setConsoleLogs(prev => [
-          ...prev,
-          { sender: "PRIME", msg: "Sovereign Healing Applied. Architecture validated." }
-        ]);
-      } else {
-        throw new Error();
+      
+      // FIXED: Matching your backend return property 'html'
+      if (data.ok && data.html) {
+        setGeneratedCode(data.html);
+        setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: "Sovereign Healing Applied. Architecture validated." }]);
+      } else { 
+        throw new Error(data.error || "Authority Refusal"); 
       }
     } catch (err) {
-      setConsoleLogs(prev => [
-        ...prev,
-        { sender: "PRIME", msg: "CRITICAL: Prime Authority requires rest. Check Root Engine." }
-      ]);
-    } finally {
-      setIsBuilding(false);
-    }
-  };
-
-  // Builder function (not wired yet – backend is ready at /api/build)
-  const handleBuild = async () => {
-    try {
-      setIsBuilding(true);
-
-      const res = await fetch("/api/build", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt })
-      });
-
-      const data = await res.json();
-
-      if (data.code) {
-        setGeneratedCode(data.code);
-        setConsoleLogs((prev) => [
-          ...prev,
-          { sender: "PRIME", msg: "Build complete." }
-        ]);
-      } else {
-        setConsoleLogs((prev) => [
-          ...prev,
-          { sender: "PRIME", msg: "Build failed: No code returned." }
-        ]);
-      }
-    } catch (err) {
-      setConsoleLogs((prev) => [
-        ...prev,
-        { sender: "PRIME", msg: "Build error: " + err.message }
-      ]);
-    } finally {
-      setIsBuilding(false);
-    }
+      setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: `CRITICAL: Prime Authority requires rest. ${err.message}` }]);
+    } finally { setIsBuilding(false); }
   };
 
   if (view === "garden") {
     return (
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateRows: 'auto 1fr auto', 
-        minHeight: '100vh', 
-        background: 'white', 
-        fontFamily: 'sans-serif' 
-      }}>
-        {/* NAV */}
+      <div style={{ display: 'grid', gridTemplateRows: 'auto 1fr auto', minHeight: '100vh', background: 'white', fontFamily: 'sans-serif' }}>
         <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '1.5rem 4rem', borderBottom: '1px solid #eee', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ background: '#4F46E5', padding: '8px', borderRadius: '8px' }}>
-              <Sparkles size={24} color="white"/>
-            </div>
-            <span style={{ fontWeight: '900', fontSize: '1.5rem', letterSpacing: '2px' }}>
-              BLUE LOTUS
-            </span>
+            <div style={{ background: '#4F46E5', padding: '8px', borderRadius: '8px' }}><Sparkles size={24} color="white"/></div>
+            <span style={{ fontWeight: '900', fontSize: '1.5rem', letterSpacing: '2px' }}>BLUE LOTUS</span>
           </div>
           <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-            <button
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#4F46E5',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px'
-              }}
-            >
-              <LogIn size={18}/> Sign In
-            </button>
-            <button
-              style={{
-                background: '#4F46E5',
-                color: 'white',
-                padding: '0.8rem 1.5rem',
-                borderRadius: '12px',
-                border: 'none',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px'
-              }}
-            >
-              <UserPlus size={18}/> Sign Up
-            </button>
-            <button
-              onClick={() => setView("forge")}
-              style={{
-                background: '#111827',
-                color: 'white',
-                padding: '0.8rem 1.5rem',
-                borderRadius: '12px',
-                border: 'none',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              Enter Forge
-            </button>
+            <button style={{ background: 'transparent', border: 'none', color: '#4F46E5', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}><LogIn size={18}/> Sign In</button>
+            <button style={{ background: '#4F46E5', color: 'white', padding: '0.8rem 1.5rem', borderRadius: '12px', border: 'none', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px' }}><UserPlus size={18}/> Sign Up</button>
+            <button onClick={() => setView("forge")} style={{ background: '#111827', color: 'white', padding: '0.8rem 1.5rem', borderRadius: '12px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Enter Forge</button>
           </div>
         </nav>
 
-        {/* HERO/MAIN */}
         <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '4rem 2rem' }}>
-          <h1 style={{ fontSize: '4.5rem', fontWeight: '900', marginBottom: '2rem', textAlign: 'center' }}>
-            Plant a <span style={{ color: '#4F46E5' }}>new idea.</span>
-          </h1>
+          <h1 style={{ fontSize: '4.5rem', fontWeight: '900', marginBottom: '2rem', textAlign: 'center' }}>Plant a <span style={{ color: '#4F46E5' }}>new idea.</span></h1>
           
-          <div
-            style={{
-              width: '100%',
-              maxWidth: '850px',
-              background: '#f8faff',
-              border: '2px solid #4F46E5',
-              borderRadius: '40px',
-              padding: '2.5rem',
-              boxShadow: '0 20px 40px rgba(79, 70, 229, 0.05)',
-              marginBottom: '4rem'
-            }}
-          >
-            <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="What should we build today?"
-              style={{
-                width: '100%',
-                border: 'none',
-                outline: 'none',
-                background: 'transparent',
-                fontSize: '1.8rem',
-                minHeight: '120px',
-                resize: 'none'
-              }}
-            />
+          <div style={{ width: '100%', maxWidth: '850px', background: '#f8faff', border: '2px solid #4F46E5', borderRadius: '40px', padding: '2.5rem', boxShadow: '0 20px 40px rgba(79, 70, 229, 0.05)', marginBottom: '4rem' }}>
+            <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="What should we build today?" style={{ width: '100%', border: 'none', outline: 'none', background: 'transparent', fontSize: '1.8rem', minHeight: '120px', resize: 'none' }} />
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
-              <button
-                onClick={() => handleBeginCultivation()}
-                style={{
-                  background: '#4F46E5',
-                  color: 'white',
-                  border: 'none',
-                  padding: '1.2rem 3rem',
-                  borderRadius: '20px',
-                  fontWeight: 'bold',
-                  fontSize: '1.2rem',
-                  cursor: 'pointer'
-                }}
-              >
-                BEGIN CULTIVATION
-              </button>
+              <button onClick={() => handleBeginCultivation()} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '1.2rem 3rem', borderRadius: '20px', fontWeight: 'bold', fontSize: '1.2rem', cursor: 'pointer' }}>BEGIN CULTIVATION</button>
             </div>
           </div>
 
-          {/* PRICING & CREDITS */}
           <div style={{ textAlign: 'center', width: '100%' }}>
-            <h3 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '1rem' }}>
-              Sovereign Tiers
-            </h3>
-            <p style={{ color: '#6B7280', marginBottom: '2rem' }}>
-              <HeartPulse size={16} inline="true" color="#4F46E5"/> <strong>Sovereign Healing Code</strong>
-            </p>
+             <h3 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '1rem' }}>Sovereign Tiers</h3>
+             <p style={{ color: '#6B7280', marginBottom: '2rem' }}>All plans include <HeartPulse size={16} style={{display: 'inline', verticalAlign: 'middle'}} color="#4F46E5"/> <strong>Sovereign Healing Code</strong></p>
              
-            <div style={{ marginBottom: '3rem' }}>
-              <button
-                onClick={() => setBilling('monthly')}
-                style={{
-                  padding: '0.8rem 2rem',
-                  background: billing === 'monthly' ? '#4F46E5' : '#eee',
-                  color: billing === 'monthly' ? 'white' : '#666',
-                  border: 'none',
-                  borderRadius: '12px 0 0 12px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setBilling('yearly')}
-                style={{
-                  padding: '0.8rem 2rem',
-                  background: billing === 'yearly' ? '#4F46E5' : '#eee',
-                  color: billing === 'yearly' ? 'white' : '#666',
-                  border: 'none',
-                  borderRadius: '0 12px 12px 0',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                Yearly
-              </button>
-            </div>
+             <div style={{ marginBottom: '3rem' }}>
+                <button onClick={() => setBilling('monthly')} style={{ padding: '0.8rem 2rem', background: billing === 'monthly' ? '#4F46E5' : '#eee', color: billing === 'monthly' ? 'white' : '#666', border: 'none', borderRadius: '12px 0 0 12px', cursor: 'pointer', fontWeight: 'bold' }}>Monthly</button>
+                <button onClick={() => setBilling('yearly')} style={{ padding: '0.8rem 2rem', background: billing === 'yearly' ? '#4F46E5' : '#eee', color: billing === 'yearly' ? 'white' : '#666', border: 'none', borderRadius: '0 12px 12px 0', cursor: 'pointer', fontWeight: 'bold' }}>Yearly</button>
+             </div>
 
-            <div
-              style={{
-                display: 'flex',
-                gap: '20px',
-                justifyContent: 'center',
-                flexWrap: 'wrap'
-              }}
-            >
-              {plans.map((plan) => (
-                <div
-                  key={plan.n}
-                  onClick={() => setSelectedPlan(plan.n)}
-                  style={{
-                    border: selectedPlan === plan.n ? '4px solid #4F46E5' : '1px solid #eee',
-                    padding: '2rem',
-                    borderRadius: '30px',
-                    width: '200px',
-                    background: plan.n === 'SOVEREIGN' ? '#111827' : 'white',
-                    color: plan.n === 'SOVEREIGN' ? 'white' : 'black',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ color: '#4F46E5', marginBottom: '10px' }}>{plan.i}</div>
-                  <div style={{ fontWeight: '900' }}>{plan.n}</div>
-                  <div style={{ fontSize: '2rem', fontWeight: '900' }}>
-                    {calculatePrice(plan.p)}
+             <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                {plans.map((plan) => (
+                  <div key={plan.n} onClick={() => setSelectedPlan(plan.n)} style={{ border: selectedPlan === plan.n ? '4px solid #4F46E5' : '1px solid #eee', padding: '2rem', borderRadius: '30px', width: '200px', background: plan.n === 'SOVEREIGN' ? '#111827' : 'white', color: plan.n === 'SOVEREIGN' ? 'white' : 'black', cursor: 'pointer' }}>
+                    <div style={{ color: '#4F46E5', marginBottom: '10px' }}>{plan.i}</div>
+                    <div style={{ fontWeight: '900' }}>{plan.n}</div>
+                    <div style={{ fontSize: '2rem', fontWeight: '900' }}>{calculatePrice(plan.p)}</div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#4F46E5', margin: '10px 0' }}>{plan.c} Cultivations/mo</div>
+                    <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>{plan.d}</p>
                   </div>
-                  <div
-                    style={{
-                      fontSize: '0.8rem',
-                      fontWeight: 'bold',
-                      color: '#4F46E5',
-                      margin: '10px 0'
-                    }}
-                  >
-                    {plan.c} Cultivations/mo
-                  </div>
-                  <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>{plan.d}</p>
-                </div>
-              ))}
-            </div>
+                ))}
+             </div>
           </div>
         </main>
 
-        {/* FOOTER */}
-        <footer
-          style={{
-            background: '#020617',
-            color: 'white',
-            padding: '4rem 2rem',
-            textAlign: 'center',
-            borderTop: '1px solid #1E293B'
-          }}
-        >
-          <div
-            style={{
-              fontWeight: '900',
-              letterSpacing: '4px',
-              fontSize: '1.5rem',
-              marginBottom: '1rem'
-            }}
-          >
-            BLUE LOTUS
-          </div>
-          <p style={{ opacity: 0.4, fontSize: '0.9rem' }}>
-            © 2026 SOVEREIGN AUTHORITY // CULTIVATED BY TWIN PRIME
-          </p>
+        <footer style={{ background: '#020617', color: 'white', padding: '4rem 2rem', textAlign: 'center', borderTop: '1px solid #1E293B' }}>
+          <div style={{ fontWeight: '900', letterSpacing: '4px', fontSize: '1.5rem', marginBottom: '1rem' }}>BLUE LOTUS</div>
+          <p style={{ opacity: 0.4, fontSize: '0.9rem' }}>© 2026 SOVEREIGN AUTHORITY // CULTIVATED BY TWIN PRIME</p>
         </footer>
       </div>
     );
   }
 
-  {/* FORGE MODE */}
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#020617',
-        color: 'white',
-        fontFamily: 'monospace'
-      }}
-    >
-      <nav
-        style={{
-          height: '70px',
-          borderBottom: '1px solid #1E293B',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 2rem',
-          justifyContent: 'space-between'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <RefreshCw className={isBuilding ? "animate-spin" : ""} color="#818CF8" />
-          <strong>FORGE MODE</strong>
-        </div>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#020617', color: 'white', fontFamily: 'monospace' }}>
+      <nav style={{ height: '70px', borderBottom: '1px solid #1E293B', display: 'flex', alignItems: 'center', padding: '0 2rem', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}><RefreshCw className={isBuilding ? "animate-spin" : ""} color="#818CF8" /><strong>FORGE MODE</strong></div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            style={{
-              background: '#1E293B',
-              border: '1px solid #334155',
-              padding: '8px',
-              borderRadius: '8px'
-            }}
-          >
-            <Trash2 size={18} color="#EF4444" />
-          </button>
-          <button
-            style={{
-              background: '#1E293B',
-              border: '1px solid #334155',
-              padding: '8px',
-              borderRadius: '8px'
-            }}
-          >
-            <Github size={18} color="white" />
-          </button>
-          <button
-            onClick={() => setView("garden")}
-            style={{
-              background: 'transparent',
-              color: '#94A3B8',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            EXIT
-          </button>
+           <button style={{ background: '#1E293B', border: '1px solid #334155', padding: '8px', borderRadius: '8px' }}><Trash2 size={18} color="#EF4444" /></button>
+           <button style={{ background: '#1E293B', border: '1px solid #334155', padding: '8px', borderRadius: '8px' }}><Github size={18} color="white" /></button>
+           <button onClick={() => setView("garden")} style={{ background: 'transparent', color: '#94A3B8', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>EXIT</button>
         </div>
       </nav>
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        <div
-          style={{
-            width: '400px',
-            borderRight: '1px solid #1E293B',
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '1.5rem'
-          }}
-        >
-          <h3 style={{ color: '#818CF8' }}>
-            <ShieldCheck size={16} /> TWIN INTERFACE
-          </h3>
+        <div style={{ width: '400px', borderRight: '1px solid #1E293B', display: 'flex', flexDirection: 'column', padding: '1.5rem' }}>
+          <h3 style={{ color: '#818CF8' }}><ShieldCheck size={16} style={{display: 'inline', verticalAlign: 'middle'}} /> TWIN INTERFACE</h3>
           <div style={{ flex: 1, overflowY: 'auto' }}>
             {consoleLogs.map((log, i) => (
-              <div
-                key={i}
-                style={{
-                  marginBottom: '1rem',
-                  borderLeft: `2px solid ${
-                    log.sender === 'PRIME' ? '#4F46E5' : '#818CF8'
-                  }`,
-                  paddingLeft: '10px'
-                }}
-              >
-                <small
-                  style={{
-                    color: log.sender === 'PRIME' ? '#4F46E5' : '#818CF8'
-                  }}
-                >
-                  {log.sender}
-                </small>
+              <div key={i} style={{ marginBottom: '1rem', borderLeft: `2px solid ${log.sender === 'PRIME' ? '#4F46E5' : '#818CF8'}`, paddingLeft: '10px' }}>
+                <small style={{ color: log.sender === 'PRIME' ? '#4F46E5' : '#818CF8' }}>{log.sender}</small>
                 <p style={{ margin: 0, fontSize: '0.9rem' }}>{log.msg}</p>
               </div>
             ))}
           </div>
-          <div
-            style={{
-              background: '#1E293B',
-              borderRadius: '10px',
-              padding: '0.8rem',
-              display: 'flex'
-            }}
-          >
-            <input
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleBeginCultivation()}
-              placeholder="Message TWIN Prime..."
-              style={{
-                flex: 1,
-                background: 'transparent',
-                border: 'none',
-                color: 'white',
-                outline: 'none'
-              }}
-            />
-            <button
-              onClick={() => handleBeginCultivation()}
-              style={{ background: 'transparent', border: 'none' }}
-            >
-              <Send size={18} color="#818CF8" />
-            </button>
+          <div style={{ background: '#1E293B', borderRadius: '10px', padding: '0.8rem', display: 'flex' }}>
+            <input value={prompt} onChange={(e) => setPrompt(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleBeginCultivation()} placeholder="Message TWIN Prime..." style={{ flex: 1, background: 'transparent', border: 'none', color: 'white', outline: 'none' }} />
+            <button onClick={() => handleBeginCultivation()} style={{ background: 'transparent', border: 'none' }}><Send size={18} color="#818CF8" /></button>
           </div>
         </div>
         <div style={{ flex: 1, background: '#f1f5f9', padding: '1rem' }}>
-          <iframe
-            srcDoc={
-              generatedCode ||
-              "<html><body style='display:flex;justify-content:center;align-items:center;height:99vh;font-family:sans-serif;color:#94a3b8;'><h3>Waiting for Prime Authorization...</h3></body></html>"
-            }
-            style={{
-              width: '100%',
-              height: '100%',
-              background: 'white',
-              borderRadius: '20px',
-              border: 'none'
-            }}
-          />
+          <iframe srcDoc={generatedCode || "<html><body style='display:flex;justify-content:center;align-items:center;height:99vh;font-family:sans-serif;color:#94a3b8;'><h3>Waiting for Prime Authorization...</h3></body></html>"} style={{ width: '100%', height: '100%', background: 'white', borderRadius: '20px', border: 'none' }} />
         </div>
       </div>
     </div>
