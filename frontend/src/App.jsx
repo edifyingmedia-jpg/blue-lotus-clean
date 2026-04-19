@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   ArrowRight, Leaf, Sprout, Trees, Crown, RefreshCw, 
-  Send, Trash2, Github, Sparkles, ShieldCheck, UserPlus, LogIn, HeartPulse 
+  Send, Trash2, Github, Sparkles, ShieldCheck, UserPlus, LogIn, HeartPulse, Rocket
 } from 'lucide-react';
 
 const App = () => {
@@ -26,7 +26,7 @@ const App = () => {
     return billing === "monthly" ? `$${price}` : `$${price}/yr`;
   };
 
-  // CORRECTED CULTIVATION ENGINE
+  // CULTIVATION ENGINE (TWIN PRIME)
   const handleBeginCultivation = async (overridePrompt) => {
     const activePrompt = overridePrompt || prompt;
     if (!activePrompt) return;
@@ -45,7 +45,6 @@ const App = () => {
         body: JSON.stringify({ prompt: activePrompt }),
       });
       
-      // Safety check: Catch "A server error occurred" plain-text before it breaks JSON parsing
       if (!response.ok) {
         const text = await response.text();
         throw new Error(`Authority Refused: ${text.substring(0, 30)}...`);
@@ -53,7 +52,6 @@ const App = () => {
 
       const data = await response.json();
       
-      // Matches your real backend/api/twin.js logic
       if (data.ok && data.html) {
         setGeneratedCode(data.html);
         setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: "Sovereign Healing Applied. Architecture validated." }]);
@@ -65,9 +63,37 @@ const App = () => {
     } finally { setIsBuilding(false); }
   };
 
+  // MANIFESTATION ENGINE (PUBLISH)
+  const handlePublish = async () => {
+    if (!generatedCode) return;
+    setIsBuilding(true);
+    setConsoleLogs(prev => [...prev, { sender: "TWIN", msg: "Initiating final manifestation protocol..." }]);
+    
+    try {
+      const response = await fetch('/api/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ html: generatedCode, projectName: "SovereignApp" }),
+      });
+      
+      const data = await response.json();
+      if (data.ok) {
+        setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: `APP LIVE: ${data.deploymentUrl}` }]);
+        alert(`Sovereign App Manifested at: ${data.deploymentUrl}`);
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: `Publication Denied: ${err.message}` }]);
+    } finally {
+      setIsBuilding(false);
+    }
+  };
+
   if (view === "garden") {
     return (
       <div style={{ display: 'grid', gridTemplateRows: 'auto 1fr auto', minHeight: '100vh', background: 'white', fontFamily: 'sans-serif' }}>
+        {/* NAV */}
         <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '1.5rem 4rem', borderBottom: '1px solid #eee', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ background: '#4F46E5', padding: '8px', borderRadius: '8px' }}><Sparkles size={24} color="white"/></div>
@@ -80,6 +106,7 @@ const App = () => {
           </div>
         </nav>
 
+        {/* MAIN */}
         <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '4rem 2rem' }}>
           <h1 style={{ fontSize: '4.5rem', fontWeight: '900', marginBottom: '2rem', textAlign: 'center' }}>Plant a <span style={{ color: '#4F46E5' }}>new idea.</span></h1>
           
@@ -113,6 +140,7 @@ const App = () => {
           </div>
         </main>
 
+        {/* FOOTER */}
         <footer style={{ background: '#020617', color: 'white', padding: '4rem 2rem', textAlign: 'center', borderTop: '1px solid #1E293B' }}>
           <div style={{ fontWeight: '900', letterSpacing: '4px', fontSize: '1.5rem', marginBottom: '1rem' }}>BLUE LOTUS</div>
           <p style={{ opacity: 0.4, fontSize: '0.9rem' }}>© 2026 SOVEREIGN AUTHORITY // CULTIVATED BY TWIN PRIME</p>
@@ -121,11 +149,13 @@ const App = () => {
     );
   }
 
+  {/* FORGE VIEW */}
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#020617', color: 'white', fontFamily: 'monospace' }}>
       <nav style={{ height: '70px', borderBottom: '1px solid #1E293B', display: 'flex', alignItems: 'center', padding: '0 2rem', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}><RefreshCw className={isBuilding ? "animate-spin" : ""} color="#818CF8" /><strong>FORGE MODE</strong></div>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+           <button onClick={handlePublish} disabled={!generatedCode} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px', opacity: generatedCode ? 1 : 0.5 }}><Rocket size={18}/> PUBLISH</button>
            <button style={{ background: '#1E293B', border: '1px solid #334155', padding: '8px', borderRadius: '8px' }}><Trash2 size={18} color="#EF4444" /></button>
            <button style={{ background: '#1E293B', border: '1px solid #334155', padding: '8px', borderRadius: '8px' }}><Github size={18} color="white" /></button>
            <button onClick={() => setView("garden")} style={{ background: 'transparent', color: '#94A3B8', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>EXIT</button>
@@ -149,7 +179,7 @@ const App = () => {
           </div>
         </div>
         <div style={{ flex: 1, background: '#f1f5f9', padding: '1rem' }}>
-          <iframe srcDoc={generatedCode || "<html><body style='display:flex;justify-content:center;align-items:center;height:99vh;font-family:sans-serif;color:#94a3b8;'><h3>Waiting for Prime Authorization...</h3></body></html>"} style={{ width: '100%', height: '100%', background: 'white', borderRadius: '20px', border: 'none' }} />
+          <iframe title="preview" srcDoc={generatedCode || "<html><body style='display:flex;justify-content:center;align-items:center;height:99vh;font-family:sans-serif;color:#94a3b8;'><h3>Waiting for Prime Authorization...</h3></body></html>"} style={{ width: '100%', height: '100%', background: 'white', borderRadius: '20px', border: 'none' }} />
         </div>
       </div>
     </div>
