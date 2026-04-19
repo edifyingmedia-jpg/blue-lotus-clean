@@ -26,6 +26,7 @@ const App = () => {
     return billing === "monthly" ? `$${price}` : `$${price}/yr`;
   };
 
+  // CORRECTED CULTIVATION ENGINE
   const handleBeginCultivation = async (overridePrompt) => {
     const activePrompt = overridePrompt || prompt;
     if (!activePrompt) return;
@@ -44,14 +45,20 @@ const App = () => {
         body: JSON.stringify({ prompt: activePrompt }),
       });
       
+      // Safety check: Catch "A server error occurred" plain-text before it breaks JSON parsing
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Authority Refused: ${text.substring(0, 30)}...`);
+      }
+
       const data = await response.json();
       
-      // FIXED: Matching your backend return property 'html'
+      // Matches your real backend/api/twin.js logic
       if (data.ok && data.html) {
         setGeneratedCode(data.html);
         setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: "Sovereign Healing Applied. Architecture validated." }]);
       } else { 
-        throw new Error(data.error || "Authority Refusal"); 
+        throw new Error(data.error || "Generation Failed"); 
       }
     } catch (err) {
       setConsoleLogs(prev => [...prev, { sender: "PRIME", msg: `CRITICAL: Prime Authority requires rest. ${err.message}` }]);
@@ -85,7 +92,7 @@ const App = () => {
 
           <div style={{ textAlign: 'center', width: '100%' }}>
              <h3 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '1rem' }}>Sovereign Tiers</h3>
-             <p style={{ color: '#6B7280', marginBottom: '2rem' }}>All plans include <HeartPulse size={16} style={{display: 'inline', verticalAlign: 'middle'}} color="#4F46E5"/> <strong>Sovereign Healing Code</strong></p>
+             <p style={{ color: '#6B7280', marginBottom: '2rem' }}>All plans include <HeartPulse size={16} style={{display:'inline', verticalAlign:'middle'}} color="#4F46E5"/> <strong>Sovereign Healing Code</strong></p>
              
              <div style={{ marginBottom: '3rem' }}>
                 <button onClick={() => setBilling('monthly')} style={{ padding: '0.8rem 2rem', background: billing === 'monthly' ? '#4F46E5' : '#eee', color: billing === 'monthly' ? 'white' : '#666', border: 'none', borderRadius: '12px 0 0 12px', cursor: 'pointer', fontWeight: 'bold' }}>Monthly</button>
@@ -127,7 +134,7 @@ const App = () => {
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         <div style={{ width: '400px', borderRight: '1px solid #1E293B', display: 'flex', flexDirection: 'column', padding: '1.5rem' }}>
-          <h3 style={{ color: '#818CF8' }}><ShieldCheck size={16} style={{display: 'inline', verticalAlign: 'middle'}} /> TWIN INTERFACE</h3>
+          <h3 style={{ color: '#818CF8' }}><ShieldCheck size={16} style={{display:'inline', verticalAlign:'middle'}} /> TWIN INTERFACE</h3>
           <div style={{ flex: 1, overflowY: 'auto' }}>
             {consoleLogs.map((log, i) => (
               <div key={i} style={{ marginBottom: '1rem', borderLeft: `2px solid ${log.sender === 'PRIME' ? '#4F46E5' : '#818CF8'}`, paddingLeft: '10px' }}>
