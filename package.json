@@ -2,11 +2,22 @@
   "name": "blue-lotus-monolith",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
-  "dependencies": {
-    "openai": "^4.0.0"
-  },
   "scripts": {
-    "build": "cd frontend && npm install && npm run build"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "lucide-react": "^0.344.0",
+    "openai": "^4.28.0",
+    "framer-motion": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.0"
   }
 }
