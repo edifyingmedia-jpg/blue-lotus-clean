@@ -92,7 +92,7 @@ export default function App() {
             <span className="font-bold tracking-tight text-lg text-white uppercase italic">Blue Lotus Clean</span>
           </div>
 
-          {/* HARBOR BUTTONS - MOVED TO TOP BAR */}
+          {/* TOP BAR HARBOR BUTTONS */}
           <div className="flex items-center gap-2">
             {['vercel', 'netlify', 'cloudflare'].map((p) => (
               <button 
