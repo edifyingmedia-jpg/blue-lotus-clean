@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Leaf, Sprout, Crown, Plus, Send, Terminal, Globe, 
-  Github, ChevronRight, Loader2, CheckCircle2, AlertCircle 
-} from 'lucide-react';
+import { Leaf, Sprout, Crown, Plus, Send, Terminal, Globe, Github, ChevronRight, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const plans = [
   { id: 'sprout', name: 'Lotus Sprout', icon: Leaf, cost: '5 Velocity', desc: 'Single component generation' },
@@ -32,7 +29,8 @@ export default function App() {
     setLogs([]);
     addLog('Initiating Sovereign Architect...', 'info');
 
-    const fallbackHTML = `<html><script src="https://cdn.tailwindcss.com"></script><body class="bg-[#020617] text-white p-12 flex flex-col items-center justify-center h-screen border-4 border-cyan-500/20"><div class="text-center space-y-6"><div class="w-20 h-20 bg-cyan-500/10 border border-cyan-500/30 rounded-3xl mx-auto flex items-center justify-center shadow-[0_0_50px_rgba(6,182,212,0.2)]"><div class="w-4 h-4 bg-cyan-400 rounded-full animate-pulse"></div></div><h1 class="text-5xl font-black tracking-tighter italic">BLUE LOTUS CLEAN</h1><p class="text-cyan-500/60 font-mono text-sm tracking-[0.3em] uppercase">Sovereign Asset Manifested</p></div></body></html>`;
+    // Nexus Fallback: Renders a high-fashion dashboard if the API link is severed
+    const fallbackHTML = `<html><script src="https://cdn.tailwindcss.com"></script><body class="bg-[#020617] text-white p-12 flex flex-col items-center justify-center h-screen border-4 border-cyan-500/20"><div class="text-center space-y-6"><div class="w-20 h-20 bg-cyan-500/10 border border-cyan-500/30 rounded-3xl mx-auto flex items-center justify-center shadow-[0_0_50px_rgba(6,182,212,0.2)]"><div class="w-4 h-4 bg-cyan-400 rounded-full animate-pulse"></div></div><h1 class="text-5xl font-black tracking-tighter italic">BLUE LOTUS CLEAN</h1><p class="text-cyan-500/60 font-mono text-sm tracking-[0.3em] uppercase">Sovereign Asset Manifested</p><div class="p-6 bg-white/5 border border-white/10 rounded-2xl max-w-md"><p class="text-slate-400 text-sm">" ${prompt.substring(0, 60)}... "</p></div></div></body></html>`;
 
     try {
       const response = await fetch('/api/twin', {
@@ -40,7 +38,9 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, plan: selectedPlan?.id }),
       });
+      
       const data = await response.json();
+      
       if (data.ok) {
         addLog('Blueprint synthesized by TWIN.', 'success');
         setGeneratedFiles(data.files);
@@ -91,20 +91,6 @@ export default function App() {
             </div>
             <span className="font-bold tracking-tight text-lg text-white uppercase italic">Blue Lotus Clean</span>
           </div>
-
-          {/* TOP BAR HARBOR BUTTONS */}
-          <div className="flex items-center gap-2">
-            {['vercel', 'netlify', 'cloudflare'].map((p) => (
-              <button 
-                key={p} 
-                onClick={() => handleManifest(p)}
-                className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all"
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-
           <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10">
             <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">System Ready</span>
@@ -119,9 +105,16 @@ export default function App() {
               <h2 className="text-4xl font-bold text-white mb-4">Blue Lotus Garden</h2>
               <p className="text-slate-400 text-lg leading-relaxed font-medium">Select a blueprint tier to begin the sovereign cultivation process.</p>
             </header>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {plans.map((plan) => (
-                <button key={plan.id} onClick={() => setSelectedPlan(plan)} className={`relative group p-8 rounded-3xl border transition-all text-left ${selectedPlan?.id === plan.id ? 'bg-cyan-500/10 border-cyan-500/50 shadow-[0_0_40px_rgba(6,182,212,0.1)]' : 'bg-slate-900/40 border-white/5 hover:border-white/10' }`} >
+                <button 
+                  key={plan.id} 
+                  onClick={() => setSelectedPlan(plan)}
+                  className={`relative group p-8 rounded-3xl border transition-all text-left ${
+                    selectedPlan?.id === plan.id ? 'bg-cyan-500/10 border-cyan-500/50 shadow-[0_0_40px_rgba(6,182,212,0.1)]' : 'bg-slate-900/40 border-white/5 hover:border-white/10'
+                  }`}
+                >
                   <plan.icon className={`w-10 h-10 mb-6 ${selectedPlan?.id === plan.id ? 'text-cyan-400' : 'text-slate-500'}`} />
                   <h3 className="font-bold text-white text-xl mb-1">{plan.name}</h3>
                   <p className="text-sm text-slate-400 mb-6 leading-relaxed">{plan.desc}</p>
@@ -129,11 +122,19 @@ export default function App() {
                 </button>
               ))}
             </div>
+
             {selectedPlan && (
               <div className="bg-slate-900/40 border border-white/5 rounded-[2.5rem] p-10 backdrop-blur-sm animate-in zoom-in-95 duration-300">
-                <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="What shall we manifest today?" className="w-full h-32 bg-transparent text-2xl text-white placeholder:text-slate-700 border-none focus:ring-0 resize-none font-medium" />
+                <textarea 
+                  value={prompt} 
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="What shall we manifest today?"
+                  className="w-full h-32 bg-transparent text-2xl text-white placeholder:text-slate-700 border-none focus:ring-0 resize-none font-medium"
+                />
                 <div className="flex justify-end pt-8 border-t border-white/5">
-                  <button onClick={handleBeginCultivation} className="group px-10 py-5 bg-white text-slate-950 rounded-full font-black flex items-center gap-3 hover:bg-cyan-400 transition-all active:scale-95"> BEGIN CULTIVATION <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /> </button>
+                  <button onClick={handleBeginCultivation} className="group px-10 py-5 bg-white text-slate-950 rounded-full font-black flex items-center gap-3 hover:bg-cyan-400 transition-all active:scale-95">
+                    BEGIN CULTIVATION <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
                 </div>
               </div>
             )}
@@ -151,16 +152,27 @@ export default function App() {
                 {logs.map(log => (
                   <div key={log.id} className="flex gap-4">
                     <span className="text-slate-700">[{new Date(log.id).toLocaleTimeString([], {hour12: false})}]</span>
-                    <span className={log.type === 'success' ? 'text-emerald-400' : log.type === 'error' ? 'text-rose-400' : 'text-cyan-400 font-bold'}> {log.message} </span>
+                    <span className={log.type === 'success' ? 'text-emerald-400' : log.type === 'error' ? 'text-rose-400' : 'text-cyan-400 font-bold'}>
+                       {log.message}
+                    </span>
                   </div>
                 ))}
               </div>
+              
               <div className="p-8 border-t border-white/5 bg-slate-900/20">
+                {/* PROVIDER SELECTOR */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {['vercel', 'netlify', 'cloudflare'].map((p) => (
+                    <button key={p} onClick={() => setProvider(p)} className={`py-2 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${provider === p ? 'bg-cyan-500 text-slate-950 border-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.3)]' : 'bg-slate-900 border-white/5 text-slate-500'}`}>{p}</button>
+                  ))}
+                </div>
                 <button disabled={!generatedFiles || isCultivating} onClick={() => handleManifest(provider)} className="w-full py-5 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-20 text-white rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 shadow-xl shadow-cyan-500/10">
-                  {isCultivating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Globe className="w-5 h-5" />} Ready for Manifestation
+                  {isCultivating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Globe className="w-5 h-5" />}
+                  Manifest on {provider}
                 </button>
               </div>
             </div>
+
             <div className="bg-white rounded-[2rem] border border-white/5 relative overflow-hidden shadow-2xl">
               {previewUrl ? (
                 <iframe src={previewUrl} className="w-full h-full border-none" title="Preview" />
