@@ -1,5 +1,6 @@
 // api/twin-generate.js
 import OpenAI from "openai";
+import { MASTER_BUILDER_SYSTEM } from "../lib/twin/masterBuilder.js";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -13,7 +14,7 @@ export default async function handler(req, res) {
   const completion = await client.chat.completions.create({
     model: "gpt-4.1",
     messages: [
-      { role: "system", content: "You generate clean, production-ready code." },
+      { role: "system", content: MASTER_BUILDER_SYSTEM },
       { role: "user", content: prompt }
     ]
   });
